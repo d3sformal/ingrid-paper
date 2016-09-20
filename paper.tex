@@ -168,13 +168,23 @@ The thesis also aims to lay groundwork for future extensions and suggest possibl
 
 \section{Introduction}
 
-Prevailing approach to the definition of valid syntax of programming languages is through/using grammars written, for example, using notations based on (or similar to) EBNF [reference]. Many popular tools exist for automated generation of parsers from the grammars, such as ANTLR and Bison/Flex. Source code of programs in the language is then written in a text editor, which is a part of some IDE.
+\JB{Odstavec mirne upraven} The prevailing approach to define valid syntaxes for programming languages is through grammars written typically in notations based on (or similar to) EBNF [reference]. Many popular tools exist for automated generation of parsers from the grammar definitions, such as ANTLR and Bison/Flex. The source code of programs in such languages is written in a text editors, usually embedded into an IDE.
 
-An alternative emerged recently in the form of projectional editors that are used mainly in special IDEs for domain specific languages, which are called language workbenches. A popular tool of this kind is MPS [odkaz] developed by JetBrains. In MPS, you can design a custom language, and then use it as an IDE for writing programs in the language and compiling them into executables. The key idea behind projectional editors is that a developer directly manipulates the AST representation of the source code, and not a plain text. \todo{Kratce zminit vyhody a nevyhody toho postupu.} One advantage of projectional editors is that developers practically cannot make syntax errors (MPS IDE will not allow them to make syntax errors). Furthermore, languages can be defined in a modular way (object-oriented, hierarchical) and multiple languages can be easily combined together. 
-The mechanisms supported by MPS also give us, for instance, the possibility to extend existing languages very easily, just by inheritance.
-Nice illustration of the abilities of MPS is the mbeddr project [citation] which extends C with domain-specific constructs and data types.
+\JB{Odstavec mirne upraven} Projectional (or structural) editing offers an alternative approach. While the idea emerged as early as in 1970s, it failed to get adopted widely, mostly due to inconvenient and unnatural way of manipulating code.  A recent revival of projectional editing has been observed in the area of language workbenches - IDE-like tools that enable the developers to manipulate the actual language definition. The Meta-programming System (MPS) [reference] by JetBrains is an open-source language workbench that focuses of Domain Specific Languages and leverages the concept of projectional editor. MPS allows developers to design custom languages and then use use them to write code and compile it into executables. MPS provides the whole IDE infrastructure for such languages.
+
+\JB{Odstavec mirne upraven} The key idea behind projectional editors is that a developer directly manipulates the AST representation of the source code instead of plain text. To avoid the fate of the early projectional editors MPS has put extra effort into making text manipulation feel like editing real text. MPS models, although being persisted as XML or binary files, can be versioned using the industry standard source-control systems (Git, Subversion). On-line model browsers have been incorporated into some of the popular public source code repositories (BitBucket) [reference] .
+
+\JB{Odstavec mirne upraven} The absence of parsers brings about numerous benefits, which are in particular useful for DSLs, which are frequently used by domain experts, who may not be professional programmers.
+\begin{itemize}
+	\item Since a projectional editors controls the interaction between the user and the code, the developers practically cannot enter syntactically invalid code.
+	\item Languages can be defined in a modular way and multiple languages can be easily combined together or extend one another, while parsers seriously limit language modularity for traditional parsed languages.
+	\item The languages may offer contextual or non-parseable notations, such as tables, diagrams or positional syntax.
+	\item Since the projection is detached from the physical representation of code (AST), authors can define multiple notations and allow the developers to switch between different representations of the code.
+\end{itemize}
+A motivating illustration of the abilities of MPS is the mbeddr project [citation], which extends C with numerous domain-specific constructs and data types.
 We provide more details about MPS in Section 2.1.
 
+\JB{Navrhuji smazat nasledujici odstavec}
 \todo{From thesis.
 	One of these tools is the JetBrains MPS~\cite{ref:MPS}, which approaches languages from a~different point of view.
 	MPS doesn't use the textual representation of code as usual, but rather works with the actual abstract syntax tree that holds the code's structure.
@@ -185,9 +195,13 @@ We provide more details about MPS in Section 2.1.
 }
 
 \todo{Pouzivat jen terminy "AST nodes" a "language elements" (to spis). Nepouzivat pojem "concepts" abychom ctenare nematli.}
-In order to use a language inside MPS, it has to be defined using the MPS concepts. In particular, one has to create the structure (types of AST nodes), editor (projection of AST), and text generation (to enable creation of plain text files used as input for compilers). We provide more details in Section X (Background about MPS).
 
-However, it is a lot of work to create a definition of a programming language in MPS. Therefore, very few mainstream languages are now fully supported by MPS (through some extensions).
+\JB{Odstavec upraven} Projectional editing introduces some new problems we haven't encountered before. One of them is the need for a~special definition of languages created inside MPS so that the IDE can understand them and work with them. In order to use a language inside MPS, it has to be defined through the MPS infrastructure. In particular, one has to create the abstract syntax called Structure (the types of allowed AST nodes), concrete syntax called Editor (projection of the AST on the screen and its interactions with the user), and text generation (to enable creation of plain text files used as input for compilers). We provide more details in Section X (Background about MPS).
+
+\JB{Odstavec pridan pro vysvetleni motivace prace} MPS is typically used for syntactically rich DSLs, which are likely to benefit most from overcoming the limitations of parser-based languages. These DSLs are then transformed on the AST level by a series of model-to-model transformations to an AST model representing the desired semantics in a General-purpose language (GPL), such as C or Java. This model is then converted to a textual representation of that language and compiled by the standard means of the target platform. This implies that the target GPL must also be defined by the MPS means, to allow the DSLs to have their models transformed into a model in the GPL.
+
+\JB{Odstavec doplnen} However, it requires substantial effort to create a definition of a GPL in MPS. Therefore, very few mainstream GPLs are now fully supported by MPS. Only Java and C have been implemented to date, which limits the DSLs authors to only target these supported target GPLs. We believe that an automated process of importing grammars of GPLs into MPS would encourage more GPLs to be migrated to MPS and thus giving the DSL authors more options.
+
 \todo{From thesis.
 	However, building these languages is a~complicated and time-consuming process and a~lot of effort must be put into them before they are ready for use.
 
@@ -195,9 +209,8 @@ However, it is a lot of work to create a definition of a programming language in
 	A big part of this effort is, however, quite straightforward and can be possibly automated, as we show in this paper. Automation speeds up the process of adoption of new languages to a great degree.
 }
 
-\todo{From thesis.
-	We will look into the possibility of automatic import of already existing general purpose languages into MPS using a grammar description of their syntax.
-}
+\JB{Odstavec upraven} Since a big part of the language definition process in MPS is quite straightforward and can possibly be automated, we will look into the possibility of automatic import of already existing general purpose languages into MPS using a grammar description of their syntax.
+
 We present INGRID --- a method and a tool for semi-automated construction of MPS definition of programming languages based on their ANTLR grammars.
 We also discuss challenges that we encountered during this process and our solution to them. Most of these challenges are general, i.e. not MPS specific, as they apply to the relation between grammars defined in EBNF-like style (rules and tokens, everything defined in plain text) and structured (object-oriented) approach used in MPS (and other language workbenches).
 
