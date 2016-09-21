@@ -345,24 +345,12 @@ In Figure~\ref{fig:if_editor_definition}, you can see what a real editor definit
 
 \paragraph{BaseLanguage}
 \todo{Introduce the base language here.}
-A program written in MPS language cannot be executed directly.
-MPS uses an approach based on translation into a program in the so-called BaseLanguage.
-A plain-text representation of a BaseLanguage program is then passed to a system compiler and the result is executed.
-The module responsible for generating the program in the BaseLanguage is called "textgen" (we describe it briefly in the next paragraph).
-
-BaseLanguage is also an MPS language --- it is the official port of Java for MPS (created by JetBrains, authors of MPS).
-The default base language of MPS is Java, but others are supported too.
-
-Since BaseLanguage is an MPS language, BaseLanguage code is not a (plain) text source code, but again, an AST built out of nodes belonging to the BaseLanguage language.
-This means that generating code inside MPS consists of generating some AST out of BaseLanguage nodes.
-
-Besides representing the default (most common) target of text generation, BaseLanguage is used also for all additional programming inside MPS.
+\JB{Odstavec prepsan}
+In order to implement MPS itself and also to support the basic set of language-definition DSLs, BaseLanguage was developed in the early days of MPS. BaseLanguage is a clone of Java implemented using the MPS constructs. Although BaseLanguage is syntactically almost identical to Java, it is edited in a projectional editor, just like all languages in MPS. The DSLs that language authors use in order to define languages are generated into BaseLanguage. Similarly, all customer DSLs that are meant to be generated into Java choose BaseLanguage as their generation target and the conversion to textual Java will be handled by BaseLanguage without any further effort, since BaseLanguage has a TextGen aspect defined, which translates BaseLanguage code into textual Java sources.
 
 \paragraph{TextGen.}
-The TextGen aspect defines how a certain AST node will be translated into a text source code (in the base language).
-This will allow us to generate source code in text form out of an AST model and ultimately to generate a text program out of the code user writes in the (imported) MPS language.
-The TextGen aspect is basically just one method/procedure definition for each AST node in the language. The method produces string representation of the given AST node and its children.
-MPS then calls this method for the root AST node of the program.
+\JB{Odstavec upraven} The TextGen aspect defines how a certain AST node will be translated into text. The TextGen aspect is typically only needed for the bottom-line (base) languages. DSLs, on the other hand, need to define rules for model-to-model conversion (a generator), since these are rarely converted to text directly. After TextGen has generated textual sources from an AST, a compiler for the particular GPL gets invoke in order to compile the generate sources into binary code.
+The TextGen definition follows a very straightforward pattern - each node outputs its textual representation into a textual buffer, calling TextGen of its children nodes at the right moments. MPS then calls this method for the root AST nodes of the given program.
 TextGen aspect has to be defined (especially its more complex functionality) using the BaseLanguage.
 Again, we included an example of the if statement (Figure~\ref{fig:if_statement_textgen}).
 
@@ -373,6 +361,7 @@ Again, we included an example of the if statement (Figure~\ref{fig:if_statement_
 	\label{fig:if_statement_textgen}
 \end{figure}
 
+\JB{Navrhuji odebrat}
 \todo{From thesis.
 
 After the program's AST is created using the projectional editor, there can be rules defined on how to generate code in plain text out of that tree.
