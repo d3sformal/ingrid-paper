@@ -290,7 +290,7 @@ Its abstract syntax tree representation will look something like shown on Figure
   \label{fig:if_ast}
 \end{figure}
 
-The underlying child nodes have their own children and so on. The type of nodes can be restricted by the language structure definition. For example, we can restrict the condition in the if/else statement to be an expression, statement block to be a list of statements, etc.
+The underlying child nodes have their own children and so on. The type of nodes can be restricted by the language structure definition. For example, we can restrict the condition in the if/else statement to be an expression, the statement block to be a list of statements, etc.
 
 \JB{odstavec upraven} Alternative visual representations are possible and they are not bound to be just the textual representation at all. For example, blocks for both of the branches can be aligned next to each other and displayed with differend background color, like shown in Figure~\ref{fig:if_editor}.
 
@@ -306,15 +306,12 @@ The underlying child nodes have their own children and so on. The type of nodes 
 
 \todo{Highlight the object-oriented hierarchical nature of language definitions in MPS. The environment restricts and guides the developer so that he makes less mistakes.}
 
-Some concepts and design patterns known from object oriented programming can be used in the language definition --- inheritance, interfaces, and so on.
-The AST node can be inherited from a parent (abstract) node and it can implement a special interface node.
-Most importantly, nodes have child nodes and that is how the AST itself is created.
+Some concepts and design patterns known from object oriented programming can be used in language definition for MPS --- inheritance between concepts, interfaces, delegation and so on. Most importantly, nodes can have child nodes and that is how the AST itself is created.
 
-\todo{Zduraznit ze AST node (object) ma nekolik aspectu: structure, editor, textgen. Definice MPS language je organizovana takto --- pres AST nodes, ktere maji nekolik aspectu (ruzne pohledy).}
+\JB{Zmineno vyse, navrhuji odstranit} \todo{Zduraznit ze AST node (object) ma nekolik aspectu: structure, editor, textgen. Definice MPS language je organizovana takto --- pres AST nodes, ktere maji nekolik aspectu (ruzne pohledy).}
 
 \paragraph{Structure.}
-The most important aspect of any MPS language is structure. It must be created first for each AST node.
-It specifies core attributes such as name of the AST node, inheritance relationships, possible child nodes (types and cardinality), implemented interfaces, references to other nodes, other properties (fields of any type that can hold values), etc.
+\JB{Odstavec mirne upraven} The fundamental aspect of any MPS language is structure. It must be created first for each type of the intended AST node. Structure specifies core attributes such as name of the concept, inheritance relationships, possible child concepts (their types and cardinalities), the implemented interfaces, references to other nodes, other properties (fields of any type that can hold values), etc.
 In Figure~\ref{fig:if_statement_structure}, you can see the structure aspect definition for the if statement.
 
 \begin{figure}[ht]
@@ -325,10 +322,7 @@ In Figure~\ref{fig:if_statement_structure}, you can see the structure aspect def
 \end{figure}
 
 \paragraph{Editor.}
-Editor aspect is where the user defines what the projectional editor representation of a code fragment (an AST node) looks like.
-The editor aspect of an AST node defines its visual representation (of the code) in the projectional editor.
-The user usually incorporates all children, references, and properties inside the representation so that future user of the language can insert their value into these placeholders.
-All elements can be styled using a~language similar to CSS.
+\JB{Odstavec mirne upraven}The editor aspect is where the user defines what the projectional editor representation of a code fragment (an AST node) looks like on the screen and how the user interacts with the code. JetBrains have developed a cellular system that allows placing node's (concept's) properties and children into different cells. The author usually incorporates all concept's children, references, and properties inside the representation so that the future users of the language can insert the values that the node expects. Additionally, all visual cells of the editor can be styled using a~language similar to CSS.
 
 \begin{figure}[ht]
 	\centering
@@ -337,6 +331,7 @@ All elements can be styled using a~language similar to CSS.
 	\label{fig:if_editor_definition}
 \end{figure}
 
+\JB{Nasledujici odstavec navrhuji odstranit}
 \todo{From thesis.
 
 The editor is a module dedicated/responsible for the definition of appearance of an AST node (concept).
@@ -350,7 +345,7 @@ In Figure~\ref{fig:if_editor_definition}, you can see what a real editor definit
 
 \paragraph{BaseLanguage}
 \todo{Introduce the base language here.}
-A program written in an MPS language cannot be executed directly.
+A program written in MPS language cannot be executed directly.
 MPS uses an approach based on translation into a program in the so-called BaseLanguage.
 A plain-text representation of a BaseLanguage program is then passed to a system compiler and the result is executed.
 The module responsible for generating the program in the BaseLanguage is called "textgen" (we describe it briefly in the next paragraph).
@@ -385,8 +380,7 @@ This module is called "text gen".
 These defined generators can target any language and platform.
 
 \paragraph{Other aspects.}
-MPS supports also other aspects, such as type checking and data-flow analysis, but they are not important for our contribution.
-Moreover, information needed for their automated generation is not available/contained inside a grammar file.
+MPS supports also other aspects, such as type checking, model transformations, static and data-flow code analysis, refactorings, language migrations, etc., but these are not important for our contribution. Moreover, the information needed for their automated generation is not available/contained inside a grammar file.
 
 }
 
