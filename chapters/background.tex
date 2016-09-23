@@ -1,0 +1,173 @@
+\section{Background and Related Work}
+
+We will briefly introduce fundamental basics of the MPS environment.
+We will analyze existing related projects that are trying to accomplish similar goals, and then we will weigh advantages and disadvantages of these approaches.
+
+\subsection{JetBrains MPS}
+
+\JB{Odstavec upraven} JetBrains MPS is a complete language workbench - a development environment that allows developers to define their own languages and then use them to develop code. The code can then be transformed into a target language, typically a GPL, such as Java or C.
+
+\JB{Navrhuji odstranit} We need to provide a good understanding of how the MPS~\cite{ref:MPS} environment works.
+Focus on basic/fundamental and relevant features. In this section, we will explain fundamental basics of MPS as it is crucial in the understanding of our contribution and associated challenges.
+
+\JB{odstavec upraven} MPS differs from typical IDEs in one important aspect - the projectional editor. The developer does not work with the textual representation of the source code directly, but rather with its AST (abstract syntax tree) that is the model of the code. When users are creating programs using the MPS projectional editor, they are basically assembling the tree (AST) out of predefined building blocks of the imported languages. The definition of the language dictates, which where in the AST can certain elements be placed or how they can be nested inside other elements. In traditional IDEs it is the parser that constructs an AST using the language's elements.
+
+\JB{Odstavec upraven} The building blocks of MPS models are called nodes. Code of any program in MPS is built from nodes and these nodes represent instances of elements defined in one of the languages that the program declares to be using. These language elements are called concepts. In brief, nodes in code are instances of concepts defined in the language.
+
+\JB{Vyhody/nevyhody diskutujeme v kapitole 1. Navrhuji nasledujici odstavec zrusit nebo text z kapitoly 1. presunout sem}
+Keeping the model of the code in the AST form has several advantages.
+One of them is that MPS then only allows composing the program strictly following the syntax of the language, which results in an inability to actually write syntactically invalid code.
+The code is generated out of the always-valid AST beyond user's reach.
+
+\JB{Odstavec upraven} One of key advantages of projectional editor stems from separation of abstract and concrete syntax. While the AST provides an exhaustive representation of the code, the way it is displayed on the screen and the way the user interacts with it are unconstrained. The editor can take any visual form and shape. The language author can define multiple visualizations and let the developer to choose one that fits best the task at hands - editing, debugging, reviewing, resolving merge conflicts, etc.
+
+For a better understanding, we will give a~small example. Let's assume we have a language with typical if/else structure similar to the one in Java:
+
+\begin{center}
+	\begin{minipage}{.38\textwidth}
+		\begin{alltt}
+			if (\textit{condition})
+			    \textit{then statement block}
+			else
+			    \textit{else statement block}
+		\end{alltt}
+	\end{minipage}
+\end{center}
+
+Its abstract syntax tree representation will look something like shown on Figure~\ref{fig:if_ast}.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[scale=0.6]{./images/if_statement_ast.png}
+  \caption{"If statement" abstract syntax tree}
+  \label{fig:if_ast}
+\end{figure}
+
+The underlying child nodes have their own children and so on. The type of nodes can be restricted by the language structure definition. For example, we can restrict the condition in the if/else statement to be an expression, the statement block to be a list of statements, etc.
+
+\JB{odstavec upraven} Alternative visual representations are possible and they are not bound to be just the textual representation at all. For example, blocks for both of the branches can be aligned next to each other and displayed with differend background color, like shown in Figure~\ref{fig:if_editor}.
+
+\begin{figure}[ht]
+	\centering
+	\hspace{-4mm}
+	\includegraphics[scale=0.75]{./images/if_statement_editor.png}
+	\caption{"If statement" projectional editor example}
+	\label{fig:if_editor}
+\end{figure}
+
+\JB{Odstavec mirne upraven}The definition of a language element (the concept) consists of several aspects and each aspect codifies a different part of the nodes' behavior. The essential aspects are the following: structure (abstract syntax), editor (concrete syntax - how the code is projected and edited) and textgen (how to transform the AST into textual source code). If, instead of generating text directly, the language is supposed to be generated into another language that is available in MPS, the generator aspect must be used to specify the model-transformation rules. The structure, editor and textgen aspects are most relevant for the contribution of this paper, so we describe them here (and neglect/ignore the other aspects such as type system and data-flow).
+
+\todo{Highlight the object-oriented hierarchical nature of language definitions in MPS. The environment restricts and guides the developer so that he makes less mistakes.}
+
+Some concepts and design patterns known from object oriented programming can be used in language definition for MPS --- inheritance between concepts, interfaces, delegation and so on. Most importantly, nodes can have child nodes and that is how the AST itself is created.
+
+\JB{Zmineno vyse, navrhuji odstranit} \todo{Zduraznit ze AST node (object) ma nekolik aspectu: structure, editor, textgen. Definice MPS language je organizovana takto --- pres AST nodes, ktere maji nekolik aspectu (ruzne pohledy).}
+
+\paragraph{Structure.}
+\JB{Odstavec mirne upraven} The fundamental aspect of any MPS language is structure. It must be created first for each type of the intended AST node. Structure specifies core attributes such as name of the concept, inheritance relationships, possible child concepts (their types and cardinalities), the implemented interfaces, references to other nodes, other properties (fields of any type that can hold values), etc.
+In Figure~\ref{fig:if_statement_structure}, you can see the structure aspect definition for the if statement.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.55]{./images/if_statement_structure.png}
+	\caption{"If statement" structure aspect definition}
+	\label{fig:if_statement_structure}
+\end{figure}
+
+\paragraph{Editor.}
+\JB{Odstavec mirne upraven}The editor aspect is where the user defines what the projectional editor representation of a code fragment (an AST node) looks like on the screen and how the user interacts with the code. JetBrains have developed a cellular system that allows placing node's (concept's) properties and children into different cells. The author usually incorporates all concept's children, references, and properties inside the representation so that the future users of the language can insert the values that the node expects. Additionally, all visual cells of the editor can be styled using a~language similar to CSS.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.5]{./images/if_statement_editor_definition.png}
+	\caption{"If statement" editor aspect definition}
+	\label{fig:if_editor_definition}
+\end{figure}
+
+\JB{Nasledujici odstavec navrhuji odstranit}
+\todo{From thesis.
+
+The editor is a module dedicated/responsible for the definition of appearance of an AST node (concept).
+JetBrains have developed a cellular system that allows placing node's (concept's) properties and children into different cells.
+These cells then can be styled to user's liking.
+There are many different types of cells, each behaving a little bit different towards its contents.
+For example, MPS supports various horizontal and vertical lists, etc.
+Extra cells can be added on top --- cells which just specify layout adjustments such as indentation and text color.
+In Figure~\ref{fig:if_editor_definition}, you can see what a real editor definition might look like for the if statement of the Java language (as defined in MPS).
+}
+
+\paragraph{BaseLanguage}
+\todo{Introduce the base language here.}
+\JB{Odstavec prepsan}
+In order to implement MPS itself and also to support the basic set of language-definition DSLs, BaseLanguage was developed in the early days of MPS. BaseLanguage is a clone of Java implemented using the MPS constructs. Although BaseLanguage is syntactically almost identical to Java, it is edited in a projectional editor, just like all languages in MPS. The DSLs that language authors use in order to define languages are generated into BaseLanguage. Similarly, all customer DSLs that are meant to be generated into Java choose BaseLanguage as their generation target and the conversion to textual Java will be handled by BaseLanguage without any further effort, since BaseLanguage has a TextGen aspect defined, which translates BaseLanguage code into textual Java sources.
+
+\paragraph{TextGen.}
+\JB{Odstavec upraven} The TextGen aspect defines how a certain AST node will be translated into text. The TextGen aspect is typically only needed for the bottom-line (base) languages. DSLs, on the other hand, need to define rules for model-to-model conversion (a generator), since these are rarely converted to text directly. After TextGen has generated textual sources from an AST, a compiler for the particular GPL gets invoke in order to compile the generate sources into binary code.
+The TextGen definition follows a very straightforward pattern - each node outputs its textual representation into a textual buffer, calling TextGen of its children nodes at the right moments. MPS then calls this method for the root AST nodes of the given program.
+TextGen aspect has to be defined (especially its more complex functionality) using the BaseLanguage.
+Again, we included an example of the if statement (Figure~\ref{fig:if_statement_textgen}).
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[scale=0.6]{./images/if_statement_textgen.png}
+	\caption{"If statement" TextGen aspect definition}
+	\label{fig:if_statement_textgen}
+\end{figure}
+
+\JB{Navrhuji odebrat}
+\todo{From thesis.
+
+After the program's AST is created using the projectional editor, there can be rules defined on how to generate code in plain text out of that tree.
+This module is called "text gen".
+These defined generators can target any language and platform.
+
+\paragraph{Other aspects.}
+MPS supports also other aspects, such as type checking, model transformations, static and data-flow code analysis, refactorings, language migrations, etc., but these are not important for our contribution. Moreover, the information needed for their automated generation is not available/contained inside a grammar file.
+
+}
+
+\subsection{Similar Projects}
+
+Currently, there exists an almost full port of the Java language called BaseLanguage~\cite{ref:BaseLanguage} extended with some MPS specific features.
+It was imported manually by JetBrains and it is still undergoing changes as Java itself is evolving.
+
+Within the mbeddr project~\cite{ref:mbeddr}, the C language is also manually tailored for MPS.
+
+Now/here we describe three similar projects (with similar goals) that we are aware of.
+We focus on (consider) these three projects: PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
+
+\paragraph{PE4MPS.}
+PE4MPS~\cite{ref:PE4MPS} is a project by \todo{Doplnit autora} that is trying to solve the same problem as we do.
+It solves the lack of information about code layout in grammars by creating a new grammar notation called PE Grammars~\cite{ref:PE} (the PE abbreviation comes from projectional editing).
+It has tw components: PE parser and PE4MPS plugin for MPS.
+Their approach is to mimic an existing grammar notation called ANTLRv4~\cite{ANTLR4} and enrich its syntax with custom (their own) constructs.
+These extensions tell (guide, hint) the parser what the AST node layout should look like.
+Supported extensions (already implemented) include horizontal and vertical lists, and some indentation rules --- however, even these few features make the already not-so-simple syntax of ANTLR v4 much more complex.
+The parser then uses this information when generating the projectional editor for am AST node.
+Author of this approach/project described the PE syntax using the ANTLRv4 notation~\cite{ANTLR4reference} and then used the ANTLR toolset to automatically generate an ANTLRv4 parser for PE grammar files.
+The PE parser reads any PE file and stores the language structure found inside to a custom representation of Java objects.
+
+The PE4MPS plugin/project/tool is built on top of the PE parser.
+This plugin uses the PE parser to build the PE file representation (the aforementioned tree-like structure of Java objects) and then creates AST nodes and their aspects inside MPS.
+The extended syntax brought by PE describes the layout of each element, e.g. it tells the plugin that one set of child nodes should be displayed horizontally, another set should be vertical with each child on a separate line and with some indentation, and so on.
+
+A limitation of the PE4MPS approach is that it, from what we understand, does not implement full ANTLR syntax.
+This means that every grammar might need a non-trivial adjustment before its usage.
+One of our goals is to enable import of as many languages out-of-the-box as possible and adopting the full specification.
+
+\paragraph{ANTLR{\_}MPS.}
+ANTLR{\_}MPS~\cite{ANTLR2MPS} is another project that is dealing with a similar problem.
+The author of this project is Fabien Campagne
+The ANTLR{\_}MPS project also uses ANTLRv4 grammar notation~\cite{ANTLR4} and tries to import grammars inside MPS.
+However, it does not try to generate the projectional editor at all (i.e., it does not deal with this problem), probably because it is in an early stage of development.
+
+The way this import process of ANTLR{\_}MPS works is quite different from what we have seen in the PE4MPS project, and it is quite complex/complicated to use.
+It works as follows. We give only a brief high-level overview and omit low-level technical details.
+The author created a whole new ANTLRv4 MPS language, which is an MPS port of the grammar notations' syntax.
+To import a language, the user utilizes this MPS ANTLR language.
+The textual grammar is imported automatically into MPS taking the form of the MPS's ported grammar language (so that the textual grammar is converted into MPS nodes, that means an AST node is created for each grammar rule).
+No child-parent relationships in the structure are generated by the tool --- all must be created manually by the user.
+There are no editor nor TextGen aspects created neither.
+
+\paragraph{mps-metabnf.}
+\todo{Popis na zaklade emailove diskuze (Nizozemci).}

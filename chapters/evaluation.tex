@@ -1,0 +1,71 @@
+\section{Evaluation}
+
+We implemented everything (the proposed approach described above) in the form of an MPS plugin that allows users to carry out the import.
+
+We used a mix of Java and BaseLanguage in our implementation.
+We used the MPS API, which can be called from the BaseLanguage programs too, to generate some of the language elements.
+BaseLanguage is needed to use/call the MPS (language) API, i.e. to programmatically create new language elements and their aspects.
+
+The plugin uses the ANTLR library to work with ANTLRv4 grammar files (to parse them, etc) and several MPS libraries (that implement the MPS API).
+
+For the first step of automated construction of MPS languages from grammars (i.e., for parsing the grammar), the plugin uses the ANTLR library~\cite{ref:ANTLR4} to generate a Java ANTLR parser of the ANTLRv4 notation, because there exists an ANTLRv4 grammar for the ANTLRv4 notation~\cite{ref:ANTLR4reference}.
+
+\todo{
+	We should provide url to the github repository (implementation) and pointer to some package with ANTLR grammars and imported MPS languages (take from Attachments.zip in the master thesis).
+}
+
+\todo{Popsat nase zkusenosti s importem slozitych jazyku (XML, JavaScript, Python, a dalsi).}
+
+From introduction: We will also show some example languages imported with INGRID and discuss our experience.
+
+In order to evaluate INGRID, we tried to import several real/mainstream languages:
+\begin{itemize}
+	\item \textbf{SimpleXML} --- Simplified XML that we used in this thesis for explanatory purposes.
+	\item \textbf{JSON} --- Similar to XML, but this time a full port of the specification.
+	\item \textbf{ECMAScript 5.1} --- Specification of the language known as JavaScript, dated to the year 2011, which is currently the most frequently adopted version.
+\end{itemize}
+Results of the import process are included in the package that is available at \todo{url}.
+The repository \todo{Add url} contains an example MPS project. There are three languages.
+For each example language, you can find its original import, exactly in the form as created by our plugin.
+
+We experimented with import of XML, JavaScript, Python, and maybe some other languages.
+
+These general purpose languages are quite complex when it comes to their structure and the overall syntax variety.
+
+We must emphasize that the automatically imported languages are not ready-to-use full-fledged MPS languages.
+We did not expect to achieve that at this stage, as that is a much bigger, if not impossible, challenge.
+Imported languages contain full structure found in the respective grammars and some more aspect definitions that will help users of the languages in creating code.
+The imported language has to be manually adjusted (tweak, polished) by the end user (developer) and some of its complications have to be resolved manually by a human.
+
+We found out that manual adjusting of the editor/textgen aspect (adding line breaks and indentation) is far more effective and precise than any automated approach we came up with (during our research).
+The imported language can be, in our opinion, adjusted very fast into a more readable form.
+
+The package at \todo{url} contains also adjusted versions of all three languages.
+Then, for each language, there is an adjusted version.
+
+This adjusted version was created from the original import and the author spent no more than between 20 to 60 minutes of working on it.
+The first author spent only a couple of minutes of (manually) adjusting them after the automated import, so that we try to prove our point above.
+More specifically, the JSON language was ready for use in no more than 20 minutes of minor adjusting.
+We chose this language because it does not require us to implement complex aspects, such as type checking or data flows.
+Similarly, the SimpleXML turned out very nice.
+
+Our main goal was to prove that even though our method (plugin) does not create a perfect language, it can be customized very fast into a very usable form.
+We manually tweaked/customized the editor and the TextGen aspect only, structure aspect was left in its original form.
+This justifies some of the decisions we have described in Section X (editor aspect) and Section Y (textgen), proving that our approach is quite practical (and the best).
+
+We have also tried to use the INGRID tool/plugin to import the JavaScript language, which is exactly the type of a complicated general purpose language that might be of interest to other people.
+There are already some projects, where a manual port of JavaScript is being done.
+One of them is the ECMAScript4MPS~\cite{ref:ECMAScript4MPS} from the author of the PE4MPS project~\cite{ref:PE4MPS} that we described in Section X (similar projects, related work).
+The result of import by INGRID is quite good, comparable to the PE4MPS project.
+Our language is, of course, missing a lot of more advanced aspects/features that, for example, can help deriving types of expressions and so on.
+These aspects improve the usability by a lot, e.g. when the user starts writing numbers, a number literal is inserted, whereas in our import the user has to first insert the concept representing the number literal and then proceed with writing numbers.
+These actions are needed in any MPS language and are expected to be implemented after the import step, \todo{Maybe say that INGRID does not generate these actions/aspects/features yet but it is our future work} as it is not possible to generate them automatically.
+However, when it comes to language structure, concept aliases, and auto-completion, we think that INGRID (our method/plugin) did a very good job.
+The structure aspect is very similar to the ECMAScript4MPS's one, which was created manually over the course of a large number of hours.
+INGRID does that (achieves the same result) fully automatically.
+
+To summarize, import languages such as JavaScript, JSON, MySQL and others is giving nice results.
+
+Results of our experiments with languages such as JSON or JavaScript show that the proposed approach (INGRID) yields very good results, comparable to existing manual ports, and spares the user from hours of tedious, error prone and time-consuming work.
+
+Limitation: the project is lacking proper error reporting and cannot handle cyclic rules (which could be found in Python grammar, for example).
