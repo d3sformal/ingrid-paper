@@ -184,10 +184,15 @@ User is then able to adjust this grammar.
 After this, a second step of the import process is needed, that generates the final MPS language out of this adjusted grammar definition.
 
 The key takeaways from the mps-metabnf project are that the intermediate grammar MPS representation, when finished, will offer some powerful means of adjustment.
-Using the projectional editor, the user can easily specify information about the code layout, export the target MPS language and in case further adjustments are needed, come back to the grammar definition and fix any problems.
-The MPS language of the grammar definition can be easily extended with needed features (indenting, line breaks...), which is superior to our approach.
+Using the projectional editor, the user can easily specify information about the code layout, export the target MPS language and, in case further adjustments are needed, come back to the grammar definition, fix any problems and regenerate the language.
+The MPS language of the grammar definition can be easily extended with needed features (indenting, line breaks...), which is superior to our approach, because they can be represented using many visual means.
 
-It also has some downsides.
+This approach also has some downsides.
 Because MPS doesn't offer any tools that would allow easy transformation from the MPS grammar to the MPS language, the second step of the import process hasn't been implemented yet and will be probably very problematic.
 Another downside might be the need for a double transformation implementation -- first one being the import of the text grammar to the MPS grammar definition.
+
+From another point of view -- for each additional feature, that we decide to add to the grammar notation, we need to implement a corresponding transformation.
+This subsequently leads to duplicating the projectional editor that is already present in MPS.
+This means that there needs to be a line drawn between which features are added and which will be left for the user to add to the target language using MPS.
+
 

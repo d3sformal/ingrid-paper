@@ -25,16 +25,17 @@ In order to evaluate INGRID, we tried to import several real/mainstream language
 	\item \textbf{ECMAScript 5.1} --- Specification of the language known as JavaScript, dated to the year 2011, which is currently the most frequently adopted version.
 \end{itemize}
 Results of the import process are included in the package that is available at \todo{url}.
-The repository \todo{Add url} contains an example MPS project. There are three languages.
+The repository \todo{Add url} contains an example MPS project with three languages.
 For each example language, you can find its original import, exactly in the form as created by our plugin.
 
-We experimented with import of XML, JavaScript, Python, and maybe some other languages.
+We experimented with import of XML, JavaScript, Python, Ruby, C#, Swift, MySQL and some other languages.
 
-These general purpose languages are quite complex when it comes to their structure and the overall syntax variety.
+Most of these languages are quite complex when it comes to their structure and the overall syntax variety.
 
 We must emphasize that the automatically imported languages are not ready-to-use full-fledged MPS languages.
 We did not expect to achieve that at this stage, as that is a much bigger, if not impossible, challenge.
 Imported languages contain full structure found in the respective grammars and some more aspect definitions that will help users of the languages in creating code.
+\PV{The imported language has to be manually tweaked by the end user.}
 The imported language has to be manually adjusted (tweak, polished) by the end user (developer) and some of its complications have to be resolved manually by a human.
 
 We found out that manual adjusting of the editor/textgen aspect (adding line breaks and indentation) is far more effective and precise than any automated approach we came up with (during our research).
@@ -51,7 +52,7 @@ Similarly, the SimpleXML turned out very nice.
 
 Our main goal was to prove that even though our method (plugin) does not create a perfect language, it can be customized very fast into a very usable form.
 We manually tweaked/customized the editor and the TextGen aspect only, structure aspect was left in its original form.
-This justifies some of the decisions we have described in Section X (editor aspect) and Section Y (textgen), proving that our approach is quite practical (and the best).
+This justifies some of the decisions we have described in Section X (editor aspect) and Section Y (textgen), proving that our approach is quite practical (and the best\PV{?}).
 
 We have also tried to use the INGRID tool/plugin to import the JavaScript language, which is exactly the type of a complicated general purpose language that might be of interest to other people.
 There are already some projects, where a manual port of JavaScript is being done.
@@ -64,8 +65,10 @@ However, when it comes to language structure, concept aliases, and auto-completi
 The structure aspect is very similar to the ECMAScript4MPS's one, which was created manually over the course of a large number of hours.
 INGRID does that (achieves the same result) fully automatically.
 
-To summarize, import languages such as JavaScript, JSON, MySQL and others is giving nice results.
+\PV{Veta se opakuje nize, odstranil bych tuhle}
+To summarize, import languages such as JavaScript or JSON and others are giving nice results.
 
 Results of our experiments with languages such as JSON or JavaScript show that the proposed approach (INGRID) yields very good results, comparable to existing manual ports, and spares the user from hours of tedious, error prone and time-consuming work.
 
+\PV{Tohle uz neni pravda, error reporting i cyklicka pravidla jsem pred odevzdanim DP vyladil a kod celkove dodelal. Cyklicka pravidla to tedy neumi, jen na ne upozorni (a rekne, ktere pravidlo je obsahuje).}
 Limitation: the project is lacking proper error reporting and cannot handle cyclic rules (which could be found in Python grammar, for example).
