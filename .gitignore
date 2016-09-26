@@ -1,5 +1,8 @@
 /out/
 
+paper.pdf
+translate.bat
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
