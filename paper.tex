@@ -51,7 +51,7 @@
 \newcommand{\mr}[1]{\mathrm{#1}}
 \newcommand{\mt}[1]{\mathtt{#1}}
 
-\newcommand{\todo}[1]{{\bfseries #1}}
+\newcommand{\todo}[1]{{\bfseries TODO #1}}
 
 % for writing comments
 \newcommand{\PP}[1]{\textcolor{blue}{\bfseries PP: #1}} % Pavel Parizek
@@ -59,15 +59,15 @@
 \newcommand{\JB}[1]{\textcolor{orange}{\bfseries JB: #1}} % JetBrains
 
 % colors for the ANTLR environment
-\definecolor{antlrbgcolor}{rgb}{1, 1, 1}
+\definecolor{antlrbgcolor}{rgb}{1,1,1}
 \definecolor{antlrparserrulecolor}{RGB}{11,83,148}
 \definecolor{antlrlexerrulecolor}{RGB}{191,144,0}
 \definecolor{antlrliteralcolor}{RGB}{133,32,12}
 \definecolor{antlrregexcolor}{RGB}{56,118,29}
 
 % colors for the MPS environment
-\definecolor{mpsbgcolor}{rgb}{.962, .962, .962}
-\definecolor{mpsconceptcolor}{RGB}{42, 140, 0}
+\definecolor{mpsbgcolor}{rgb}{1,1,1}
+\definecolor{mpsconceptcolor}{RGB}{42,140,0}
 \definecolor{mpsinterfacecolor}{RGB}{170,0,229}
 
 % coloring commands
@@ -77,11 +77,9 @@
 \newcommand{\antlrliteralnoap}[1]{\textcolor{antlrliteralcolor}{#1}}
 \newcommand{\antlrliteral}[1]{\antlrap\antlrliteralnoap{#1}\antlrap}
 \newcommand{\antlrregex}[1]{\textcolor{antlrregexcolor}{#1}}
-% TODO mozna zmenit "mpsconcept" na "mpslangelem"
 \newcommand{\mpsconcept}[1]{\textcolor{mpsconceptcolor}{#1}}
 \newcommand{\mpsinterface}[1]{\textcolor{mpsinterfacecolor}{#1}}
 
-% TODO zmenil jsem pozadi na bilou, ale podle me je to hur citelny
 % environment for the ANTLR code (grammars)
 \newenvironment{antlr}
 {
@@ -122,14 +120,12 @@
 
 
 % TODO
-%\conferenceinfo{OOPSLA'12,} {October 19--26, 2012, Tuscon, Arizona, USA.}
-%\CopyrightYear{2012}
-%\copyrightdata{978-1-4503-1561-6/12/10}
+%\conferenceinfo{PLDI'17,} {June 19--26, 2017, Barcelona, Spain.}
+%\CopyrightYear{2017}
+%\copyrightdata{TODO}
 
 
-% TODO
-\title{\todo{INGRID: Creating Languages in MPS by Importing ANTLR Grammars}}
-% alternative: "INGRID: Importing Grammars Into MPS"
+\title{\todo{INGRID: Creating Languages in MPS from ANTLR Grammars}}
 
 
 \authorinfo{P\v{r}emysl Vysok\'y \and Pavel Par\'izek}
@@ -178,10 +174,18 @@ This research was supported by JetBrains. \todo{Pridat jeste nejaky grant a komp
 
 \bibliographystyle{abbrvnat}
 
-% TODO opravit formatovani jednotlivych zaznamu a vhodne seradit
 \begin{thebibliography}{}
 
+\bibitem{ref:MBEDDR} M. Voelter, D. Ratiu, B. Schaetz, and B. Kolb. mbeddr: an Extensible C-based Programming Language and IDE for Embedded Systems. SPLASH 2012, ACM.
+
+\bibitem{ref:ANTLR} ANTLR parser generator, \url{http://www.antlr.org}
+
+\bibitem{ref:BISONFLEX} J. Levine. Flex \& Bison: Text Processing Tools. O'Reilly Media, 2009.
+
 \bibitem{ref:MPS} JetBrains MPS, \url{https://www.jetbrains.com/mps/}
+
+
+% TODO opravit formatovani nasledujicich polozek a vhodne zaradit
 
 \bibitem{ref:mbeddr} mbeddr, \url{mbeddr.com/}
 
