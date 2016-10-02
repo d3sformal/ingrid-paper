@@ -32,62 +32,35 @@ Specifically, an author of a language has to create:
 \begin{enumerate}
 	\item the abstract syntax called \emph{Structure}, which defines the types of allowed AST nodes,
 	\item the concrete syntax called \emph{Editor}, i.e. projection of the AST on the screen and its interactions with the user, and
-	\item \emph{text generation} to enable creation of plain text files used as input for compilers.
+	\item text generation scripts, also called \emph{TextGen}, to enable creation of plain text files used as input for compilers.
 \end{enumerate}	
 Again, we provide additional technical details in Section~\ref{sect:MPS}.
 
+MPS is typically used for syntactically rich DSLs, which are likely to benefit most from overcoming the limitations of parser-based languages.
+Before a program written in such a DSL can be executed, it is transformed on the AST level by a series of model-to-model transformations to an AST model that represents the desired semantics in a general-purpose language (GPL), such as C or Java.
+This model is then converted to a textual representation of that language and compiled by the standard means of the target platform.
+Therefore, the target GPL must also be defined by the MPS means in order to allow the DSLs to have their models transformed into a model in the GPL.
 
+However, very few mainstream GPLs are now fully supported by MPS, because it requires substantial effort to manually create a full definition of a GPL in MPS.
+Only Java and C have been implemented to date, which limits the authors of DSLs to only target these supported GPLs.
+The overall goal of our project is to automatize the process of language definition in MPS as much as possible, exploiting the fact that a big part of this process is quite straightforward.
+We believe that such an automated process would encourage and speed-up the migration of more GPLs into MPS, thus giving the authors of DSLs more options.
+Other possible applications include the support for writing programs in GPLs using the projectional editor and combination of GPLs with domain-specific languages natively created in MPS.
 
-% TODO continue from here
+In this paper we present INGRID, a method and a tool for semi-automated construction of the definition of a programming language in MPS that uses an ANTLR grammar of the language as a description of its syntax.
+We discuss the main challenges that we encountered during the development of INGRID and our solution to them.
+Although we explain everything on the examples of MPS languages and ANTLR grammars, we emphasize that most of the challenges are general. 
+They apply to the relation between two approaches to the definition of a programming language --- (i) one that uses grammars in an EBNF-like notation, with rules and tokens written in plain text, and the corresponding parser generators, and (ii) the structured object-oriented approach used in MPS and other language workbenches.
+Specifically, the description of a language in the form of a grammar does not hold any information about the code layout, and the grammar typically contains many rules that do not directly correspond to AST nodes and programming language constructs.
+We provide more details in Section~\ref{sect:LANGDEF}.
 
+The INGRID tool can help also to make the construction of DSLs more efficient.
+Based on our experience, we believe that, especially for simple languages, it is less time consuming to write their grammar by hand and then create the language definition in MPS using INGRID, than to create the language manually using the MPS GUI.
 
+%INGRID allows developers to leverage all the features that MPS has to offer together with general purpose languages such as C++, JavaScript or Python.
 
-\JB{Odstavec pridan pro vysvetleni motivace prace} MPS is typically used for syntactically rich DSLs, which are likely to benefit most from overcoming the limitations of parser-based languages. These DSLs are then transformed on the AST level by a series of model-to-model transformations to an AST model representing the desired semantics in a General-purpose language (GPL), such as C or Java. This model is then converted to a textual representation of that language and compiled by the standard means of the target platform. This implies that the target GPL must also be defined by the MPS means, to allow the DSLs to have their models transformed into a model in the GPL.
-
-\JB{Odstavec doplnen} However, it requires substantial effort to create a definition of a GPL in MPS. Therefore, very few mainstream GPLs are now fully supported by MPS. Only Java and C have been implemented to date, which limits the DSLs authors to only target these supported target GPLs. We believe that an automated process of importing grammars of GPLs into MPS would encourage more GPLs to be migrated to MPS and thus giving the DSL authors more options.
-
-\todo{From thesis.
-	However, building these languages is a~complicated and time-consuming process and a~lot of effort must be put into them before they are ready for use.
-
-	These examples show that recreating a~full language inside MPS is not an easy task and a~lot of time must be spent on implementing all aspects of the language.
-	A big part of this effort is, however, quite straightforward and can be possibly automated, as we show in this paper. Automation speeds up the process of adoption of new languages to a great degree.
-}
-
-\JB{Odstavec upraven} Since a big part of the language definition process in MPS is quite straightforward and can possibly be automated, we will look into the possibility of automatic import of already existing general purpose languages into MPS using a grammar description of their syntax.
-
-We present INGRID --- a method and a tool for semi-automated construction of MPS definition of programming languages based on their ANTLR grammars.
-We also discuss challenges that we encountered during this process and our solution to them. Most of these challenges are general, i.e. not MPS specific, as they apply to the relation between grammars defined in EBNF-like style (rules and tokens, everything defined in plain text) and structured (object-oriented) approach used in MPS (and other language workbenches).
-
-\todo{Hodne zduraznit automation, tedy ze chceme maximalizovat automatizaci.}
-The main goal of our/the INGRID approach is to automatize the construction of MPS languages from ANTLR grammars as much as possible.
-
-\todo{From thesis.
-	Automatic import of already existing languages into MPS from the grammar description of their syntax.
-}
-\todo{Mozna prodat INGRID jako automatickou konverzi gramatik do podoby MPS languages, tedy jako nastroj ktery umoznuje portaci jazyku do prostredi MPS a jejich nasledne pouziti v MPS (treba kombinace s dalsimi jazyky).}
-
-Our primary motivation is to enable better support for mainstream and/or general purpose programming languages (XML, C, C++, JavaScript, Python) in MPS, especially to enable writing programs in these languages using the projectional editor and to combine them with domain-specific languages natively created in MPS.
-\todo{Zduraznit take pouziti importovanych jazyku pro cile generovani z DSL --- to plati zejmena u mainstream general-purpose languages jako treba JavaScript.}
-
-\todo{Briefly mention the biggest challenges.}
-The are related to the way grammar encoding/description of languages are usually written.
-They do not hold any information about the code layout, and contain many rules that do not directly correspond to AST nodes (programming language constructs).
-We discuss them in more detail later (Section X).
-
-\todo{From thesis.
-	INGRID allows developers to leverage all the features that MPS has to offer together with general purpose languages such as C++, JavaScript or Python.
-	The biggest benefit is the possibility to code in these mainstream general purpose languages using the projectional editor.
-}
-
-However, we do not target just the very complex general purpose languages such as JavaScript.
-INGRID can be used also for simple languages.
-We believe that, for simple languages, it is less time consuming to create the grammar by hand (e.g., using the ANLTR notation and toolset) and then create the language definition in MPS by using the INGRID tool, than to create it manually using the MPS GUI --- this is another benefit of INGRID.
-
-Structure of the paper.
-In the beginning, we will describe the MPS editor and related/similar projects.
-Then, we describe our approach to creating language definition in MPS from their grammars, and discuss the major challenges together with our solution.
-We will also show some example languages imported with INGRID and discuss our experience.
-
-
-Although we will explain/describe the challenges/problems and our solutions in the context of MPS and ANTLR, we believe that they apply (are relevant) more generally - i.e., also for other language workbenches (to authors of other language workbenches) and parser generators.
+The rest of the paper has the following structure.
+In the next section, we provide necessary information about MPS and a brief overview of projects with similar goals as INGRID.
+Then, in Section~\ref{sect:LANGDEF}, we describe our approach to the construction of a language definition in MPS from its ANTLR grammar, discussing the major challenges together with our solution along the way.
+We also discuss our experience with usage of INGRID on complex mainstream languages, such as JavaScript and C\#, and highlight open problems (Section~\ref{sect:EVAL}), and then we conclude.
 
