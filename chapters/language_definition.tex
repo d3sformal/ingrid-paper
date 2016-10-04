@@ -70,33 +70,26 @@ Below in Figure X, you can find the grammar of the SimpleXML language in the ANT
 
 \begin{figure*}[ht]
 \centering
-\begin{antlr}
+\begin{framed}
+\begin{alltt}
 	\textbf{grammar} \textit{SimpleXML};
-	\antlrparserrule{document}     :   \antlrparserrule{prolog}? \antlrparserrule{comment}? \antlrparserrule{element} ;
-	\antlrparserrule{prolog}       :   \antlrliteral{<?xml } \antlrparserrule{attribute}* \antlrliteral{?>} ;
-	\antlrparserrule{comment}      :   \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
-	\antlrparserrule{element}      :   \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attribute}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>}
-	             |   \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attribute}* \antlrliteral{/>}
-	             ;
-	\antlrparserrule{attribute}    :   \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT} \antlrliteral{"} ;
-	\antlrparserrule{content}      :   \antlrlexerrule{TEXT}
-	             |   \antlrparserrule{element}
-	             |   \antlrparserrule{comment}
-	             |   \antlrlexerrule{CDATA}
-	             ;
-	\antlrlexerrule{Name}         :   \antlrlexerrule{NameStartChar} \antlrlexerrule{NameChar}* ;
+	\antlrparserrule{document}  : \antlrparserrule{prolog}? \antlrparserrule{comment}? \antlrparserrule{element} ;
+	\antlrparserrule{prolog}    : \antlrliteral{<?xml } \antlrparserrule{attrib}* \antlrliteral{?>} ;
+	\antlrparserrule{comment}   : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
+	\antlrparserrule{element}   : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{/>} ;
+	\antlrparserrule{attrib}    : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT} \antlrliteral{"} ;
+	\antlrparserrule{content}   : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
+	\antlrlexerrule{Name}      : \antlrlexerrule{NameStartChar} \antlrlexerrule{NameChar}* ;
 	\textbf{fragment}
-	\antlrlexerrule{DIGIT}        :   \antlrregex{[0-9]} ;
+	\antlrlexerrule{DIGIT}     : \antlrregex{[0-9]} ;
 	\textbf{fragment}
-	\antlrlexerrule{NameChar}     :   \antlrlexerrule{NameStartChar}
-	             |   \antlrliteral{-} | \antlrliteral{_} | \antlrliteral{.}
-	             |   \antlrlexerrule{DIGIT}
-	             ;
+	\antlrlexerrule{NameChar}  : \antlrlexerrule{NameStartChar} | \antlrliteral{-} | \antlrliteral{_} | \antlrliteral{.} | \antlrlexerrule{DIGIT} ;
 	\textbf{fragment}
-	\antlrlexerrule{NameStartChar}:   \antlrregex{[:a-zA-Z]} ;
-	\antlrlexerrule{TEXT}         :   \antlrregex{~[<"]*} ;
-	\antlrlexerrule{CDATA}        :   \antlrliteral{<![CDATA[} \antlrregex{.*?} \antlrliteral{]]>} ;
-\end{antlr}
+	\antlrlexerrule{NameStartChar} : \antlrregex{[:a-zA-Z]} ;
+	\antlrlexerrule{TEXT}      : \antlrregex{~[<"]*} ;
+	\antlrlexerrule{CDATA}     : \antlrliteral{<![CDATA[} \antlrregex{.*?} \antlrliteral{]]>} ;
+\end{alltt}
+\end{framed}
 \caption{SimpleXML grammar}
 \end{figure*}
 
@@ -138,48 +131,50 @@ We took each/every such tree that represents the lexer rule and flattened it int
 
 For illustration, consider the lexer rule \antlrlexerrule{Name} from our/the SimpleXML language (Figure XY), together with all its sub-rules, shown in Figure~\ref{fig:lexerrule}.
 
-\begin{figure*}[ht]
+\begin{figure}[ht]
 \centering
-\begin{antlr}
-	\antlrlexerrule{Name}         :   \antlrlexerrule{NameStartChar} \antlrlexerrule{NameChar}* ;
+\begin{framed}
+\begin{alltt}
+	\antlrlexerrule{Name}     : \antlrlexerrule{NameStartChar} \antlrlexerrule{NameChar}* ;
 	\textbf{fragment}
-	\antlrlexerrule{DIGIT}        :   \antlrregex{[0-9]} ;
+	\antlrlexerrule{DIGIT}    : \antlrregex{[0-9]} ;
 	\textbf{fragment}
-	\antlrlexerrule{NameChar}     :   \antlrlexerrule{NameStartChar}
-             |   \antlrliteral{-} | \antlrliteral{{\_}} | \antlrliteral{.}
-             |   \antlrlexerrule{DIGIT}
-             ;
+	\antlrlexerrule{NameChar} : \antlrlexerrule{NameStartChar} 
+	         | \antlrliteral{-} | \antlrliteral{{\_}} | \antlrliteral{.} | \antlrlexerrule{DIGIT} ;
 	\textbf{fragment}
-	\antlrlexerrule{NameStartChar}:   \antlrregex{[:a-zA-Z]} ;
-\end{antlr}
+	\antlrlexerrule{NameStartChar} : \antlrregex{[:a-zA-Z]} ;
+\end{alltt}
+\end{framed}
 \caption{Lexer rule from SimpleXML}
 \label{fig:lexerrule}
-\end{figure*}
+\end{figure}
 
 Intuitively, we can create a regular expression by gluing elements of each alternative together and then join these alternatives with a classic regex OR ($|$), which is exactly its function in the ANTLRv4 grammar notation.
 We have captures this idea in the form of the recursive algorithm in Figure~\ref{fig:algflatten}, which covers the whole process.
 
 % TODO prepsat jako standardni pseudocode (nejspis pouzit jiny latex environment)
-\begin{figure*}[ht]
+\begin{figure}[ht]
 \centering
-\begin{antlr}
-	Flatten(\textit{R}):
-	1) Define \textit{T} as a list of empty string
-	2) For each alternative \textit{A} of the rule \textit{R}:
-	3)     Define \textit{R} = \antlrap\antlrap
-	4)     For each element \textit{E} of \textit{A}:
-	5)         If \textit{E} is not yet flattened:
-	6)             Flatten(\textit{E})
-	7)         \textit{R}.append(\textit{E})
-	8)         \textit{R}.append(\textit{E}.operator)
-	9)     \textit{T}.add(\textit{R})
-	10) Build a string S out of elements t$_{\text{1}}$, t$_{\text{2}}$, ... t$_{\text{n}}$ of \textit{T}:
-	11)     (t$_{\text{1}}$)|(t$_{\text{2}}$)|...|(t$_{\text{n}}$)
-	12) Return \textit{S}
-\end{antlr}
+\begin{framed}
+\begin{alltt}
+Flatten(\textit{R}):
+  Define \textit{T} as a list of empty string
+  For each alternative \textit{A} of the rule \textit{R}:
+    Define \textit{R} = \antlrap\antlrap
+    For each element \textit{E} of \textit{A}:
+	  If \textit{E} is not yet flattened:
+	    Flatten(\textit{E})
+      \textit{R}.append(\textit{E})
+      \textit{R}.append(\textit{E}.operator)
+    \textit{T}.add(\textit{R})
+  Build a string S from elements of \textit{T}:
+    (t$_{\text{1}}$)|(t$_{\text{2}}$)|...|(t$_{\text{n}}$)
+  Return \textit{S}
+\end{alltt}
+\end{framed}
 \caption{Flatten algorithm}
 \label{fig:algflatten}
-\end{figure*}
+\end{figure}
 
 The output of \texttt{Flatten(Name)} (output of the Flatten algorithm applied to the \antlrlexerrule{Name} rule) is this regular expression (in this form):
 
@@ -207,20 +202,19 @@ The structure is created according to object-oriented principles.
 Each node (element) is represented by an object (and can be treated as such) that may have a parent node, child nodes, and properties of any data type (similar to fields), it may implement any number of interfaces, and it may also hold references to other nodes.
 For every rule of the grammar (for every node in the grammar AST) that breaks into more/multiple alternatives, we must create a node in the MPS structure AST for each alternative of the grammar (every child node).
 Names of the nodes for alternatives are composed from the name of the rule and a number indicating the order of appearance in the grammar.
-For example, considering the fragment of the grammar of the SimpleXML language in Figure~\ref{fig:xmlgrammarelement}
+For example, consider the fragment of the grammar of the SimpleXML language in Figure~\ref{fig:xmlelementrule}.
+Results of this step for the first alternative, which represents the represents the full XML tag with content, can be seen in Figure~\ref{fig:element_node_common}.
 
 \begin{figure*}[ht]
 \centering
-\begin{antlr}
-	\antlrparserrule{element}      :   \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attribute}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>}
-             \textcolor{gray}{|   \antlrap<\antlrap Name attribute* \antlrap/>\antlrap}
-             \textcolor{gray}{;}
-\end{antlr}
-\caption{Fragment of the SimpleXML grammar}
-\label{fig:xmlgrammarelement}
+\begin{framed}
+\begin{alltt}
+	\antlrparserrule{element} : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrap<\antlrap Name attrib* \antlrap/>\antlrap ;
+\end{alltt}
+\end{framed}
+\caption{Element rule from the SimpleXML grammar}
+\label{fig:xmlelementrule}
 \end{figure*}
-
-Results of this step for the first alternative, which represents the represents the full XML tag with content, can be seen in Figure~\ref{fig:element_node_common}.
 
 \begin{figure}[ht]
 	\centering
@@ -241,50 +235,43 @@ The main/key difference between these two lies in the way we create children fie
 The key idea of this approach is that, for each rule with more than one alternative, an interface node is created.
 Consider the \antlrparserrule{content} rule from our SimpleXML language (Figure~\ref{fig:contentrule}).
 
-\begin{figure*}[ht]
+\begin{figure}[ht]
 \centering
-\begin{antlr}
+\begin{framed}
+\begin{alltt}
 	\antlrparserrule{content}    :   \antlrlexerrule{TEXT}
            |   \antlrparserrule{element}
            |   \antlrparserrule{comment}
            |   \antlrlexerrule{CDATA}
            ;
-\end{antlr}
+\end{alltt}
+\end{framed}
 \caption{Content rule}
 \label{fig:contentrule}
-\end{figure*}
+\end{figure}
 
 Any of the four nodes corresponding to alternatives could appear anywhere the \antlrparserrule{content} rule is referenced.
 So we will create one interface node, and then for each alternative of this rule we create one node that implements the interface.
 The resulting fragment of structure will look like the one in Figure~\ref{fig:icontentitf}.
 
-\begin{figure*}[ht]
+\begin{figure}[ht]
 \centering
-\begin{mps}
+\begin{framed}
+\begin{alltt}
 	\mpsinterface{IContent}   :   \mpsconcept{Content{\_}1}
            |   \mpsconcept{Content{\_}2}
            |   \mpsconcept{Content{\_}3}
            |   \mpsconcept{Content{\_}4}
-\end{mps}
+\end{alltt}
+\end{framed}
 \caption{IContent interface}
 \label{fig:icontentitf}
-\end{figure*}
+\end{figure}
 
 References to other parser rules are captured by links to children (interfaces or object nodes) in the AST nodes.
-For the \antlrparserrule{element} rule that is referencing the \antlrparserrule{content} rule, defined as in Figure~\ref{fig:elementrule}, we get the AST node representing the first alternative that is shown in Figure~\ref{fig:element_node_full}.
+For the \antlrparserrule{element} rule that is referencing the \antlrparserrule{content} rule, defined as in Figure~\ref{fig:xmlelementrule}, we get the AST node representing the first alternative that is shown in Figure~\ref{fig:element_node_full}.
 There is one \mpsinterface{IElement} interface node that is implemented by two object nodes \mpsconcept{Element{\_}1}, \mpsconcept{Element{\_}2}.
 The node \mpsconcept{Element{\_}1} has two child links pointing to \mpsinterface{IAttribute} and \mpsinterface{IContent}.
-
-\begin{figure*}[ht]
-\centering
-\begin{antlr}
-	\antlrparserrule{element}    :   \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attribute}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>}
-           |   \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attribute}* \antlrliteral{/>}
-           ;
-\end{antlr}
-\caption{Element rule}
-\label{fig:elementrule}
-\end{figure*}
 
 \begin{figure}[ht]
 	\centering
@@ -326,19 +313,13 @@ We call such \emph{end rules} and \emph{end nodes}, respectively, because they c
 
 \begin{figure*}[ht]
 \centering
-\begin{antlr}
-	\antlrparserrule{content}    :   \antlrlexerrule{TEXT}
-           |   \antlrparserrule{element}
-           |   \antlrparserrule{comment}
-           |   \antlrlexerrule{CDATA}
-           ;
-
-	\antlrparserrule{element}    :   \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attribute}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>}
-           |   \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attribute}* \antlrliteral{/>}
-           ;
-
-	\antlrparserrule{comment}    :   \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
-\end{antlr}
+\begin{framed}
+\begin{alltt}
+	\antlrparserrule{content} : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
+	\antlrparserrule{element} : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{/>} ;
+	\antlrparserrule{comment} : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
+\end{alltt}
+\end{framed}
 \caption{Content parser rule with children}
 \label{fig:contentrulewithchildren}
 \end{figure*}
@@ -361,27 +342,29 @@ Figure XY shows the algorithm (in pseudocode) that finds all end rules for a giv
 % TODO pouzit standardni environment pro algoritmy
 \begin{figure*}[ht]
 \centering
-\begin{antlr}
+\begin{framed}
+\begin{alltt}
 	FindPathsToEndNodes($R$):
-	1)  Define $L$ as an empty list of list of nodes
-	2)  Return FindPathsToEndNodes($R$, $L$)
+	  Define $L$ as an empty list of list of nodes
+	  Return FindPathsToEndNodes($R$, $L$)
 
 	FindPathsToEndNodes($R$, $L$):
-	3)  Define $Q$ as list of list of nodes
-	4)  For each alternative $A$ of rule $R$:
-	5)      $L1$ = Clone($L$)
-	6)      If $A$ is a parser rule with only one element $E$:
-	7)          Let $I$ be interface/concept representing rule $E$
-	8)          $L1$.Add($I$)
-	9)          $P$ = FindPathsToEndNodes($E$, $L1$)
-	10)         $Q$ = Merge($Q$, $P$)
-	11)     Else
-	12)         $L1$.Add($R$)
-	13)         Let $P$ be concept representing $A$
-	14)         $L1$.Add($P$)
-	15)         $Q$.Add($L1$)
-	16) Return $Q$
-\end{antlr}
+	  Define $Q$ as list of list of nodes
+	  For each alternative $A$ of rule $R$:
+	    $L1$ = Clone($L$)
+	    If $A$ is a parser rule with only one element $E$:
+	      Let $I$ be interface/concept representing rule $E$
+	      $L1$.Add($I$)
+	      $P$ = FindPathsToEndNodes($E$, $L1$)
+	      $Q$ = Merge($Q$, $P$)
+	    Else
+	      $L1$.Add($R$)
+	      Let $P$ be concept representing $A$
+	      $L1$.Add($P$)
+	      $Q$.Add($L1$)
+	  Return $Q$
+\end{alltt}
+\end{framed}
 \caption{Algorithm for finding end rules}
 \label{fig:shortcut_algorithm}
 \end{figure*}
@@ -544,17 +527,18 @@ There are some cases, where altering the input grammar might yield far better MP
 We will show two examples how the usability of the resulting MPS language can be improved.
 Let us look at the definition of an XML attribute in Figure~\ref{fig:xmlattribute}.
 
-\begin{figure*}[ht]
+\begin{figure}[ht]
 \centering
-\begin{antlr}
-	\antlrparserrule{attribute}   :   \antlrlexerrule{Name} \antlrliteral{=} \antlrlexerrule{STRING} ;
-	\antlrlexerrule{STRING}      :   \antlrliteral{"} \antlrregex{~["]*} \antlrliteral{"}
-	            |   \antlrliteral{\textbackslash'} \antlrregex{~[']*} \antlrliteral{\textbackslash'}
-	            ;
-\end{antlr}
+\begin{framed}
+\begin{alltt}
+	\antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{=} \antlrlexerrule{STRING} ;
+	\antlrlexerrule{STRING} : \antlrliteral{"} \antlrregex{~["]*} \antlrliteral{"}
+	       | \antlrliteral{\textbackslash'} \antlrregex{~[']*} \antlrliteral{\textbackslash'} ;
+\end{alltt}
+\end{framed}
 \caption{Definition of an XML attribute}
 \label{fig:xmlattribute}
-\end{figure*}
+\end{figure}
 
 The original XML grammar has quotes as a part of the value.
 For the resulting MPS language, it would mean that there would be a placeholder for the attribute value that would expect us to input the leading and trailing quote together with the value too each time.
@@ -563,38 +547,37 @@ The user might be confused by this and will not be able to tell why his string v
 
 In our SimpleXML language, we adjusted the grammar easily in the manner that we show in Figure~\ref{fig:xmladjustgrammar}.
 
-\begin{figure*}[ht]
+\begin{figure}[ht]
 \centering
-\begin{antlr}
-	\antlrparserrule{attribute}   :   \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT1} \antlrliteral{"}
-	            |   \antlrlexerrule{Name} \antlrliteral{=\textbackslash'} \antlrlexerrule{TEXT2} \antlrliteral{\textbackslash'}
-	            ;
-	\antlrlexerrule{TEXT1}       :   \antlrregex{~["]*} ;
-	\antlrlexerrule{TEXT2}       :   \antlrregex{~[']*} ;
-\end{antlr}
+\begin{framed}
+\begin{alltt}
+	\antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT1} \antlrliteral{"}
+	       | \antlrlexerrule{Name} \antlrliteral{=\textbackslash'} \antlrlexerrule{TEXT2} \antlrliteral{\textbackslash'} ;
+	\antlrlexerrule{TEXT1} : \antlrregex{~["]*} ;
+	\antlrlexerrule{TEXT2} : \antlrregex{~[']*} ;
+\end{alltt}
+\end{framed}
 \caption{Adjusted grammar of SimpleXML}
 \label{fig:xmladjustgrammar}
-\end{figure*}
+\end{figure}
 
 We turned quotes into literals, thus ensuring that they will only appear in the projectional editor as fixed constant cells.
 We will not have to encapsulate the value in them each time.
 The user will only have to choose, which attribute version he wants to use (single or double quotes).
 
-As the second example, we will show the ECMAScript\footnote{https://github.com/antlr/grammars-v4/blob/master/ecmascript/ECMAScript.g4} language otherwise known as JavaScript.
+As the second example, we will use the ECMAScript\footnote{https://github.com/antlr/grammars-v4/blob/master/ecmascript/ECMAScript.g4} language otherwise known as JavaScript.
 Every statement in JavaScript needs to be either followed by a semicolon, newline, file end or end of the block --- see the Figure~\ref{fig:javascriptstmt}.
 
 \begin{figure*}[ht]
 \centering
-\begin{antlr}
-	\antlrparserrule{eos}            : \antlrlexerrule{SemiColon}
-	               | \antlrlexerrule{EOF}
-	               | {lineTerminatorAhead()}?
-	               | {{\_}input.LT(1).getType() == \antlrlexerrule{CloseBrace}}?
-	               ;
+\begin{framed}
+\begin{alltt}
+	\antlrparserrule{eos} : \antlrlexerrule{SemiColon} | \antlrlexerrule{EOF} | {lineTerminatorAhead()}? 
+	    | {{\_}input.LT(1).getType() == \antlrlexerrule{CloseBrace}}? ;
 	\textcolor{gray}{// Example reference of the eos rule}
-	\antlrparserrule{breakStatement} : \antlrlexerrule{Break} \antlrlexerrule{Identifier}? \antlrparserrule{eos}
-	               ;
-\end{antlr}
+	\antlrparserrule{breakStmt} : \antlrlexerrule{Break} \antlrlexerrule{Identifier}? \antlrparserrule{eos} ;
+\end{alltt}
+\end{framed}
 \caption{Statements in JavaScript}
 \label{fig:javascriptstmt}
 \end{figure*}
@@ -610,14 +593,16 @@ Then we can just put each statement on a separate line as it is usual for JavaSc
 This small adjustment is very quick when done inside the grammar.
 We just change the \antlrparserrule{eos} rule to the form shown in Figure~\ref{fig:eosrule}.
 
-\begin{figure*}[ht]
+\begin{figure}[ht]
 \centering
-\begin{antlr}
+\begin{framed}
+\begin{alltt}
 	\antlrparserrule{eos} : \antlrliteral{;} ;
-\end{antlr}
+\end{alltt}
+\end{framed}
 \caption{eos parser rule}
 \label{fig:eosrule}
-\end{figure*}
+\end{figure}
 
 This way, we can change the grammar in a way that it will not describe the same ECMAScript language as before, but will definitely make our MPS language more usable.
 TextGen aspect may be defined in such a way that puts the semicolon back (after each statement) in the generated plain-text representation.

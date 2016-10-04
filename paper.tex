@@ -13,10 +13,10 @@
 \usepackage{times}
 \usepackage{multirow}
 \usepackage{balance}
-\usepackage{adjustbox}
+\usepackage{framed}
 \usepackage{alltt}
 \usepackage{textcomp}
-\usepackage[usenames]{xcolor}
+\usepackage[dvipsnames]{xcolor}
 
 \setcounter{tocdepth}{3}
 
@@ -58,61 +58,15 @@
 \newcommand{\PV}[1]{\textcolor{red}{\bfseries PV: #1}} % Premek Vysoky
 \newcommand{\JB}[1]{\textcolor{orange}{\bfseries JB: #1}} % JetBrains
 
-% colors for the ANTLR environment
-\definecolor{antlrbgcolor}{rgb}{1,1,1}
-\definecolor{antlrparserrulecolor}{RGB}{11,83,148}
-\definecolor{antlrlexerrulecolor}{RGB}{191,144,0}
-\definecolor{antlrliteralcolor}{RGB}{133,32,12}
-\definecolor{antlrregexcolor}{RGB}{56,118,29}
-
-% colors for the MPS environment
-\definecolor{mpsbgcolor}{rgb}{1,1,1}
-\definecolor{mpsconceptcolor}{RGB}{42,140,0}
-\definecolor{mpsinterfacecolor}{RGB}{170,0,229}
-
 % coloring commands
 \newcommand{\antlrap}{\textquotesingle}
-\newcommand{\antlrparserrule}[1]{\textcolor{antlrparserrulecolor}{#1}}
-\newcommand{\antlrlexerrule}[1]{\textcolor{antlrlexerrulecolor}{#1}}
-\newcommand{\antlrliteralnoap}[1]{\textcolor{antlrliteralcolor}{#1}}
+\newcommand{\antlrparserrule}[1]{\textcolor{Blue}{#1}}
+\newcommand{\antlrlexerrule}[1]{\textcolor{RedOrange}{#1}}
+\newcommand{\antlrliteralnoap}[1]{\textcolor{Maroon}{#1}}
 \newcommand{\antlrliteral}[1]{\antlrap\antlrliteralnoap{#1}\antlrap}
-\newcommand{\antlrregex}[1]{\textcolor{antlrregexcolor}{#1}}
-\newcommand{\mpsconcept}[1]{\textcolor{mpsconceptcolor}{#1}}
-\newcommand{\mpsinterface}[1]{\textcolor{mpsinterfacecolor}{#1}}
-
-% environment for the ANTLR code (grammars)
-\newenvironment{antlr}
-{
-	\vspace{3mm}
-	\par
-	\noindent
-	\adjustbox{margin=3mm,bgcolor=antlrbgcolor,frame,minipage=485pt,inner=\linewidth}
-	\bgroup
-	\alltt
-}
-{
-	\endalltt
-	\egroup
-	\\
-	\vspace{2mm}
-}
-
-% environment for the MPS code
-\newenvironment{mps}
-{
-	\vspace{3mm}
-	\par
-	\noindent
-	\adjustbox{margin=3mm,bgcolor=mpsbgcolor,frame,minipage=394pt,inner=\linewidth}
-	\bgroup
-	\alltt
-}
-{
-	\endalltt
-	\egroup
-	\\
-	\vspace{2mm}
-}
+\newcommand{\antlrregex}[1]{\textcolor{PineGreen}{#1}}
+\newcommand{\mpsconcept}[1]{\textcolor{OliveGreen}{#1}}
+\newcommand{\mpsinterface}[1]{\textcolor{Plum}{#1}}
 
 
 
