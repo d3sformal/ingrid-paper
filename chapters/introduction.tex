@@ -16,9 +16,9 @@ In the rest of the paper, we will use MPS to illustrate the general concepts and
 %MPS models, although being persisted as XML or binary files, can be versioned using the industry standard source-control systems (Git, Subversion).
 %On-line model browsers have been incorporated into some of the popular public source code repositories (BitBucket) [reference] .
 
-Projectional editing, and in particular the absence of parsers, brings several benefits.
+Projectional editing, keeping the code in the AST form, and in particular the absence of parsers, brings along several benefits.
 \begin{itemize}
-	\item The developers practically cannot enter syntactically invalid code, because a projectional editor controls the interaction between the user and the code.
+	\item The developers practically cannot enter syntactically invalid code, because a projectional editor controls the interaction between the user and the code. An AST created by the editor can represent only a syntactically valid code.
 	\item Programming languages can be defined in a modular way, and multiple languages can be easily combined together or one can extend another, while parsers seriously limit language modularity for traditional parsed languages.
 	\item The languages may support contextual or non-parseable notations, such as tables, diagrams and positional syntax.
 	\item Since the projection is detached from the physical representation of code (AST), authors of languages can define multiple notations and allow the developers to switch between different representations of the code.

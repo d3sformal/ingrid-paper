@@ -1,78 +1,55 @@
 \section{Background and Related Work}
 \label{sect:BACKGRELWORK}
 
-% TODO continue from here
-
-We will briefly introduce fundamental basics of the MPS environment.
-We will analyze existing related projects that are trying to accomplish similar goals, and then we will weigh advantages and disadvantages of these approaches.
+In this section, first we introduce basic features of the MPS platform, and then we discuss other existing projects that aim to add support for general purpose languages into MPS.
 
 \subsection{JetBrains MPS}
 \label{sect:MPS}
 
-\JB{Odstavec upraven} JetBrains MPS is a complete language workbench - a development environment that allows developers to define their own languages and then use them to develop code. The code can then be transformed into a target language, typically a GPL, such as Java or C.
+JetBrains MPS is a complete language workbench --- an integrated development environment that allows developers to create their own languages and use them to write code.
+The code can then be transformed into a target language, typically a GPL, such as Java or C, and eventually compiled into executable programs.
 
-\JB{Navrhuji odstranit}
-\PV{Souhlasim}
-We need to provide a good understanding of how the MPS~\cite{ref:MPS} environment works.
-Focus on basic/fundamental and relevant features. In this section, we will explain fundamental basics of MPS as it is crucial in the understanding of our contribution and associated challenges.
+As we already indicated, MPS differs from typical IDEs in one important aspect --- the projectional editor.
+The developer does not work with the textual representation of the source code directly, but rather with its AST that is the model of the code.
+Basically, when using the MPS projectional editor, programs are created by assembling the tree (AST) out of predefined building blocks of selected languages.
+The definition of a language in MPS dictates, where in the AST can certain elements be placed and how they can be nested inside other elements.
+On the other hand, in traditional IDEs it is the parser that constructs an AST of a program using the language's elements.
 
-\JB{odstavec upraven} MPS differs from typical IDEs in one important aspect - the projectional editor. The developer does not work with the textual representation of the source code directly, but rather with its AST (abstract syntax tree) that is the model of the code. When users are creating programs using the MPS projectional editor, they are basically assembling the tree (AST) out of predefined building blocks of the imported languages. The definition of the language dictates, which where in the AST can certain elements be placed or how they can be nested inside other elements. In traditional IDEs it is the parser that constructs an AST using the language's elements.
+The building blocks of MPS models are called nodes.
+Code of any program in MPS is built from nodes, which represent instances of concepts defined in one of the languages that the program declares to be using.
+In the context of MPS, a concept is, in fact, a building block of a language definition.
+We use the terms \emph{MPS concept} and \emph{AST node} when needed to avoid confusion.
 
-\JB{Odstavec upraven} The building blocks of MPS models are called nodes. Code of any program in MPS is built from nodes and these nodes represent instances of elements defined in one of the languages that the program declares to be using. These language elements are called concepts. In brief, nodes in code are instances of concepts defined in the language.
+One of the key advantages of projectional editing stems from the separation of abstract and concrete syntax.
+While AST provides a complete and precise representation of the code, the way it is displayed on the screen and the way the user interacts with it are unconstrained.
+The editor can take any visual form and shape.
+The language author can define multiple alternative visualizations and let the developer to choose one that fits best the task at hand --- for example, editing, debugging, reviewing, resolving merge conflicts, etc.
+In particular, the visual representations are not bound to be just textual at all.
+For example, blocks corresponding to branches of an \code{if-then-else} statement can be aligned next to each other and displayed with different background colors.
 
-\JB{Vyhody/nevyhody diskutujeme v kapitole 1. Navrhuji nasledujici odstavec zrusit nebo text z kapitoly 1. presunout sem}
-\PV{Spis bych zrusil tady, kapitola 1 mi prijde vhodnejsi pro zmineni motivace}
-Keeping the model of the code in the AST form has several advantages.
-One of them is that MPS then only allows composing the program strictly following the syntax of the language, which results in an inability to actually write syntactically invalid code.
-The code is generated out of the always-valid AST beyond user's reach.
+The definition of an MPS concept (language element) consists of several aspects, where each aspect codifies a different part of the AST nodes' behavior.
+The essential aspects are the following: \emph{Structure} (abstract syntax), \emph{Editor} (concrete syntax) and \emph{TextGen}.
+Editor defines the concrete syntax (i.e., how the code is visualized and edited) and TextGen specifies how AST nodes are transformed into textual representation.
+If, instead of generating text directly, programs in the language are supposed to be transformed into another language that is available in MPS, the Generator aspect must be used to specify the model-to-model transformation rules.
+Since only the Structure, Editor and TextGen aspects are relevant for the contribution of this paper, we describe these three below in more detail, and neglect other aspects such as type system and data-flow.
 
-\JB{Odstavec upraven} One of key advantages of projectional editor stems from separation of abstract and concrete syntax. While the AST provides an exhaustive representation of the code, the way it is displayed on the screen and the way the user interacts with it are unconstrained. The editor can take any visual form and shape. The language author can define multiple visualizations and let the developer to choose one that fits best the task at hands - editing, debugging, reviewing, resolving merge conflicts, etc.
+Languages are built from the concepts using techniques known from object-oriented programming --- containment, inheritance, interfaces, and so on.
+Therefore, a definition of a whole language in MPS typically has an object-oriented and hierarchical nature.
 
-For a better understanding, we will give a~small example. Let's assume we have a language with typical if/else structure similar to the one in Java:
 
-\begin{center}
-	\begin{minipage}{.38\textwidth}
-		\begin{alltt}
-			if (\textit{condition})
-			    \textit{then statement block}
-			else
-			    \textit{else statement block}
-		\end{alltt}
-	\end{minipage}
-\end{center}
 
-Its abstract syntax tree representation will look something like shown on Figure~\ref{fig:if_ast}.
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[scale=0.6]{./images/if_statement_ast.png}
-  \caption{"If statement" abstract syntax tree}
-  \label{fig:if_ast}
-\end{figure}
 
-The underlying child nodes have their own children and so on. The type of nodes can be restricted by the language structure definition. For example, we can restrict the condition in the if/else statement to be an expression, the statement block to be a list of statements, etc.
+% TODO continue from here
 
-\JB{odstavec upraven} Alternative visual representations are possible and they are not bound to be just the textual representation at all. For example, blocks for both of the branches can be aligned next to each other and displayed with differend background color, like shown in Figure~\ref{fig:if_editor}.
 
-\begin{figure}[ht]
-	\centering
-	\hspace{-4mm}
-	\includegraphics[scale=0.75]{./images/if_statement_editor.png}
-	\caption{"If statement" projectional editor example}
-	\label{fig:if_editor}
-\end{figure}
-
-\JB{Odstavec mirne upraven}The definition of a language element (the concept) consists of several aspects and each aspect codifies a different part of the nodes' behavior. The essential aspects are the following: structure (abstract syntax), editor (concrete syntax - how the code is projected and edited) and textgen (how to transform the AST into textual source code). If, instead of generating text directly, the language is supposed to be generated into another language that is available in MPS, the generator aspect must be used to specify the model-transformation rules. The structure, editor and textgen aspects are most relevant for the contribution of this paper, so we describe them here (and neglect/ignore the other aspects such as type system and data-flow).
-
-\todo{Highlight the object-oriented hierarchical nature of language definitions in MPS. The environment restricts and guides the developer so that he makes less mistakes.}
-
-Some concepts and design patterns known from object oriented programming can be used in language definition for MPS --- inheritance between concepts, interfaces, delegation and so on. Most importantly, nodes can have child nodes and that is how the AST itself is created.
-
-\JB{Zmineno vyse, navrhuji odstranit} \todo{Zduraznit ze AST node (object) ma nekolik aspectu: structure, editor, textgen. Definice MPS language je organizovana takto --- pres AST nodes, ktere maji nekolik aspectu (ruzne pohledy).}
 
 \paragraph{Structure.}
 \JB{Odstavec mirne upraven} The fundamental aspect of any MPS language is structure. It must be created first for each type of the intended AST node. Structure specifies core attributes such as name of the concept, inheritance relationships, possible child concepts (their types and cardinalities), the implemented interfaces, references to other nodes, other properties (fields of any type that can hold values), etc.
 In Figure~\ref{fig:if_statement_structure}, you can see the structure aspect definition for the if statement.
+
+The language structure definition restricts the type of nodes (concepts) that can appear at a particular place in AST.
+For example, we can restrict the condition in the if-then-else statement to be an expression, the then-block to be a list of statements, etc.
 
 \begin{figure}[ht]
 	\centering
@@ -133,7 +110,11 @@ MPS supports also other aspects, such as type checking, model transformations, s
 
 }
 
+% TODO mozna zmenit nazev teto sekce
 \subsection{Similar Projects}
+
+We are aware of several projects that provide certain support for GPLs in the context of the MPS platform.
+We will analyze existing related projects that are trying to accomplish similar goals, and then we will weigh advantages and disadvantages of these approaches.
 
 Currently, there exists an almost full port of the Java language called BaseLanguage~\cite{ref:BaseLanguage} extended with some MPS specific features.
 It was imported manually by JetBrains and it is still undergoing changes as Java itself is evolving.
