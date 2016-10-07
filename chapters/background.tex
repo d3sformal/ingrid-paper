@@ -36,6 +36,46 @@ Since only the Structure, Editor and TextGen aspects are relevant for the contri
 Languages are built from the concepts using techniques known from object-oriented programming --- containment, inheritance, interfaces, and so on.
 Therefore, a definition of a whole language in MPS typically has an object-oriented and hierarchical nature.
 
+\paragraph{Structure.}
+The fundamental aspect of any MPS language is Structure.
+It must be created first for each intended element (concept) of the language.
+Structure specifies core attributes of an MPS concept such as the name, inheritance relationships, possible child concepts (including their types and cardinalities), the implemented interfaces, and references to other AST nodes.
+% other properties (fields of any type that can hold values), etc.
+Figure~\ref{fig:if_statement_structure} shows definition of the Structure aspect for the \code{if} statement.
+
+The definition of Structure restricts the type of AST nodes that can appear at a particular place in the tree.
+For example, one can restrict the condition in the \code{if-then-else} statement to be a boolean expression, and the \code{then}-block to be a list of statements.
+
+\begin{figure}[ht]
+\centering
+\begin{alltt}
+\small
+\mpskeyword{concept} IfStatement \mpskeyword{extends} Statement
+        \mpskeyword{implements} IContainsStatementList
+                   IDontSubstituteByDefault
+                   IConditional
+
+  \mpskeyword{instance can be root:} false
+  \mpskeyword{alias:} \mpsalias{if}
+  \mpskeyword{short description:} \mpsplaceholder{<no short description>}
+
+  \mpskeyword{properties:}
+  \mpsproperty{forceOneLine}   : boolean
+  \mpsproperty{forceMultiLine} : boolean
+  
+  \mpskeyword{children:}
+  \mpsproperty{condition}        : Expression[\mpscardinality{1}]
+  \mpsproperty{ifFalseStatement} : Statement[\mpscardinality{0..1}]
+  \mpsproperty{ifTrue}           : StatementList[\mpscardinality{1}]
+  \mpsproperty{elsifClauses}     : ElsifClause[\mpscardinality{0..n}]
+  
+  \mpskeyword{references:}
+  \mpsplaceholder{<< ... >>}
+\end{alltt}
+\caption{Structure aspect of the \code{if} statement}
+\label{fig:if_statement_structure}
+\end{figure}
+
 
 
 
@@ -43,20 +83,6 @@ Therefore, a definition of a whole language in MPS typically has an object-orien
 % TODO continue from here
 
 
-
-\paragraph{Structure.}
-\JB{Odstavec mirne upraven} The fundamental aspect of any MPS language is structure. It must be created first for each type of the intended AST node. Structure specifies core attributes such as name of the concept, inheritance relationships, possible child concepts (their types and cardinalities), the implemented interfaces, references to other nodes, other properties (fields of any type that can hold values), etc.
-In Figure~\ref{fig:if_statement_structure}, you can see the structure aspect definition for the if statement.
-
-The language structure definition restricts the type of nodes (concepts) that can appear at a particular place in AST.
-For example, we can restrict the condition in the if-then-else statement to be an expression, the then-block to be a list of statements, etc.
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.55]{./images/if_statement_structure.png}
-	\caption{"If statement" structure aspect definition}
-	\label{fig:if_statement_structure}
-\end{figure}
 
 \paragraph{Editor.}
 \JB{Odstavec mirne upraven}The editor aspect is where the user defines what the projectional editor representation of a code fragment (an AST node) looks like on the screen and how the user interacts with the code. JetBrains have developed a cellular system that allows placing node's (concept's) properties and children into different cells. The author usually incorporates all concept's children, references, and properties inside the representation so that the future users of the language can insert the values that the node expects. Additionally, all visual cells of the editor can be styled using a~language similar to CSS.
