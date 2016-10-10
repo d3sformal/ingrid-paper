@@ -59,19 +59,33 @@
 \newcommand{\JB}[1]{\textcolor{orange}{\bfseries JB: #1}} % JetBrains
 
 % coloring and font style commands
+  % ANTLR
 \newcommand{\antlrap}{\textquotesingle}
 \newcommand{\antlrparserrule}[1]{\textcolor{Blue}{#1}}
 \newcommand{\antlrlexerrule}[1]{\textcolor{RedOrange}{#1}}
 \newcommand{\antlrliteralnoap}[1]{\textcolor{Maroon}{#1}}
 \newcommand{\antlrliteral}[1]{\antlrap\antlrliteralnoap{#1}\antlrap}
 \newcommand{\antlrregex}[1]{\textcolor{PineGreen}{#1}}
+  % MPS in general
 \newcommand{\mpsconcept}[1]{\textcolor{OliveGreen}{#1}}
 \newcommand{\mpsinterface}[1]{\textcolor{Plum}{#1}}
-\newcommand{\mpskeyword}[1]{\textcolor{Blue}{\textbf{#1}}}
-\newcommand{\mpsalias}[1]{\textcolor{Green}{\textbf{#1}}}
-\newcommand{\mpsproperty}[1]{\textcolor{Fuchsia}{\textbf{#1}}}
-\newcommand{\mpsplaceholder}[1]{\textcolor{Gray}{\textbf{#1}}}
-\newcommand{\mpscardinality}[1]{\textcolor{RoyalBlue}{#1}}
+  % MPS structure
+\newcommand{\mpsstkeyword}[1]{\textcolor{Blue}{\textbf{#1}}}
+\newcommand{\mpsstalias}[1]{\textcolor{Green}{\textbf{#1}}}
+\newcommand{\mpsstproperty}[1]{\textcolor{Fuchsia}{\textbf{#1}}}
+\newcommand{\mpsstplaceholder}[1]{\textcolor{Gray}{\textbf{#1}}}
+\newcommand{\mpsstcardinality}[1]{\textcolor{RoyalBlue}{#1}}
+  % MPS editor
+\newcommand{\mpsedkeyword}[1]{\textcolor{Black}{\textbf{#1}}}
+\newcommand{\mpsedtarget}[1]{\textcolor{Fuchsia}{#1}}
+\newcommand{\mpsedannotation}[1]{\textcolor{Gray}{\textbf{#1}}}
+  % MPS textgen
+\newcommand{\mpstgkeyword}[1]{\textcolor{Blue}{\textbf{#1}}}
+\newcommand{\mpstgtarget}[1]{\textcolor{Fuchsia}{#1}}
+\newcommand{\mpstgparam}[1]{\textcolor{Violet}{#1}}
+\newcommand{\mpstgaction}[1]{\textcolor{Fuchsia}{\textbf{#1}}}
+\newcommand{\mpstgliteral}[1]{\textcolor{Green}{\textbf{#1}}}
+\newcommand{\mpstgnodeprop}[1]{\textcolor{darkgray}{#1}}
 
 
 
