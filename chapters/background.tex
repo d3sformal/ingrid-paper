@@ -42,7 +42,6 @@ It must be created first for each intended element (concept) of the language.
 Structure specifies core attributes of an MPS concept such as the name, inheritance relationships, possible child concepts (including their types and cardinalities), the implemented interfaces, and references to other AST nodes.
 % other properties (fields of any type that can hold values), etc.
 Figure~\ref{fig:if_statement_structure} shows definition of the Structure aspect for the \code{if-else} statement.
-\PP{Mozna trochu vic popsat obsah figure --- co znamenaji jednotlive prvky definice.}
 
 The definition of Structure restricts the type of AST nodes that can appear at a particular place in the tree.
 For example, one can restrict the condition in the \code{if-then-else} statement to be a boolean expression, and the \code{then}-block to be a list of statements.
@@ -86,8 +85,8 @@ The supported visual characteristics include text color and indentation.
 
 Figure~\ref{fig:if_editor_definition} shows an example of what the definition of the Editor aspect for the \code{if-else} statement might look like.
 While here we indicate positions of cell borders on each line by spaces (just for the purpose of illustration), MPS GUI actually uses a graphically much more appealing way of displaying the Editor aspects, which involves vertical and horizontal lines of different colors and also background colors other than white for some cells.
-\PP{Vysvetlit symboly "[-", "-]" \%, a dalsi ktere nejsou hned zrejme.}
-	
+The symbols \verb|[-| and \verb|-]| represent layout information (cells), such as indentation.
+
 \begin{figure}[ht]
 \centering
 \begin{alltt}
@@ -221,7 +220,7 @@ Using the projectional editor, the user can easily specify information about the
 The MPS language of the grammar definition can be easily extended with needed features (indenting, line breaks...), which is superior to our approach, because they can be represented using many visual means.
 
 This approach also has some downsides.
-Because MPS doesn't offer any tools that would allow easy transformation from the MPS grammar to the MPS language, the second step of the import process hasn't been implemented yet and will be probably very problematic.
+Because MPS doesn't offer any tools that would allow easy transformation from the MPS grammar \PP{To je konkretni gramatika zadefinovana pomoci MPS jazyka pro ANTLR} to the MPS language, the second step of the import process hasn't been implemented yet and will be probably very problematic.
 Another downside might be the need for a double transformation implementation -- first one being the import of the text grammar to the MPS grammar definition.
 
 From another point of view -- for each additional feature, that we decide to add to the grammar notation, we need to implement a corresponding transformation.
