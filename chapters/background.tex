@@ -23,7 +23,7 @@ We use the terms \emph{MPS concept} and \emph{AST node} when needed to avoid con
 One of the key advantages of projectional editing stems from the separation of abstract and concrete syntax.
 While AST provides a complete and precise representation of the code, the way it is displayed on the screen and the way the user interacts with it are unconstrained.
 The editor can take any visual form and shape.
-The language author can define multiple alternative visualizations and let the developer to choose one that fits best the task at hand --- for example, editing, debugging, reviewing, resolving merge conflicts, etc.
+The language author can define multiple alternative visualizations and let the developer choose one that fits best the task at hand --- for example, editing, debugging, reviewing, resolving merge conflicts, etc.
 In particular, the visual representations are not bound to be just textual at all.
 For example, blocks corresponding to branches of an \code{if-then-else} statement can be aligned next to each other and displayed with different background colors.
 
@@ -85,7 +85,7 @@ The supported visual characteristics include text color and indentation.
 
 Figure~\ref{fig:if_editor_definition} shows an example of what the definition of the Editor aspect for the \code{if-else} statement might look like.
 While here we indicate positions of cell borders on each line by spaces (just for the purpose of illustration), MPS GUI actually uses a graphically much more appealing way of displaying the Editor aspects, which involves vertical and horizontal lines of different colors and also background colors other than white for some cells.
-The symbols \verb|[-| and \verb|-]| represent layout information (cells), such as indentation.
+The symbols \verb|[-| and \verb|-]| represent layout information (cells), which define rules for mutual positioning for the contained cells (vertical, horizontal, indentation).
 
 \begin{figure}[ht]
 \centering
@@ -120,7 +120,7 @@ The TextGen aspect specifies how a given AST node will be translated into plain 
 It is typically needed only for the bottom-line base languages.
 DSLs, on the other hand, need to define rules for model-to-model conversions (Generators), since these are rarely converted to text directly.
 After TextGen has generated textual sources from an AST, a compiler for the particular GPL is invoked to compile the textual sources into binary code.
-The TextGen definition follows a very straightforward pattern --- each node outputs its textual representation into a buffer, calling TextGen of its children nodes at the right moments.
+The TextGen definition follows a very straightforward pattern --- each node outputs its textual representation into a buffer, while calling TextGen of its children nodes at the right moments.
 MPS calls the corresponding method on the root AST nodes of the given program.
 
 \begin{figure}[ht]
