@@ -107,7 +107,7 @@ The symbols \verb|[-| and \verb|-]| represent layout information (cells), such a
 \end{figure}
 
 \paragraph{BaseLanguage.}
-Another important feature of MPS that we need to describe in more detail is \emph{BaseLanguage}.
+Another important feature of MPS that we need to describe in more detail is \emph{BaseLanguage}~\cite{ref:BaseLanguage}.
 It is a clone of Java implemented using the MPS constructs.
 BaseLanguage was developed in the early days of MPS in order to implement MPS itself and also to support the basic set of language-definition DSLs,
 Although BaseLanguage is syntactically almost identical to Java, it is edited in a projectional editor, just like all the languages in MPS.
@@ -122,9 +122,6 @@ DSLs, on the other hand, need to define rules for model-to-model conversions (Ge
 After TextGen has generated textual sources from an AST, a compiler for the particular GPL is invoked to compile the textual sources into binary code.
 The TextGen definition follows a very straightforward pattern --- each node outputs its textual representation into a buffer, calling TextGen of its children nodes at the right moments.
 MPS calls the corresponding method on the root AST nodes of the given program.
-
-TextGen aspect for each AST node (concept of the language) has to be defined using the BaseLanguage.
-Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:if_statement_textgen}).
 
 \begin{figure}[ht]
 \centering
@@ -149,6 +146,20 @@ Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:i
 \label{fig:if_statement_textgen}
 \end{figure}
 
+TextGen aspect for each AST node (concept of the language) has to be defined using the BaseLanguage.
+Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:if_statement_textgen}).
+
+\subsection{Related Projects}
+
+The BaseLanguage~\cite{ref:BaseLanguage} is an almost full port of the Java language, extended with MPS-specific features.
+It was created manually by JetBrains, and it is still undergoing changes as Java itself is evolving.
+
+The C language has also been manually tailored for MPS within the mbeddr project~\cite{ref:MBEDDR}.
+
+Besides that, we are aware of three other projects that provide certain support for GPLs in the context of MPS --- namely PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
+We describe their main features and limitations in this section.
+
+
 
 
 
@@ -156,20 +167,6 @@ Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:i
 % TODO continue from here
 
 
-
-% TODO mozna zmenit nazev teto sekce
-\subsection{Similar Projects}
-
-We are aware of several projects that provide certain support for GPLs in the context of the MPS platform.
-We will analyze existing related projects that are trying to accomplish similar goals, and then we will weigh advantages and disadvantages of these approaches.
-
-Currently, there exists an almost full port of the Java language called BaseLanguage~\cite{ref:BaseLanguage} extended with some MPS specific features.
-It was imported manually by JetBrains and it is still undergoing changes as Java itself is evolving.
-
-Within the mbeddr project~\cite{ref:mbeddr}, the C language is also manually tailored for MPS.
-
-Now/here we describe three similar projects (with similar goals) that we are aware of.
-We focus on (consider) these three projects: PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
 
 \paragraph{PE4MPS.}
 PE4MPS~\cite{ref:PE4MPS} is a project by Marco Lombardo that is trying to solve the same problem as we do.
