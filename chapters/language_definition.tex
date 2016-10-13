@@ -30,8 +30,10 @@ In the following subsections, we provide some details about our approach to pars
 
 During our work on this project, we also discovered/encountered challenges/issues related to input grammars --- intermediate rules in the syntax hierarchy that allow humans to understand the grammar better (structure aspect/component), whitespace (editor aspect).
 There is a challenge/issue that we have discovered during our work on this project (in the process of our own implementation), and that is related to construction of the structure aspect.
+
 Grammars are written by humans and therefore contain some structures (intermediary layers) inside of them that help a human brain to understand it better.
 However, these structures add unnecessary levels to its syntax hierarchy which lead to problems when using this language inside MPS.
+\PV{Dalsi veta asi zbytecna}
 We describe/discuss these challenges in more detail (also using examples) and our solutions to the challenges inside the respective following subsections.
 
 Result of the construction of a MPS language from the input grammar (import) has to be polished by the human user.
@@ -60,6 +62,7 @@ At some places, we discuss important possible alternatives (as there are several
 We illustrate the main steps on the example of a simplified XML language, which is defined below (in Figure XY).
 
 \todo{Pouzit jazyk SimpleXML na running exaple.}
+\PV{Dalsi veta asi prijde niz?}
 
 We decided to use SimpleXML because it is small enough to fit here, but still can be used to illustrate the main challenges and our solution
 
@@ -83,7 +86,7 @@ Below in Figure X, you can find the grammar of the SimpleXML language in the ANT
 	\textbf{fragment}
 	\antlrlexerrule{DIGIT}     : \antlrregex{[0-9]} ;
 	\textbf{fragment}
-	\antlrlexerrule{NameChar}  : \antlrlexerrule{NameStartChar} | \antlrliteral{-} | \antlrliteral{_} | \antlrliteral{.} | \antlrlexerrule{DIGIT} ;
+	\antlrlexerrule{NameChar}  : \antlrlexerrule{NameStartChar} | \antlrliteral{-} | \antlrliteral{\_} | \antlrliteral{.} | \antlrlexerrule{DIGIT} ;
 	\textbf{fragment}
 	\antlrlexerrule{NameStartChar} : \antlrregex{[:a-zA-Z]} ;
 	\antlrlexerrule{TEXT}      : \antlrregex{~[<"]*} ;
@@ -179,7 +182,7 @@ Flatten(\textit{R}):
 The output of \texttt{Flatten(Name)} (output of the Flatten algorithm applied to the \antlrlexerrule{Name} rule) is this regular expression (in this form):
 
 \begin{center}
-	\texttt{([:a-zA-Z])(([:a-zA-Z])|(-)|({\_})|(.)|([0-9]))*}
+	\texttt{[:a-zA-Z]([:a-zA-Z]|\textbackslash-|{\_}|\textbackslash.|[0-9])*}
 \end{center}
 
 \subsection{Structure}
