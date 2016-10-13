@@ -85,7 +85,7 @@ The supported visual characteristics include text color and indentation.
 
 Figure~\ref{fig:if_editor_definition} shows an example of what the definition of the Editor aspect for the \code{if-else} statement might look like.
 While here we indicate positions of cell borders on each line by spaces (just for the purpose of illustration), MPS GUI actually uses a graphically much more appealing way of displaying the Editor aspects, which involves vertical and horizontal lines of different colors and also background colors other than white for some cells.
-The symbols \verb|[-| and \verb|-]| represent layout information (cells), which define rules for mutual positioning for the contained cells (vertical, horizontal, indentation).
+The symbols \verb|[-| and \verb|-]| represent layout information (cells), which define rules for mutual positioning of the contained cells (vertical, horizontal, indentation).
 
 \begin{figure}[ht]
 \centering
@@ -159,6 +159,22 @@ The C language has also been manually tailored for MPS within the mbeddr project
 Besides that, we are aware of three other projects that provide certain support for GPLs in the context of MPS --- namely PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
 We describe their main features and limitations in this section.
 
+\paragraph{PE4MPS.}
+PE4MPS~\cite{ref:PE4MPS} is a project that addresses the lack of information about code layout in grammars by using so called PE grammars~\cite{ref:PE}, which is a new grammar notation proposed by the same author.
+The abbreviation PE stands for projectional editing.
+
+PE grammars extend the syntax of the ANTLR v4 notation by custom constructs that provide information about the possible layout of AST nodes.
+The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
+However, even these few features make the already complex syntax of ANTLR v4 much more complicated.
+
+An MPS language is created by the PE4MPS tool in two steps.
+First, the PE parser is used to load an input PE file and build its intermediate representation, which has the form of a tree-like structure consisting of Java objects.
+Then, all the concepts (AST nodes) and their aspects are created inside MPS.
+The information about the code layout, extracted from the PE file, is used when generating the projectional editor for every AST node.
+
+Another limitation of PE4MPS is that it does not implement the full ANTLR syntax.
+Every grammar might require non-trivial adjustments before it can be processed using the PE4MPS tool.
+To compare, the goals behind our INGRID approach are (1) to enable import of as many languages as possible out-of-the-box with maximal automation and (2) to adopt the full specification of every imported language.
 
 
 
@@ -167,25 +183,6 @@ We describe their main features and limitations in this section.
 % TODO continue from here
 
 
-
-\paragraph{PE4MPS.}
-PE4MPS~\cite{ref:PE4MPS} is a project by Marco Lombardo that is trying to solve the same problem as we do.
-It solves the lack of information about code layout in grammars by creating a new grammar notation called PE Grammars~\cite{ref:PE} (the PE abbreviation comes from projectional editing).
-It has tw components: PE parser and PE4MPS plugin for MPS.
-Their approach is to mimic an existing grammar notation called ANTLRv4~\cite{ANTLR4} and enrich its syntax with custom (their own) constructs.
-These extensions tell (guide, hint) the parser what the AST node layout should look like.
-Supported extensions (already implemented) include horizontal and vertical lists, and some indentation rules --- however, even these few features make the already not-so-simple syntax of ANTLR v4 much more complex.
-The parser then uses this information when generating the projectional editor for am AST node.
-Author of this approach/project described the PE syntax using the ANTLRv4 notation~\cite{ANTLR4reference} and then used the ANTLR toolset to automatically generate an ANTLRv4 parser for PE grammar files.
-The PE parser reads any PE file and stores the language structure found inside to a custom representation of Java objects.
-
-The PE4MPS plugin/project/tool is built on top of the PE parser.
-This plugin uses the PE parser to build the PE file representation (the aforementioned tree-like structure of Java objects) and then creates AST nodes and their aspects inside MPS.
-The extended syntax brought by PE describes the layout of each element, e.g. it tells the plugin that one set of child nodes should be displayed horizontally, another set should be vertical with each child on a separate line and with some indentation, and so on.
-
-A limitation of the PE4MPS approach is that it, from what we understand, does not implement full ANTLR syntax.
-This means that every grammar might need a non-trivial adjustment before its usage.
-One of our goals is to enable import of as many languages out-of-the-box as possible and adopting the full specification.
 
 \paragraph{ANTLR{\_}MPS.}
 \PV{Tenhle projekt byl z tech tri nejmene uzitecny a podle me i nejmene funkcni, tak mozna by se dal v ramci zkracovani vypustit. V dalsim projektu je na nej reference, tak treba ji vyhodit.}
