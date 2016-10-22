@@ -1,67 +1,29 @@
-% TODO continue from here
-
-\section{Creating Language Definition in MPS}
+\section{Constructing Languages in MPS}
 \label{sect:LANGDEF}
 
-From all the available notations in which grammars can be written, we decided to use the ANTLRv4 grammar notation~\cite{ANTLR4reference} as the input format (in which the input programming languages have to be defined) for the following reasons.
-\begin{itemize}
-	\item It is a very widely used grammar notation.
-	\item All popular and widely used programming languages have their syntax captured (represented) using this notation --- see the repository~\cite{ref:ANTLR4grammars}.
-	\item There is a whole framework/toolset for generating parsers and editing grammars built around it~\cite{ref:ANTLR4}.
-	\item It supports Java (it is written in Java), which is the implementation language of MPS and also the default BaseLanguage.
-	\item It uses (is based on) an EBNF (Extended Backus-Naur Form) \footnote{https://en.wikipedia.org/wiki/Extended{\_}Backus\%E2\%80\%93Naur{\_}Form} form that it useful because it meets/respects the object oriented design that is used when describing MPS aspects (definitions of MPS languages).
-	\item It has its own syntax captured in its own syntax\footnote{https://github.com/antlr/grammars-v4/tree/master/antlr4} (there is an ANTLRv4 grammar for the ANTLRv4 notation). This is a very important feature as it allows us to create a parser for ANTLRv4 grammars so that we can parse grammars of other languages.
-\end{itemize}
+The proposed INGRID method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
+All widely used programming languages have their syntax defined using this notation~\footnote{https://github.com/antlr/grammars-v4}.
+Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
 
-We use ANTLRv4 grammars as inputs (and work with them).
-	https://github.com/antlr/antlr4/blob/master/doc/index.md
-	https://github.com/antlr/grammars-v4
+The process of MPS language construction, as performed by INGRID, consists of four steps --- parsing of the input grammar, followed by definition of the essential aspects (Structure, Editor, and TextGen).
+Each of the steps 2-4 is exclusively and fully responsible for one aspect.
 
-Unlike some of the related projects, we did not add any new features into the grammar notation.
-We tried to import grammars as they are.
+INGRID is currently able to create (i) a full Structure aspect for each element (type of an AST node) of the given language, (ii) a very basic Editor, and (iii) a basic TextGen aspect.
+Therefore, the resulting MPS language typically still has to be adjusted manually to improve its usability, and the human users must also define the remaining aspects not yet supported by INGRID.
 
-The generation/import process performed by INGRID consists of three phases (import of structure, usable editor, text generation).
-We will talk about all phases of the generation/import process, describing encountered challenges/obstacles using an example language.
+Our approach differs from the related projects (Section~\ref{sect:RELATED}) especially in the level of automation. It also has much better support for the definition of Editor and TextGen.
 
-To fulfill our goal of maximal possible automation, we import/generate the full language structure and then do a lot of mundane and time-consuming work connected to creating projectional editors.
 
-Now we describe/introduce the main steps of our approach (that INGRID tool performs): parsing the grammar, creating the structure, editor, and textgen.
-We are able to create/generate the structure aspect and then very basic editor and some default/basic textgen.
-In particular, we did not port the ANTLR notation as an MPS language.
-In the following subsections, we provide some details about our approach to parsing the input grammar and creating the main aspects of each element (each type of AST node) of an MPS language (structure, editor, and textgen).
 
-During our work on this project, we also discovered/encountered challenges/issues related to input grammars --- intermediate rules in the syntax hierarchy that allow humans to understand the grammar better (structure aspect/component), whitespace (editor aspect).
-There is a challenge/issue that we have discovered during our work on this project (in the process of our own implementation), and that is related to construction of the structure aspect.
 
-Grammars are written by humans and therefore contain some structures (intermediary layers) inside of them that help a human brain to understand it better.
-However, these structures add unnecessary levels to its syntax hierarchy which lead to problems when using this language inside MPS.
-\PV{Dalsi veta asi zbytecna}
-We describe/discuss these challenges in more detail (also using examples) and our solutions to the challenges inside the respective following subsections.
 
-Result of the construction of a MPS language from the input grammar (import) has to be polished by the human user.
-For example, the aspects not supported by INGRID will be used for adjusting the imported language and improving the usability of the language.
+% TODO continue from here
 
-\todo{Briefly discuss how our overall approach differs from similar projects (PE4MPS, etc).}
-There are more ways how to approach the problem of a grammar import.
 
-Our overall approach differs from the PE4MPS project (Section X.Y) especially in the level of automation.
-While the main goal of (our) the INGRID approach is to automatize the construction of MPS languages from ANTLR grammars as much as possible, usage of PE does not really spare the user any work because it only shifts the manual work from creating projectional editor to writing PE grammars.
-What the user would do inside the MPS UI using the projectional editor is in the case of PE4MPS done using a text editor when editing PE grammars.
-MPS UI is specially designed/made/tailored for this purpose, guides the user through this process, and supports aids such as auto-completion. In particular, MPS UI allows the user to perform only changes that result in valid output.
-Editing the grammar stored in a text file using a standard editor is an inferior approach with respect to using MPS (projectional editor), because a text editor is not as user-friendly, and, more importantly, it is an error prone environment.
-
-Main drawback of ANTLR{\_}MPS, and main difference from our approach, is very limited automation: it does not create the parent-child relationships between AST nodes in the structure, and does not generate any editor and textgen aspects (for any node) at all.
-In addition, there is no attention paid to the problem of generating projectional editor and text generation is neglected too.
-We blame all this on the project being in its early stage of development.
-
-In the rest of this section, first we define the language that we will use throughout the paper as the running example.
-Then we will talk about parsing grammar files \todo{Tohle je mozna zbytecne}.
-Lastly, we will describe our approach to tackling generation of language's aspects (structure, editor, and TextGen).
-At some places, we discuss important possible alternatives (as there are several possible approaches).
 
 \subsection{Running Example}
 
-We illustrate the main steps on the example of a simplified XML language, which is defined below (in Figure XY).
+We illustrate the main steps of the INGRID method on the example of a simplified XML language, which is defined below (in Figure XY).
 
 \todo{Pouzit jazyk SimpleXML na running exaple.}
 \PV{Dalsi veta asi prijde niz?}
@@ -189,14 +151,23 @@ The output of \texttt{Flatten(Name)} (output of the Flatten algorithm applied to
 
 \subsection{Structure}
 
+\todo{We import/generate the complete/full language structure fully automatically.}
+
 Now, as the next step, we need to translate/transform the AST (the types of AST nodes) derived from the input grammar into elements of the structure aspect of the MPS language definition (into types of AST nodes), and linking the nodes appropriately.
 
 The goal of this second step is to translate (transfer) the syntax (structure) of the input language that is captured by the grammar (ANTLR), into the MPS structure aspect.
 The structure of the MPS language is somewhat similar to the grammar.
 This is (the part) where INGRID spares the user from many hours of tedious and sometimes quite challenging work.
 The process of transferring grammar rules into the structure of a MPS language presents/involves some interesting challenges.
+
+As we already indicated in the introduction, the main problem/difficulty/challenge related to Structure (creating the structure) is that a grammar typically contains many rules that do not directly correspond to AST nodes and programming language constructs.
+Challenges/issues related to input grammars --- intermediate rules in the syntax hierarchy that allow humans to understand the grammar better (structure aspect/component).
+There is a challenge/issue that is related to construction of the structure aspect.
+Grammars are written by humans and therefore contain some structures (intermediary layers) inside of them that help a human brain to understand it better.
+However, these structures add unnecessary levels to its syntax hierarchy which lead to problems when using this language inside MPS.
 The input grammar (EBNF, ANTLR) serves a little bit different purpose than MPS language, and the way grammar rules are usually written down causes some problems that we had to overcome in order to recreate the language inside MPS.
 Note that the challenges and problems are not specific to MPS --- they are common for everyone tackling a similar problem.
+In the rest of this section, we describe our solution to this problem/challenge.
 
 We are going to describe two different approaches that we designed --- the straightforward approach (Section~\ref{sect:straightforward_approach}) and the shortcut approach (Section~\ref{sect:shortcut_approach}).
 We will describe two possible approaches that we developed in Section X and Section Y, respectively.
@@ -396,6 +367,8 @@ The effect of insertion must be fully reversed when the user wants to delete som
 
 \subsection{Editor}
 
+\todo{Definition of projectional editors is only partially automated. We do a lot of mundane and time-consuming work connected to creating projectional editors.}
+
 When all types of AST nodes in the language are created, the next step is to define their visual representation in the projectional editor.
 As stated before (in Section X (about JetBrains MPS, part of background)), MPS uses a cellular system that allows placing node's properties and children into a table-like arrangement.
 Cells of different types are available --- for storing property values, references to child nodes, and keywords (string literals), and also cells that influence layout (e.g., indentation).
@@ -403,8 +376,9 @@ Cells of different types are available --- for storing property values, referenc
 The purpose (goals) of this (third) step is to create the editor aspect for each language element.
 It should project all attributes of the element --- name, properties, children, and so on --- using the respective cell types.
 
+The main problems/challenges in the process of definition of projectional editors, also/again related to input grammars, are code layout is whitespace (editor aspect).
+As we already said in the introduction, one of the biggest challenges/problems that arise here is that the grammar description of a language (the description of a language in the form of a grammar) does not hold any information about the code layout.
 The main challenge (problem) here is that an input grammar (ANTLR) does not provide/give any help/aid/information regarding the code layout.
-As we already said in the introduction, one of the biggest challenges/problems that arise here is that the grammar description of a language does not hold any information about the code layout.
 The structural rules in the grammar only tell us, what the syntax tree looks like and how the code is broken into nodes.
 In particular, the grammar says nothing about indentation, line breaks, and another formatting.
 

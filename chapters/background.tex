@@ -150,6 +150,7 @@ TextGen aspect for each AST node (concept of the language) has to be defined usi
 Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:if_statement_textgen}).
 
 \subsection{Related Projects}
+\label{sect:RELATED}
 
 The BaseLanguage~\cite{ref:BASELANG} is an almost full port of the Java language, extended with MPS-specific features.
 It was created manually by JetBrains, and it is still undergoing changes as Java itself is evolving.
@@ -172,6 +173,8 @@ First, the PE parser is used to load an input PE file and build its intermediate
 Then, all the concepts (AST nodes) and their aspects are created inside MPS.
 The information about the code layout, extracted from the PE file, is used when generating the projectional editor for every AST node.
 
+The main disadvantage of the PE4MPS approach is that it only shifts the tedious manual work from creating projectional editors in the MPS IDE to writing PE grammars in plain text.
+Usage of a standard text editor is inferior (and much more error-prone) with respect to MPS, which has been designed for the purpose of specifying the code layout and provides lot of support to developers.
 Another limitation of PE4MPS is that it does not implement the full ANTLR syntax.
 Every grammar might require non-trivial adjustments before it can be processed using the PE4MPS tool.
 To compare, the goals behind our INGRID approach are (1) to enable import of as many languages as possible out-of-the-box with maximal automation and (2) to adopt the full specification of every imported language.
