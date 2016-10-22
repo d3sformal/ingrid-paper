@@ -1,4 +1,4 @@
-\section{Constructing Languages in MPS}
+\section{Creating Language Definition in MPS}
 \label{sect:LANGDEF}
 
 The proposed INGRID method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
@@ -13,6 +13,51 @@ Therefore, the resulting MPS language typically still has to be adjusted manuall
 
 Our approach differs from the related projects (Section~\ref{sect:RELATED}) especially in the level of automation. It also has much better support for the definition of Editor and TextGen.
 
+\subsection{Running Example}
+
+We will describe the INGRID method using the example of a simplified XML language that is defined in Figure~\ref{fig:SIMPLEXML}.
+The \emph{SimpleXML} language is small but complex enough to be used for illustration of the main challenges and behavior of the proposed algorithms.
+
+\begin{figure*}[ht]
+\centering
+\begin{framed}
+\begin{alltt}
+\textbf{grammar} \textit{SimpleXML};
+\antlrparserrule{document}  : \antlrparserrule{prolog}? \antlrparserrule{comment}? \antlrparserrule{element} ;
+\antlrparserrule{prolog}    : \antlrliteral{<?xml } \antlrparserrule{attrib}* \antlrliteral{?>} ;
+\antlrparserrule{comment}   : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
+\antlrparserrule{element}   : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{/>} ;
+\antlrparserrule{attrib}    : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT} \antlrliteral{"} ;
+\antlrparserrule{content}   : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
+\antlrlexerrule{Name}      : \antlrlexerrule{NameStartChar} \antlrlexerrule{NameChar}* ;
+\textbf{fragment}
+\antlrlexerrule{DIGIT}     : \antlrregex{[0-9]} ;
+\textbf{fragment}
+\antlrlexerrule{NameChar}  : \antlrlexerrule{NameStartChar} | \antlrliteral{-} | \antlrliteral{\_} | \antlrliteral{.} | \antlrlexerrule{DIGIT} ;
+\textbf{fragment}
+\antlrlexerrule{NameStartChar} : \antlrregex{[:a-zA-Z]} ;
+\antlrlexerrule{TEXT}      : \antlrregex{~[<"]*} ;
+\antlrlexerrule{CDATA}     : \antlrliteral{<![CDATA[} \antlrregex{.*?} \antlrliteral{]]>} ;
+\end{alltt}
+\end{framed}
+\caption{Grammar of the SimpleXML language in the ANTLR v4 notation}
+\label{fig:SIMPLEXML}
+\end{figure*}
+
+The grammar of SimpleXML contains elements of the kinds that are listed below.
+Each color in Figure~\ref{fig:SIMPLEXML} corresponds to a different kind in a way that is indicated by the list item headers.
+\begin{itemize}
+	\item \textbf{ANTLR v4 keywords} are required by the notation.
+	\item \antlrparserrule{\textbf{Parser rules}} describe the structure of a language.
+		Alternatives on the right side of a rule are separated by the pipe character ($|$).
+	\item \antlrlexerrule{\textbf{Lexer rules}} describe terminal symbols that the parser matches against the input string.
+		A terminal symbol can be encoded as a string value or using a regular expression.
+		The \textbf{fragment} keyword states that the lexer rule just brings more clarity into the notation but it is not visible in the parser output.
+	\item \antlrliteralnoap{\textbf{String literals}}, always written inside of a pair of single quote marks, also represent terminal symbols, but by exact match to a string constant.
+	\item \antlrregex{\textbf{Regular expressions}} describe string tokens to be matched against regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
+\end{itemize}
+Elements on the right side of a rule can be annotated with standard EBNF operators (?+*) that specify the allowed number of occurrences.
+
 
 
 
@@ -20,62 +65,6 @@ Our approach differs from the related projects (Section~\ref{sect:RELATED}) espe
 % TODO continue from here
 
 
-
-\subsection{Running Example}
-
-We illustrate the main steps of the INGRID method on the example of a simplified XML language, which is defined below (in Figure XY).
-
-\todo{Pouzit jazyk SimpleXML na running exaple.}
-\PV{Dalsi veta asi prijde niz?}
-
-We decided to use SimpleXML because it is small enough to fit here, but still can be used to illustrate the main challenges and our solution
-
-Throughout the whole paper, we will be using one example language to illustrate main challenges and our solution.
-The language is a simplified version of XML. We call it \emph{SimpleXML}.
-We created the grammar of the language by taking the official XML ANTLRv4 grammar\footnote{https://github.com/antlr/grammars-v4/tree/master/xml} and stripped it down to eliminate/avoid some not so interesting (advanced) features such as XML entities.
-Below in Figure X, you can find the grammar of the SimpleXML language in the ANTLRv4 notation.
-
-\begin{figure*}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\textbf{grammar} \textit{SimpleXML};
-	\antlrparserrule{document}  : \antlrparserrule{prolog}? \antlrparserrule{comment}? \antlrparserrule{element} ;
-	\antlrparserrule{prolog}    : \antlrliteral{<?xml } \antlrparserrule{attrib}* \antlrliteral{?>} ;
-	\antlrparserrule{comment}   : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
-	\antlrparserrule{element}   : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{/>} ;
-	\antlrparserrule{attrib}    : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT} \antlrliteral{"} ;
-	\antlrparserrule{content}   : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
-	\antlrlexerrule{Name}      : \antlrlexerrule{NameStartChar} \antlrlexerrule{NameChar}* ;
-	\textbf{fragment}
-	\antlrlexerrule{DIGIT}     : \antlrregex{[0-9]} ;
-	\textbf{fragment}
-	\antlrlexerrule{NameChar}  : \antlrlexerrule{NameStartChar} | \antlrliteral{-} | \antlrliteral{\_} | \antlrliteral{.} | \antlrlexerrule{DIGIT} ;
-	\textbf{fragment}
-	\antlrlexerrule{NameStartChar} : \antlrregex{[:a-zA-Z]} ;
-	\antlrlexerrule{TEXT}      : \antlrregex{~[<"]*} ;
-	\antlrlexerrule{CDATA}     : \antlrliteral{<![CDATA[} \antlrregex{.*?} \antlrliteral{]]>} ;
-\end{alltt}
-\end{framed}
-\caption{SimpleXML grammar}
-\end{figure*}
-
-We have colored the grammar so it is easier to find the way around it (to make navigation easier).
-The grammar contains following basic elements:
-
-\begin{itemize}
-	\item \textbf{ANTLRv4 keywords} -- In black, they are required by the specification.
-	\item \antlrparserrule{\textbf{Parser rules}} -- Stated in blue, they are the rules describing language's structure.
-		The alternatives (that the element on the left side may break into) are separated by the pipe ($|$) character.
-	\item \antlrlexerrule{\textbf{Lexer rules}} -- In yellow, they are rules describing terminal symbols that the parser is matching against the input.
-		Terminals are encoded as string values and regular expressions.
-		The \textbf{fragment} keyword states that the lexer sub-rule is just a helper rule that brings more clarity into the notation but is not visible in the parser output.
-	\item \antlrliteralnoap{\textbf{String values (literals)}} -- In red, always inside of a pair of apostrophes, they are similar to lexer rules.
-		They describe a terminal string, not using regular expressions but by an exact string match.
-	\item \antlrregex{\textbf{Regular expressions}} -- Colored in green, they describe a string token to be matched using a regular expression with the special ANTLRv4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
-	\item \textbf{Rule operators (?+*)} - Left in black, following any element, they quantify the number of occurrences the prepending element can appear in.
-		These operators can also be prepended by an asterisk (*), meaning they are non-greedy.
-\end{itemize}
 
 \subsection{Parsing (the) Grammar}
 
