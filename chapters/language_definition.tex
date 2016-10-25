@@ -5,7 +5,7 @@ The proposed INGRID method accepts grammars in the ANTLR v4 notation~\cite{ref:A
 All widely used programming languages have their syntax defined using this notation~\footnote{https://github.com/antlr/grammars-v4}.
 Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
 
-The process of MPS language construction, as performed by INGRID, consists of four phases --- the first is parsing of the input grammar, which is followed by definition of the essential aspects (Structure, Editor, and TextGen).
+The process of MPS language construction, as performed by INGRID, consists of four phases --- the first is parsing of the input grammar, which is followed by definition of the essential aspects of the language (Structure, Editor, and TextGen).
 Each of the phases 2-4 is exclusively and fully responsible for one aspect.
 
 INGRID is currently able to create (i) a full Structure aspect for each element (type of an AST node) of the given language, (ii) a very basic Editor, and (iii) a basic TextGen aspect.
@@ -58,7 +58,7 @@ Each color in Figure~\ref{fig:SIMPLEXML} corresponds to a different kind in a wa
 \end{itemize}
 Elements on the right side of a rule can be annotated with standard EBNF operators (\code{?}, \code{+}, \code{*}) that specify the allowed number of occurrences.
 
-\subsection{Parsing Input Grammar}
+\subsection{Phase 1: Parsing Input Grammar}
 
 The first phase in the process of MPS language construction is parsing of the input grammar that is defined using the ANTLR v4 notation.
 An output of this phase is an AST representing the grammar.
@@ -110,6 +110,19 @@ The output of \texttt{Flatten(Name)}, i.e. application of the algorithm to the \
 It defines the syntactically valid identifiers of elements and attributes in SimpleXML.
 Each identifier must begin with a letter, followed by any combination of letters, digits, underscore, dash, or a dot.
 
+\subsection{Phase 2: Structure}
+
+In the next phase, the complete structure of the MPS language is automatically generated from the AST that represents syntax of the input language.
+Elements of the Structure aspect are derived from the AST nodes, and then linked appropriately.
+Therefore, structure of the MPS language is usually similar to the original ANTLR grammar.
+
+When designing the process for transforming AST nodes (i.e., grammar rules) into the MPS language structure, we faced several challenges.
+The main challenge related to the structure, as we already mentioned in the introduction, is that a grammar typically contains rules that do not directly correspond to programming language constructs.
+Such rules exist at the intermediate layers of a syntax hierarchy, and their main purpose is to enable easier understanding of the grammar by humans.
+We show examples illustrating this problem later, in the subsections where we describe our solution.
+Nevertheless, presence of the intermediate layers significantly complicates usage of the given language in MPS, and the layers are actually not necessary for construction of an MPS language.
+
+We have designed two approaches to eliminate the unnecessary layers during the process of creating the Structure aspect --- the \emph{straightforward} approach (Section~\ref{sect:STRAIGHTFWD}), and the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}) that is more complex and builds upon the first one.
 
 
 
@@ -118,30 +131,6 @@ Each identifier must begin with a letter, followed by any combination of letters
 % TODO continue from here
 
 
-
-\subsection{Structure}
-
-\todo{We import/generate the complete/full language structure fully automatically.}
-
-Now, as the next step, we need to translate/transform the AST (the types of AST nodes) derived from the input grammar into elements of the structure aspect of the MPS language definition (into types of AST nodes), and linking the nodes appropriately.
-
-The goal of this second step is to translate (transfer) the syntax (structure) of the input language that is captured by the grammar (ANTLR), into the MPS structure aspect.
-The structure of the MPS language is somewhat similar to the grammar.
-This is (the part) where INGRID spares the user from many hours of tedious and sometimes quite challenging work.
-The process of transferring grammar rules into the structure of a MPS language presents/involves some interesting challenges.
-
-As we already indicated in the introduction, the main problem/difficulty/challenge related to Structure (creating the structure) is that a grammar typically contains many rules that do not directly correspond to AST nodes and programming language constructs.
-Challenges/issues related to input grammars --- intermediate rules in the syntax hierarchy that allow humans to understand the grammar better (structure aspect/component).
-There is a challenge/issue that is related to construction of the structure aspect.
-Grammars are written by humans and therefore contain some structures (intermediary layers) inside of them that help a human brain to understand it better.
-However, these structures add unnecessary levels to its syntax hierarchy which lead to problems when using this language inside MPS.
-The input grammar (EBNF, ANTLR) serves a little bit different purpose than MPS language, and the way grammar rules are usually written down causes some problems that we had to overcome in order to recreate the language inside MPS.
-Note that the challenges and problems are not specific to MPS --- they are common for everyone tackling a similar problem.
-In the rest of this section, we describe our solution to this problem/challenge.
-
-We are going to describe two different approaches that we designed --- the straightforward approach (Section~\ref{sect:straightforward_approach}) and the shortcut approach (Section~\ref{sect:shortcut_approach}).
-We will describe two possible approaches that we developed in Section X and Section Y, respectively.
-\todo{Rict neco jako ze ten druhy, slozitejsi, approach vlastne rozsiruje ten prvni, jednodussi.}
 
 However, before focusing on the two approaches, we must describe the basic principles of translation from the AST representing the grammar to the MPS structure, which are common to both approaches.
 The structure is created according to object-oriented principles.
@@ -176,7 +165,7 @@ We explain later how the references to parser rules (\antlrparserrule{attribute}
 The main/key difference between these two lies in the way we create children fields for parser rules and in the way we are going to link them together using interface concepts.
 
 \subsubsection{The Straightforward Approach}
-\label{sect:straightforward_approach}
+\label{sect:STRAIGHTFWD}
 
 The key idea of this approach is that, for each rule with more than one alternative, an interface node is created.
 Consider the \antlrparserrule{content} rule from our SimpleXML language (Figure~\ref{fig:contentrule}).
@@ -252,7 +241,7 @@ This may lead to confusion on the user's part.
 The layer problem is solved/addressed by the second approach, which we describe in the next subsection.
 
 \subsubsection{The Shortcut Approach}
-\label{sect:shortcut_approach}
+\label{sect:SHORTCUT}
 
 The key idea of this approach is to identify rules and nodes that are at the end of the (derivation, inheritance) chain, and offer them directly to the user through the auto-completion menu.
 We call such \emph{end rules} and \emph{end nodes}, respectively, because they cannot transparently break into more rules/nodes.
