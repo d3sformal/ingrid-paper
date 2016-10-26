@@ -116,14 +116,108 @@ In the next phase, the complete structure of the MPS language is automatically g
 Elements of the Structure aspect are derived from the AST nodes, and then linked appropriately.
 Therefore, structure of the MPS language is usually similar to the original ANTLR grammar.
 
-When designing the process for transforming AST nodes (i.e., grammar rules) into the MPS language structure, we faced several challenges.
+When designing the process for translating AST nodes (i.e., grammar rules) into the MPS language structure, we faced several challenges.
 The main challenge related to the structure, as we already mentioned in the introduction, is that a grammar typically contains rules that do not directly correspond to programming language constructs.
-Such rules exist at the intermediate layers of a syntax hierarchy, and their main purpose is to enable easier understanding of the grammar by humans.
-We show examples illustrating this problem later, in the subsections where we describe our solution.
-Nevertheless, presence of the intermediate layers significantly complicates usage of the given language in MPS, and the layers are actually not necessary for construction of an MPS language.
+Such rules exist at the intermediate layers of a syntax hierarchy.
+Their main purpose is to enable easier understanding and maintenance of the grammar by humans.
+However, presence of the intermediate layers significantly complicates usage of the given language in MPS, and the layers are actually not necessary for construction of an MPS language.
+We show examples illustrating this problem, which we call a \emph{layer problem}, later in the subsection where we describe our solution.
 
-We have designed two approaches to eliminate the unnecessary layers during the process of creating the Structure aspect --- the \emph{straightforward} approach (Section~\ref{sect:STRAIGHTFWD}), and the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}) that is more complex and builds upon the first one.
+As a part of the INGRID method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}).
+However, before focusing on the intermediate layers and the shortcut approach, we describe the basic principles of translation from the AST into the language structure.
 
+Each concept of the language (i.e., every AST node) is represented by an object that may have a parent, some children, and properties of any data type.
+In addition, the object may implement any number of interfaces, and it may also contain references to objects representing other AST nodes.
+The parent-child relationships between objects that make the Structure aspect are derived from rules of the grammar (i.e., from the structure of the AST).
+For each rule, the object corresponding to the left-hand side is in the parent-child relationships with sets of objects that represent language elements referenced by the right-hand side.
+If a rule has multiple alternatives, then a distinct object (MPS concept) has to be created in the structure for each alternative.
+The name of a concept (object) in MPS is composed from (1) the name of the AST node, which is equivalent to the string encoding of the left-hand side of the corresponding rule, and (2) the number indicating the position of the respective alternative on the right-hand side of the rule.
+
+\begin{figure}[ht]
+\centering
+\begin{alltt}
+\small
+\mpsstkeyword{concept} Element\_1 \mpsstkeyword{extends} BaseConcept
+        \mpsstkeyword{implements} IContent, IElement
+
+  \mpsstkeyword{instance can be root:} false
+  \mpsstkeyword{alias:} \mpsstalias{< > </ >}
+  \mpsstkeyword{short description:} \mpsstalias{Element}
+
+  \mpsstkeyword{properties:}
+  \mpsstproperty{Name\_1} : Name
+  \mpsstproperty{Name\_2} : Name
+  
+  \mpsstkeyword{children:}
+  \mpsstproperty{Attribute\_1} : Attribute[\mpsstcardinality{0..n}]
+  \mpsstproperty{Content\_2}   : IContent[\mpsstcardinality{0..n}]
+\end{alltt}
+\caption{Structure aspect of the \code{Element{\_}1} concept}
+\label{fig:ELEMENTSTRUCT}
+\end{figure}
+
+Consider the parser rule \antlrparserrule{element} from the grammar in Figure~\ref{fig:SIMPLEXML}.
+Its first alternative represents the full XML element with content.
+Figure~\ref{fig:ELEMENTSTRUCT} shows the Structure aspect for the MPS concept (object) named \code{Element{\_}1} that corresponds to the alternative.
+The object contains two properties, one for each reference to the lexer rule \antlrlexerrule{Name}.
+Values of these properties should be restricted using the regular expression that corresponds to the \antlrlexerrule{Name} rule, but this is left to the human user.
+String literals, such as the keyword \textbf{for}, are omitted because they will be defined only in the Editor aspect for this concept.
+
+References to other parser rules are captured by pointers to child objects.
+The types of child objects, such as \code{IContent} in the \code{Element{\_}1} concept, are determined as follows.
+Consider the \antlrparserrule{content} rule from the SimpleXML language.
+We show just the relevant fragment of the grammar again in Figure~\ref{fig:CONTENTRULE}.
+An object corresponding to any one of the four alternatives could be the actual value anywhere the \antlrparserrule{content} rule is referenced.
+
+\begin{figure}[ht]
+\centering
+\begin{alltt}
+\small
+\antlrparserrule{content} : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
+\end{alltt}
+\caption{Parser rule \antlrparserrule{content}}
+\label{fig:CONTENTRULE}
+\end{figure}
+
+Our solution is to use interface concepts.
+For each rule with more than one alternative on the right side, i.e. for each AST node with more than one child, first an interface concept is defined in the MPS language structure, and then one object that implements the given interface is created for each alternative.
+The resulting fragment of the language structure looks like the one in Figure~\ref{fig:ICONTENTITF}.
+It contains one interface \mpsinterface{IContent} that is implemented by four object concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
+
+\begin{figure}[ht]
+\centering
+\begin{alltt}
+\small
+\mpsinterface{IContent} : \mpsconcept{Content{\_}1} | \mpsconcept{Content{\_}2} |
+           \mpsconcept{Content{\_}3} | \mpsconcept{Content{\_}4}
+\end{alltt}
+\caption{MPS interface \code{IContent} and the types of implementing objects}
+\label{fig:ICONTENTITF}
+\end{figure}
+
+Now we can illustrate the layer problem on the behavior of auto-completion in MPS.
+Suppose that a user is creating a new document in the SimpleXML language, just inserted a fresh node of the type \mpsconcept{Element{\_1}} (see above), and would like to insert another nested XML element inside.
+The auto-completion mechanism of MPS offers four options that are displayed in the left part of Figure~\ref{fig:LAYERPROBLEM}.
+Each option represents one of the MPS concepts that implement the interface \mpsinterface{IContent}, and therefore also one alternative of the \antlrparserrule{content} rule.
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[scale=0.5]{./images/layer_problem.png}
+	\caption{Layer problem in auto-completion}
+	\label{fig:LAYERPROBLEM}
+\end{figure*}
+
+However, in order to correctly insert another nested element, a user has to perform two steps:
+\begin{enumerate}
+	\item Insert an object (node) of the type \mpsconcept{Content{\_}2} inside the \mpsconcept{Element{\_}1} node. The \mpsconcept{Content{\_}2} object has only a single child node of the interface type \mpsinterface{IElement}.
+	\item Then, the user must trigger the auto-complete again and insert either an \mpsconcept{Element{\_}1} node or an \mpsconcept{Element{\_}2} node into the \mpsconcept{Content{\_}2} node. See the right part of Figure~\ref{fig:LAYERPROBLEM}.
+\end{enumerate}
+The main difficulty here is that, in the first step, the user has to (i) either correctly guess what option offered by the auto-complete menu to select, or (2) to remember the order of alternatives in the grammar rule.
+
+Similarly, if the user would like to replace a nested \mpsconcept{Element{\_}1} node with, for example, an XML comment (represented by the \mpsconcept{Comment} node), then both intermediary layers have to be deleted before she gets back to the original selection among the concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
+
+Intermediary layers have no visual appearance, and therefore it is very difficult for users to see what is actually happening and they may get confused very easily.
+The layer problem is addressed by the shortcut approach, which we describe in the next subsection.
 
 
 
@@ -132,116 +226,11 @@ We have designed two approaches to eliminate the unnecessary layers during the p
 
 
 
-However, before focusing on the two approaches, we must describe the basic principles of translation from the AST representing the grammar to the MPS structure, which are common to both approaches.
-The structure is created according to object-oriented principles.
-Each node (element) is represented by an object (and can be treated as such) that may have a parent node, child nodes, and properties of any data type (similar to fields), it may implement any number of interfaces, and it may also hold references to other nodes.
-For every rule of the grammar (for every node in the grammar AST) that breaks into more/multiple alternatives, we must create a node in the MPS structure AST for each alternative of the grammar (every child node).
-Names of the nodes for alternatives are composed from the name of the rule and a number indicating the order of appearance in the grammar.
-For example, consider the fragment of the grammar of the SimpleXML language in Figure~\ref{fig:xmlelementrule}.
-Results of this step for the first alternative, which represents the represents the full XML tag with content, can be seen in Figure~\ref{fig:element_node_common}.
-
-\begin{figure*}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\antlrparserrule{element} : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrap<\antlrap Name attrib* \antlrap/>\antlrap ;
-\end{alltt}
-\end{framed}
-\caption{Element rule from the SimpleXML grammar}
-\label{fig:xmlelementrule}
-\end{figure*}
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.75]{./images/element_node_common.png}
-	\caption{Resulting Element{\_}1 node}
-	\label{fig:element_node_common}
-\end{figure}
-
-String literals (e.g., keywords such as \textbf{for}) are omitted/skipped because they will appear only in the corresponding projectional editor.
-The node named \mpsconcept{Element{\_}1} contains two properties, one for each reference to the lexer rule \antlrlexerrule{Name} inside the first alternative of the \antlrparserrule{element} rule,
-Value of the property will be restricted using the regular expression representing the \antlrlexerrule{Name} rule.
-We explain later how the references to parser rules (\antlrparserrule{attribute} and \antlrparserrule{content}) as this is where the approaches differ.
-The main/key difference between these two lies in the way we create children fields for parser rules and in the way we are going to link them together using interface concepts.
-
-\subsubsection{The Straightforward Approach}
-\label{sect:STRAIGHTFWD}
-
-The key idea of this approach is that, for each rule with more than one alternative, an interface node is created.
-Consider the \antlrparserrule{content} rule from our SimpleXML language (Figure~\ref{fig:contentrule}).
-
-\begin{figure}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\antlrparserrule{content}    :   \antlrlexerrule{TEXT}
-           |   \antlrparserrule{element}
-           |   \antlrparserrule{comment}
-           |   \antlrlexerrule{CDATA}
-           ;
-\end{alltt}
-\end{framed}
-\caption{Content rule}
-\label{fig:contentrule}
-\end{figure}
-
-Any of the four nodes corresponding to alternatives could appear anywhere the \antlrparserrule{content} rule is referenced.
-So we will create one interface node, and then for each alternative of this rule we create one node that implements the interface.
-The resulting fragment of structure will look like the one in Figure~\ref{fig:icontentitf}.
-
-\begin{figure}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\mpsinterface{IContent}   :   \mpsconcept{Content{\_}1}
-           |   \mpsconcept{Content{\_}2}
-           |   \mpsconcept{Content{\_}3}
-           |   \mpsconcept{Content{\_}4}
-\end{alltt}
-\end{framed}
-\caption{IContent interface}
-\label{fig:icontentitf}
-\end{figure}
-
-References to other parser rules are captured by links to children (interfaces or object nodes) in the AST nodes.
-For the \antlrparserrule{element} rule that is referencing the \antlrparserrule{content} rule, defined as in Figure~\ref{fig:xmlelementrule}, we get the AST node representing the first alternative that is shown in Figure~\ref{fig:element_node_full}.
-There is one \mpsinterface{IElement} interface node that is implemented by two object nodes \mpsconcept{Element{\_}1}, \mpsconcept{Element{\_}2}.
-The node \mpsconcept{Element{\_}1} has two child links pointing to \mpsinterface{IAttribute} and \mpsinterface{IContent}.
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[scale=0.75]{./images/element_node_full.png}
-	\caption{Element{\_}1 node's structure aspect}
-	\label{fig:element_node_full}
-\end{figure}
-
-A problem with this approach, which we call \emph{the layer problem}, is related to the grammar rules (and corresponding AST nodes) that represent intermediary layers created only to make the grammar more readable.
-The intermediary layers are created by authors of the grammars in order to make them more readable and more easily (better) maintainable.
-We illustrate this problem (and explain it) on the behavior of auto-completion in MPS.
-Imagine there is a freshly inserted \mpsconcept{Element{\_}1} node (representing the full XML element as is stated in the first alternative of the \antlrparserrule{element} parser rule).
-Now we would like to insert another nested XML element inside.
-MPS auto-completion mechanism would give us four options that are captured in the left part of Figure~\ref{fig:layer_problem}.
-This is because there exist four nodes (objects) that implement the \mpsinterface{IContent} interface as per each alternative of the rule.
-
-\begin{figure*}[ht]
-	\centering
-	\includegraphics[scale=0.5]{./images/layer_problem.png}
-	\caption{Layer problem in auto-completion}
-	\label{fig:layer_problem}
-\end{figure*}
-
-However, in order to correctly insert another nested element inside, a user would have to first insert the \mpsconcept{Content{\_}2} node inside \mpsconcept{Element{\_}1} that has an \mpsinterface{IElement} child inside (and nothing else).
-Then, as the second step, a user would invoke/trigger/call for the auto-complete again and insert either \mpsconcept{Element{\_}1} or \mpsconcept{Element{\_}2} inside \mpsconcept{Content{\_}2}.
-This mean that a user would have to go through two steps, and in the first stepe either correctly guess (or remember the grammar rule's alternative order), which option/item offered by the auto-complete menu to select.
-
-Similarly, if one would decide to replace the nested \mpsconcept{Element{\_}1} node with, let's say, an XML comment (a \mpsconcept{Comment} node), we need to delete both intermediary layers before we get back to the original \mpsconcept{Content{\_}X} selection (crossroads).
-The user cannot really see what is happening, since the intermediary level has no appearance or indicator.
-This may lead to confusion on the user's part.
-
-The layer problem is solved/addressed by the second approach, which we describe in the next subsection.
-
 \subsubsection{The Shortcut Approach}
 \label{sect:SHORTCUT}
+
+\todo{Shortcut approach differs in the way references to children (parser rules) are created.}
+\todo{The main/key difference between these two lies in the way we create children fields for parser rules and in the way we are going to link them together using interface concepts.}
 
 The key idea of this approach is to identify rules and nodes that are at the end of the (derivation, inheritance) chain, and offer them directly to the user through the auto-completion menu.
 We call such \emph{end rules} and \emph{end nodes}, respectively, because they cannot transparently break into more rules/nodes.
@@ -274,7 +263,6 @@ The end nodes are highlighted using the bold font.
 
 Figure XY shows the algorithm (in pseudocode) that finds all end rules for a given parser rule.
 
-% TODO pouzit standardni environment pro algoritmy
 \begin{figure*}[ht]
 \centering
 \begin{framed}
@@ -324,7 +312,7 @@ This can be technically done in two ways --- (1) through custom auto-complete me
 Shortcuts have to be considered when inserting nodes but also when deleting them, i.e. the whole chain (shortcut path) consisting of possibly multiple intermediary AST nodes (levels) up to the end node must be added, respectively deleted.
 The effect of insertion must be fully reversed when the user wants to delete some end node (the given end node).
 
-\subsection{Editor}
+\subsection{Phase 3: Editor}
 
 \todo{Definition of projectional editors is only partially automated. We do a lot of mundane and time-consuming work connected to creating projectional editors.}
 
@@ -376,7 +364,7 @@ In practice, however, the user still has to tweak the editor aspect --- to adjus
 But it takes a very short time to reach optimal results (because MPS allows doing this very efficiently), as we show on the example of importing the JavaScript language~\cite{ref:javascript} and manually adjusting all editors that needed it, all that in a less than hour time.
 More details are provided later in Section X (examples) --- there we describe this issue further.
 
-\subsection{Text Generation}
+\subsection{Phase 4: Text Generation}
 
 The final/last, fourth step, is to create the TextGen aspect for each AST node.
 The purpose of the TextGen aspect is to define, for a language element (AST node), what code in the BaseLanguage will be generated out of it, once we want to compile and run our MPS code/program.
