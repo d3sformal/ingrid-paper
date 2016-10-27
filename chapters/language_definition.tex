@@ -222,7 +222,7 @@ The layer problem is addressed by the shortcut approach, which we describe in th
 \subsubsection{The Shortcut Approach}
 \label{sect:SHORTCUT}
 
-The key idea of this approach is to avoid all the intermediary layers (nodes) in the syntax tree by considering just the leaf nodes.
+The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree and consider just the leaf nodes.
 
 % TODO put here the example from below
 
@@ -233,20 +233,10 @@ When given a particular AST node $n$ (or a rule of the grammar) as input, the pa
 
 
 
-
-
 % TODO continue from here
 
 
 
-\todo{Shortcut approach differs in the way references to children (parser rules) are created.}
-\todo{The main/key difference between these two lies in the way we create children fields for parser rules and in the way we are going to link them together using interface concepts.}
-
-The key idea of this approach is to identify rules and nodes that are at the end of the (derivation, inheritance) chain
-
-We call such \emph{end rules} and \emph{end nodes}, respectively, because they cannot transparently break into more rules/nodes.
-
-End nodes and rules are then directly offered to the user through the auto-completion menu.
 
 \begin{figure*}[ht]
 \centering
@@ -273,6 +263,12 @@ For example, the \antlrparserrule{content} rule, given in Figure~\ref{fig:conten
 \end{itemize}
 
 The end nodes are highlighted using the bold font.
+
+
+We call the leaf nodes as \emph{end nodes} and \emph{end rules}, respectively, because they cannot transparently break into more rules/nodes.
+
+End nodes and rules are then directly offered to the user through the auto-completion menu.
+
 
 Figure XY shows the algorithm (in pseudocode) that finds all end rules for a given parser rule.
 
