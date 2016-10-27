@@ -219,6 +219,19 @@ Similarly, if the user would like to replace a nested \mpsconcept{Element{\_}1} 
 Intermediary layers have no visual appearance, and therefore it is very difficult for users to see what is actually happening and they may get confused very easily.
 The layer problem is addressed by the shortcut approach, which we describe in the next subsection.
 
+\subsubsection{The Shortcut Approach}
+\label{sect:SHORTCUT}
+
+The key idea of this approach is to avoid all the intermediary layers (nodes) in the syntax tree by considering just the leaf nodes.
+
+% TODO put here the example from below
+
+When given a particular AST node $n$ (or a rule of the grammar) as input, the parser tree (AST) built in the earlier phases is systematically traversed in order to identify each AST node that may appear at the end of a derivation chain from the input node $n$.
+
+
+
+
+
 
 
 
@@ -226,14 +239,14 @@ The layer problem is addressed by the shortcut approach, which we describe in th
 
 
 
-\subsubsection{The Shortcut Approach}
-\label{sect:SHORTCUT}
-
 \todo{Shortcut approach differs in the way references to children (parser rules) are created.}
 \todo{The main/key difference between these two lies in the way we create children fields for parser rules and in the way we are going to link them together using interface concepts.}
 
-The key idea of this approach is to identify rules and nodes that are at the end of the (derivation, inheritance) chain, and offer them directly to the user through the auto-completion menu.
+The key idea of this approach is to identify rules and nodes that are at the end of the (derivation, inheritance) chain
+
 We call such \emph{end rules} and \emph{end nodes}, respectively, because they cannot transparently break into more rules/nodes.
+
+End nodes and rules are then directly offered to the user through the auto-completion menu.
 
 \begin{figure*}[ht]
 \centering
