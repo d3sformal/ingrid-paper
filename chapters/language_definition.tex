@@ -222,12 +222,81 @@ The layer problem is addressed by the shortcut approach, which we describe in th
 \subsubsection{The Shortcut Approach}
 \label{sect:SHORTCUT}
 
-The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree and consider just the leaf nodes.
+The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree and consider just the leaf nodes, e.g., to be directly offered to the user through the auto-completion menu.
+Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, which is given in Figure~\ref{fig:CONTENTRULE} together with rules that determine the relevant fragment of the syntax hierarchy, expands ultimately into the leaf nodes that are highlighted using the bold font in Figure~\ref{fig:CONTENTEXPAND}.
 
-% TODO put here the example from below
+\begin{figure*}[ht]
+\centering
+\begin{framed}
+\begin{alltt}
+  \antlrparserrule{content} : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
+  \antlrparserrule{element} : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{/>} ;
+  \antlrparserrule{comment} : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
+\end{alltt}
+\end{framed}
+\caption{The parser rule \antlrparserrule{content} with other rules that determine the relevant fragment of the syntax hierarchy}
+\label{fig:CONTENTRULE}
+\end{figure*}
 
-When given a particular AST node $n$ (or a rule of the grammar) as input, the parser tree (AST) built in the earlier phases is systematically traversed in order to identify each AST node that may appear at the end of a derivation chain from the input node $n$.
+\begin{figure}[ht]
+\begin{framed}
+\textbf{Content{\_}1} (TEXT) \\
+\ \ \ Content{\_}2 $\rightarrow$ \textbf{Element{\_}1} \\
+\ \ \ Content{\_}2 $\rightarrow$ \textbf{Element{\_}2} \\
+\ \ \ Content{\_}3 $\rightarrow$ \textbf{Comment} \\
+\ \ \ \textbf{Content{\_}4} (CDATA)
+\end{framed}
+\caption{Leaf nodes of the parser tree fragment that has the \antlrparserrule{content} rule as its root}
+\label{fig:CONTENTEXPAND}
+\end{figure}
 
+For the input that consists of a particular AST node $N$ and the grammar rule $R$ that expands $N$, the procedure implementing the shortcut approach systematically traverses the parser tree (AST) built in the earlier phases in order to identify each AST node that may appear at the end of some derivation chain starting by the rule $R$ from the node $N$.
+Such nodes cannot expand further based on any rule in the grammar, and for that reason we call them \emph{end nodes}.
+
+\begin{figure*}[ht]
+\begin{framed}
+\begin{alltt}
+ 1 FindAllPathsToEndNodes(\textit{R}):
+ 2   \textit{CurPath} = empty list of rules and nodes
+ 3   \textbf{return} FindPaths(\textit{R}, \textit{CurPath})
+ 4
+ 5 FindPaths(\textit{R}, \textit{CurPath}):
+ 6  \textit{Paths} = empty list
+ 7  \textbf{for each} alternative \textit{A} \textbf{in} rule \textit{R}:
+ 8    \textit{NewCurPath} = Clone(\textit{CurPath})
+ 9    \textbf{if} \textit{A} contains only a single element \textit{E}:
+10      \textit{NewCurPath}.Add(\(N\sb{E}\)) \textbf{where} \(N\sb{E}\) is the node representing \textit{E}
+11      \textit{P} = FindPaths(\(R\sb{E}\), \textit{NewCurPath}) \textbf{where} \(R\sb{E}\) is the rule that expands \textit{E}
+12      \textit{Paths} = Merge(\textit{Paths}, \textit{P})
+13    \textbf{else}:
+14      \textit{NewCurPath}.Add(\textit{R})
+15      \textit{NewCurPath}.Add(\(N\sb{A}\)) \textbf{where} \(N\sb{A}\) is the node representing \textit{A}
+16      \textit{Paths}.Add(\textit{NewCurPath})
+17  \textbf{return} \textit{Paths}
+\end{alltt}
+\end{framed}
+\caption{Algorithm to find all paths to end nodes for a parser rule}
+\label{fig:SHORTCUTALG}
+\end{figure*}
+
+Figure~\ref{fig:SHORTCUTALG} shows the algorithm that finds all paths to some end node from a given parser rule $R$.
+The algorithm is based on recursive traversal of the parser tree.
+At each level of recursion, it gathers all paths that lead from the current parser rule $R$ to some end node through its alternatives (line~7).
+Two cases may occur:
+\begin{itemize}
+	\item When a particular alternative $A$ of the rule $R$ contains only a single element $E$, and the element is a reference to another parser rule (line 9), the alternative $A$ is an intermediary layer that can be transparently hidden from the user of the MPS language.
+		  A run of the algorithm continues, at line 11, by recursively processing alternatives of the rule corresponding to $E$, which lies at the next level of the parser tree.
+	\item Otherwise, an end node of a derivation chain was found and the recursion stops (lines 13-16).
+\end{itemize}
+By appending the node corresponding to the current alternative (lines 10 and 15) and the rule that leads to the alternative (line 14), the algorithm creates a full path that contains the target end node as the last element of the chain.
+
+We use the name \emph{shortcut approach} for this algorithm, because the paths collected by the algorithm provide shortcuts from the given rule to end nodes, by the virtue of hiding all intermediary layers.
+For example, the result of this algorithm for the \antlrparserrule{content} rule (Figure~\ref{fig:CONTENTRULE}) is the list of five items already shown in Figure~\ref{fig:CONTENTEXPAND}.
+
+The primary use case for shortcuts is to generate options for the auto-completion menus, such that only the end nodes are offered.
+Shortcuts have to be considered not only when nodes are inserted, but also when they are deleted.
+In each case, the whole chain including possibly multiple intermediary AST nodes (up to the end node) must be added, respectively deleted.
+When the user wants to delete some end node from the AST of a program or document written in the MPS language, the effect of an insertion must be fully reversed.
 
 
 
@@ -236,90 +305,6 @@ When given a particular AST node $n$ (or a rule of the grammar) as input, the pa
 % TODO continue from here
 
 
-
-
-\begin{figure*}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\antlrparserrule{content} : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
-	\antlrparserrule{element} : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{/>} ;
-	\antlrparserrule{comment} : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
-\end{alltt}
-\end{framed}
-\caption{Content parser rule with children}
-\label{fig:contentrulewithchildren}
-\end{figure*}
-
-For example, the \antlrparserrule{content} rule, given in Figure~\ref{fig:contentrulewithchildren} together with its child rules, can ultimately expand into following nodes:
-
-\begin{itemize}
-	\itemsep0em
-	\item \textbf{Content{\_}1} (TEXT)
-	\item Content{\_}2 $\rightarrow$ \textbf{Element{\_}1}
-	\item Content{\_}2 $\rightarrow$ \textbf{Element{\_}2}
-	\item Content{\_}3 $\rightarrow$ \textbf{Comment}
-	\item \textbf{Content{\_}4} (CDATA)
-\end{itemize}
-
-The end nodes are highlighted using the bold font.
-
-
-We call the leaf nodes as \emph{end nodes} and \emph{end rules}, respectively, because they cannot transparently break into more rules/nodes.
-
-End nodes and rules are then directly offered to the user through the auto-completion menu.
-
-
-Figure XY shows the algorithm (in pseudocode) that finds all end rules for a given parser rule.
-
-\begin{figure*}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	FindPathsToEndNodes($R$):
-	  Define $L$ as an empty list of list of nodes
-	  Return FindPathsToEndNodes($R$, $L$)
-
-	FindPathsToEndNodes($R$, $L$):
-	  Define $Q$ as list of list of nodes
-	  For each alternative $A$ of rule $R$:
-	    $L1$ = Clone($L$)
-	    If $A$ is a parser rule with only one element $E$:
-	      Let $I$ be interface/concept representing rule $E$
-	      $L1$.Add($I$)
-	      $P$ = FindPathsToEndNodes($E$, $L1$)
-	      $Q$ = Merge($Q$, $P$)
-	    Else
-	      $L1$.Add($R$)
-	      Let $P$ be concept representing $A$
-	      $L1$.Add($P$)
-	      $Q$.Add($L1$)
-	  Return $Q$
-\end{alltt}
-\end{framed}
-\caption{Algorithm for finding end rules}
-\label{fig:shortcut_algorithm}
-\end{figure*}
-
-To find end rules for each parser rule, the algorithm recursively scans through the parser tree that was built before.
-For each parser rule, it tries to find paths leading to some end rule through its alternatives:
-\begin{itemize}
-	\item Whenever it finds an alternative that contains only one element, and this element is a reference to another parser rule, it has found an intermediary level that can be transparently hidden from the user of the language.
-		The process (algorithm) continues by recursively processing alternatives of this "level" rule (since we are not at the end of the chain yet).
-	\item Otherwise, an end rule was found (recursion stops here).
-\end{itemize}
-
-By appending the rule that is leading to current element (line 12) and then appending that alternative's element itself (line 14), we get a path that contains the full path and the target end rule as the last element of the chain.
-The result of this algorithm, for example for the \antlrparserrule{content} rule, equals the listing of the five paths mentioned above.
-
-We do/repeat this for all parser rules and for each rule we get a list of paths that lead from that particular rule to an end node.
-We call these paths as \textbf{shortcuts}, because they provide a shortcut from the rule to the end of the chain.
-Now that we have the shortcuts, we will discuss several ways how to use the shortcuts (them) to improve the MPS language under construction (how to make the language better).
-
-The primary use of shortcuts is to generate options for the auto-completion menus such that only the end nodes are offered.
-This can be technically done in two ways --- (1) through custom auto-complete menus and deletion handlers or (2) by defining a special interface for each rule such that the interface is implemented only by end nodes for the rule.
-Shortcuts have to be considered when inserting nodes but also when deleting them, i.e. the whole chain (shortcut path) consisting of possibly multiple intermediary AST nodes (levels) up to the end node must be added, respectively deleted.
-The effect of insertion must be fully reversed when the user wants to delete some end node (the given end node).
 
 \subsection{Phase 3: Editor}
 
