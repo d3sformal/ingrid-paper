@@ -298,6 +298,42 @@ Shortcuts have to be considered not only when nodes are inserted, but also when 
 In each case, the whole chain including possibly multiple intermediary AST nodes (up to the end node) must be added, respectively deleted.
 When the user wants to delete some end node from the AST of a program or document written in the MPS language, the effect of an insertion must be fully reversed.
 
+\subsection{Phase 3: Editor}
+
+Having the complete structure of the new MPS language, the next phase is to define the visual representation of all concepts (AST nodes) in the projectional editor.
+As we said in Section~\ref{sect:MPS}, MPS uses a cellular system that enables the language developer to arrange the children and properties of an AST node in a table-like manner.
+Cells of different types are supported by MPS --- for storing property values, references to child nodes, and keywords (string literals), and also cells that influence layout (e.g., indentation).
+The specific goal of this phase is to create the Editor aspect for each language concept (element), such that all attributes of the concept --- name, properties, children --- are projected using the respective cell types.
+
+The main problem that we had to address is the absence of information about the code layout and whitespace in the ANTLR grammar of an input language.
+Rules forming the grammar only tell what the syntax tree looks like and how the program code is decomposed into AST nodes.
+Here we present a solution that is only partially automated for reasons explained below.
+
+We experimented with several heuristics to derive a useful code layout, but all of them produced rather suboptimal results.
+However, we observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept that should appear in its visual representation.
+This step can be very easily automated.
+
+Our solution that we implemented in the current version of the INGRID method is to create all the cells and place them in a single row.
+The resulting basic layout is illustrated on the example of the \mpsconcept{Element{\_}1} concept in the upper left corner of Figure~\ref{fig:EDITORADJUST}.
+Further adjustments of the layout, such as indentation and line breaks, can be done very efficiently in the MPS IDE.
+The bottom right part of Figure~\ref{fig:EDITORADJUST} shows a fully customized layout for the \mpsconcept{Element{\_}1} concept.
+
+\begin{figure*}[ht]
+	\centering
+	\includegraphics[scale=0.55]{./images/editor_adjustment.png}
+	\caption{Editor aspect of the \mpsconcept{Element{\_}1} concept}
+	\label{fig:EDITORADJUST}
+\end{figure*}
+
+Based on our experience, it takes a very short time to manually adjust the layout into a form much better than any fully automated heuristic could achieve.
+We expect that a typical user of the INGRID method will be able to use the projectional editor in MPS quite efficiently.
+More details are provided in Section~\ref{sect:EVAL}, including our experience with several mainstream programming languages.
+
+We plan to work on a more automated approach to the definition of Editor aspects in the future, probably using some techniques of machine learning.
+The key idea would be to derive the code layout from a set of valid input source files.
+We believe that the user would have to adjust the editor manually a little bit even in this case, because the results of a machine learning-based approach would not be perfect.
+
+
 
 
 
@@ -306,57 +342,6 @@ When the user wants to delete some end node from the AST of a program or documen
 
 
 
-\subsection{Phase 3: Editor}
-
-\todo{Definition of projectional editors is only partially automated. We do a lot of mundane and time-consuming work connected to creating projectional editors.}
-
-When all types of AST nodes in the language are created, the next step is to define their visual representation in the projectional editor.
-As stated before (in Section X (about JetBrains MPS, part of background)), MPS uses a cellular system that allows placing node's properties and children into a table-like arrangement.
-Cells of different types are available --- for storing property values, references to child nodes, and keywords (string literals), and also cells that influence layout (e.g., indentation).
-
-The purpose (goals) of this (third) step is to create the editor aspect for each language element.
-It should project all attributes of the element --- name, properties, children, and so on --- using the respective cell types.
-
-The main problems/challenges in the process of definition of projectional editors, also/again related to input grammars, are code layout is whitespace (editor aspect).
-As we already said in the introduction, one of the biggest challenges/problems that arise here is that the grammar description of a language (the description of a language in the form of a grammar) does not hold any information about the code layout.
-The main challenge (problem) here is that an input grammar (ANTLR) does not provide/give any help/aid/information regarding the code layout.
-The structural rules in the grammar only tell us, what the syntax tree looks like and how the code is broken into nodes.
-In particular, the grammar says nothing about indentation, line breaks, and another formatting.
-
-We tackled this problem by designing an automated learning approach, which generates the layout using several heuristics.
-We present our solution to this problem. It involves some intermediary step whose purpose is to generate the necessary information.
-Our solution is semi-automated (using some heuristics) --- user's help in an interactive manner is needed for final touches (polishing).
-It works as follows.
-
-As input for the algorithm (learning approach), the user has to supply to a set of valid source files written in the imported language, together with the grammar file.
-These four steps/operations are then performed.
-\begin{enumerate}
-	\item Automated generation of an ANTLR parser for the input language using the ANTLR library.
-	\item Modify/extend the code of the generated parser in order to record some additional information.
-	\item Compile the parser into an executable form.
-	\item Use the parser to parse the supplied source code files and extract information about the layout of the code during this process.
-\end{enumerate}
-This way, the imported/created MPS language would inherit the code style/layout directly from the user, i.e. it would learn directly from the code.
-In step 2, the parser is modified such that it remembers/stores the line number and column for each parsed token.
-This is very efficient and it enables to create a nice layout.
-From the line number, the algorithm can easily determine whether there is a line break between some tokens (statements, language elements).
-The column number can be then used to detect indentation.
-However, this approach is still heuristic and may give imprecise (suboptimal) results --- mainly because it is not always possible to precisely match language elements (in the MPS structure) with all tokens that belong to it.
-Note also that quality of the extracted information always depends on the amount of the source code files provided (available, supplied) and on how representative the set of source code files actually is.
-When our algorithm cannot determine some custom layout, it just creates all the cells (content) of the editor aspect and arranges them in a single row.
-Figure~\ref{fig:editor_adjustment} XY shows the difference between the default single-row layout (in the upper left corner) and the fully customized layout (in the bottom right corner) for the \mpsconcept{Element{\_}1} node.
-
-% TODO smazat cervenou sipku z toho obrazku a mozna rozdelit na dve casti (vlozit tam caru): default single-row code layout, optimal fully customized layout
-\begin{figure*}[ht]
-	\centering
-	\includegraphics[scale=0.5]{./images/editor_adjustment.png}
-	\caption{Projectional editor adjustment of the Element{\_}1 node}
-	\label{fig:editor_adjustment}
-\end{figure*}
-
-In practice, however, the user still has to tweak the editor aspect --- to adjust the code layout --- because the heuristics are not 100\% reliable.
-But it takes a very short time to reach optimal results (because MPS allows doing this very efficiently), as we show on the example of importing the JavaScript language~\cite{ref:javascript} and manually adjusting all editors that needed it, all that in a less than hour time.
-More details are provided later in Section X (examples) --- there we describe this issue further.
 
 \subsection{Phase 4: Text Generation}
 
