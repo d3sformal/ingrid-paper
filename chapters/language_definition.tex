@@ -333,34 +333,39 @@ We plan to work on a more automated approach to the definition of Editor aspects
 The key idea would be to derive the code layout from a set of valid input source files.
 We believe that the user would have to adjust the editor manually a little bit even in this case, because the results of a machine learning-based approach would not be perfect.
 
+\subsection{Phase 4: Text Generation}
 
+The purpose of the last phase of the MPS language construction is to generate the TextGen aspect for each concept.
+We use the \mpsconcept{Element{\_}1} concept again for illustration.
+Figure~\ref{fig:TEXTGENEX} shows a very basic example of BaseLanguage code that can be used as its TextGen aspect.
+The code appends all literals, properties, and children of \mpsconcept{Element{\_}1} to the output buffer, and does that in the same order as they appear in the corresponding grammar rule.
+
+\begin{figure}[ht]
+\begin{alltt}
+\small
+\mpstgkeyword{text gen component for concept} \mpstgtarget{Element{\_}1} \{
+  \mpstgparam{(context, buffer, node)->void} \{
+    \mpstgaction{append} \{\mpstgliteral{<}\};
+    \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{1}\};
+    \mpstgaction{append} \{\ \};
+    \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Attribute}}{\_}\textit{1}\};
+    \mpstgaction{append} \{\mpstgliteral{>}\};
+    \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2}\};
+    \mpstgaction{append} \{\mpstgliteral{</}\};
+    \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{2}\};
+    \mpstgaction{append} \{\mpstgliteral{>}\};
+  \}
+\}
+\end{alltt}
+\caption{Basic TextGen aspect for the \mpsconcept{Element{\_}1} concept}
+\label{fig:TEXTGENEX}
+\end{figure}
 
 
 
 
 % TODO continue from here
 
-
-
-
-\subsection{Phase 4: Text Generation}
-
-The final/last, fourth step, is to create the TextGen aspect for each AST node.
-The purpose of the TextGen aspect is to define, for a language element (AST node), what code in the BaseLanguage will be generated out of it, once we want to compile and run our MPS code/program.
-This is needed to allow/enable users to generate plain-text source code representation out of the AST they built/created inside MPS.
-Again, a TextGen aspect must be created for each language element.
-Basically, it is a single method in the BaseLanguage (or in Java?) for each language element.
-The method generates a string (plain-text) representation of the element, appends the string to the output stream, and then calls TextGen methods on all children of the element.
-
-A very basic example of BaseLanguage code that can be used as the TextGen aspect of an \mpsconcept{Element{\_}1} node, which represents the full XML tag with content, is shown in Figure~\ref{fig:textgen_example}.
-It appends all literals, properties, and children in the same order as they appear in the grammar definition.
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=90mm]{./images/textgen_example.png}
-	\caption{Example of a~TextGen aspect}
-	\label{fig:textgen_example}
-\end{figure}
 
 Like in the case of editor, we discovered some interesting challenges related to the code layout, whitespaces, and more (so on).
 We describe our solution to the challenges here in this section.
