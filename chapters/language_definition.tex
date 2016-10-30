@@ -329,7 +329,8 @@ Based on our experience, it takes a very short time to manually adjust the layou
 We expect that a typical user of the INGRID method will be able to use the projectional editor in MPS quite efficiently.
 More details are provided in Section~\ref{sect:EVAL}, including our experience with several mainstream programming languages.
 
-We plan to work on a more automated approach to the definition of Editor aspects in the future, probably using some techniques of machine learning.
+We have found that the combination of two steps, (1) automated placing of cells into a single row and (2) subsequent manual adjustment of the layout, is a very fast and efficient way of creating a nice code layout.
+Nevertheless, we plan to work on a more automated approach to the definition of Editor aspects in the future, probably using some techniques of machine learning.
 The key idea would be to derive the code layout from a set of valid input source files.
 We believe that the user would have to adjust the editor manually a little bit even in this case, because the results of a machine learning-based approach would not be perfect.
 
@@ -337,7 +338,7 @@ We believe that the user would have to adjust the editor manually a little bit e
 
 The purpose of the last phase of the MPS language construction is to generate the TextGen aspect for each concept.
 We use the \mpsconcept{Element{\_}1} concept again for illustration.
-Figure~\ref{fig:TEXTGENEX} shows a very basic example of BaseLanguage code that can be used as its TextGen aspect.
+Figure~\ref{fig:TEXTGENBASIC} shows a very basic example of BaseLanguage code that can be used as its TextGen aspect.
 The code appends all literals, properties, and children of \mpsconcept{Element{\_}1} to the output buffer, and does that in the same order as they appear in the corresponding grammar rule.
 
 \begin{figure}[ht]
@@ -358,8 +359,84 @@ The code appends all literals, properties, and children of \mpsconcept{Element{\
 \}
 \end{alltt}
 \caption{Basic TextGen aspect for the \mpsconcept{Element{\_}1} concept}
-\label{fig:TEXTGENEX}
+\label{fig:TEXTGENBASIC}
 \end{figure}
+
+Like in the case of a projectional editor, the main challenge associated with TextGen is to produce valid code with a reasonable layout.
+An implementation of the TextGen aspect must determine properly where to put line breaks, indentation, and other whitespace characters.
+For example, in the case of the concept representing an XML element, there must be a space between the element's name and the first attribute, while it is not required between the opening bracket \antlrliteral{\textless} and the name (Figure~\ref{fig:TEXTGENBASIC}).
+
+Our INGRID method targets mostly text-based languages, for whose concepts the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
+An obvious choice would therefore be to use the same approach for Editor and TextGen.
+Nevertheless, since the Editor aspect has to be adjusted manually, we decided to use a different approach for TextGen.
+We designed a procedure based on a simple fully automated heuristic that provides surprisingly good results.
+
+The procedure creates the TextGen aspect for a given language concept (AST node) in two steps.
+First, it generates a basic variant that inserts spaces in between every two tokens of the textual representation of the concept.
+In the second step, which is the core of our heuristic, spaces are eliminated from places where they are not really needed.
+The main criterion is whether the generated plain-text output can be safely processed by a parser of the original language (using the ANTLR grammar).
+We discuss all the cases here:
+\begin{itemize}
+	\item When there is a non-alphabetical literal that is used as a token in the grammar, and that might get recognized by the parser without the need for whitespace separators around it, then we can omit the spaces. An example of such literal is '\textless' in SimpleXML.
+	\item In the case of an arbitrary string, the whitespace may be omitted when the adjacent literal ends, respectively begins, with a non-alphabetical character.
+		This applies especially to the values of properties defined in Structure aspects, such as the name of an XML element.
+		Based on this heuristic, redundant spaces inside of quotes will be eliminated, as well as spaces next to semicolons and around brackets.
+		On the other hand, it will distinguish language keywords (e.g., \code{function}, \code{var}, \code{in}) from other literals by preserving the space character in between them.
+	\item Spaces can be safely omitted also when specific optional child nodes are not present, and in the case of empty lists of child nodes, so that whitespace does not accumulate.
+\end{itemize}
+A space must be alway inserted when two child nodes are next to each other.
+Elements of a sequence of child nodes are separated with space or a line break.
+
+\begin{figure}[ht]
+\begin{alltt}
+\small
+\mpstgkeyword{text gen component for concept} \mpstgtarget{Element{\_}1} \{
+  \mpstgparam{(context, buffer, node)->void} \{
+    \mpstgaction{append} \{\mpstgliteral{<}\};
+    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{1}.\textbf{isNotEmpty}) \{
+      \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{1}\};
+    \}
+    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Attribute}}{\_}\textit{1}.\textbf{size} > 0) \{
+      \mpstgaction{append} \{\ \};
+      \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Attribute}}{\_}\textit{1} with  \};
+    \}
+    \mpstgaction{append} \{\mpstgliteral{>}\};
+    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2}.\textbf{size} > 0) \{
+      \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2} with  \};
+    \}
+    \mpstgaction{append} \{\mpstgliteral{</}\};
+    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{2}.\textbf{isNotEmpty}) \{
+      \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{2}\};
+    \}
+    \mpstgaction{append} \{\mpstgliteral{>}\};
+  \}
+\}
+\end{alltt}
+\caption{Full TextGen aspect for the \mpsconcept{Element{\_}1} concept}
+\label{fig:TEXTGENFINAL}
+\end{figure}
+
+\begin{figure}[ht]
+\begin{alltt}
+\small
+\mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2}.\textbf{size} > 0) \{
+  \mpstgaction{append} \textcolor{Blue}{\textbf{\textbackslash{}n;}}
+  \mpstgaction{indent buffer;}
+  \mpstgkeyword{with indent} \{
+    \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2} with  \};
+  \}
+  \mpstgaction{append} \textcolor{Blue}{\textbf{\textbackslash{}n;}}
+\} 
+\end{alltt}
+\caption{Fragment of the TextGen aspect of \mpsconcept{Element{\_}1} with adjusted indentation}
+\label{fig:TEXTGENADJUSTED}
+\end{figure}
+
+Figure~\ref{fig:TEXTGENFINAL} contains the complete, automatically generated, TextGen aspect for the \mpsconcept{Element{\_}1} concept, which represents the full SimpleXML element.
+Such code may be adjusted manually very easily in order to produce nicely indented XML documents.
+We only need to wrap the \mpsconcept{Content{\_}2} child node with indentation and change the sequence separator to a new line character.
+A fragment of the resulting adjusted aspect (code) is in Figure~\ref{fig:TEXTGENADJUSTED}.
+
 
 
 
@@ -367,62 +444,6 @@ The code appends all literals, properties, and children of \mpsconcept{Element{\
 % TODO continue from here
 
 
-Like in the case of editor, we discovered some interesting challenges related to the code layout, whitespaces, and more (so on).
-We describe our solution to the challenges here in this section.
-
-The reader might have noticed that there is no whitespace handling inside of our SimpleXML grammar (Section XY, running example).
-Grammars in the ANTLRv4 notation are usually written in such a manner that whitespace characters are skipped (ignored).
-However/Nevertheless, TextGen aspect (generator) should/must know between which children there must be a whitespace and where it is forbidden (i.e., where to put some whitespace characters) so that the produced code is a valid one.
-For example, in the case of the \antlrparserrule{element} rule, TextGen must determine that there should be a space in between \antlrparserrule{attribute} and \antlrlexerrule{Name}, while it is not required between \antlrliteral{\textless} and \antlrlexerrule{Name}.
-In general, it is sufficient to put just a single space character at places/locations where there has to be some whitespace in order to make the code valid (syntactically correct).
-
-Layout of the generated code is also important. For example, the user may want to produce more readable code by adding indentation or line breaks.
-
-In fact, the problem of TextGen layout is quite similar to the one we have seen with the projectional editor, described in Section XY.
-Since we are dealing mostly with text-based languages, their representation in projectional editor must be almost the same as their expected plain-text representation (output).
-Therefore, one could use the same approach for editor and TextGen --- adding line breaks and indentation.
-Once we would have some information about the layout for generating better projectional editor, we could leverage the same information and use it to improve TextGen.
-
-Nevertheless, in our current approach, the editor aspects have to be adjusted manually, after the import is done, because for now it is the fastest and the most efficient way how to deal with the problem of customizing the editor to capture a nice layout.
-Therefore, we used a different approach for TextGen --- a really simple heuristics which gives surprisingly good results.
-In the first step, a very basic TextGen is created that inserts spaces in between every two tokens of the language element (AST node).
-Then, as the second step, spaces are eliminated (restricted) from positions where they are not really needed.
-We describe all the cases here:
-
-\begin{enumerate}
-	\item Whenever there is a non-alphabetical literal,	appearing as a plain string token defined in the grammar, that might get recognized by the parser safely without the need for a whitespace separator around, then we omit spaces around it.
-		For example, consider \textbf{'\textless'} in SimpleXML.
-	\item Another group are strings inserted by the user of the language, whose form is constrained by a regular expression.
-		For example, an XML tag's name belongs to this group.
-		They are usually values of properties defined in structure aspects.
-		A space must be preserved only when a neighboring literal may end with an alphabetical character. Otherwise, we can omit the space.
-		In practice, this will eliminate redundant spaces inside of quotes, next to semicolons, and around brackets, but, on the other hand, it will separate language keywords (function, var, in, etc.) from other content by keeping the space character in between them.
-	\item Spaces are omitted also in the case of child nodes that are not present (e.g., when they are optional), and in the case of empty lists of child nodes, so that spaces do not accumulate.
-	\item On the other hand, when two child elements are next to each other, we always insert space.
-	\item Sequences of children are separated with space or with a line break.
-\end{enumerate}
-These few simple heuristics work surprisingly well and give us some very nice results.
-We discuss our experience with XML, JSON, and JavaScript in Section XY (Evaluation).
-
-Figure~\ref{fig:textgen_final} shows an example of a TextGen aspect for the full SimpleXML element.
-
-\begin{figure}[ht]
-	\centering
-	\includegraphics[width=95mm]{./images/textgen_final.png}
-	\caption{Generated TextGen aspect for the SimpleXML element}
-	\label{fig:textgen_final}
-\end{figure}
-
-The automatically generated TextGen code can be adjusted manually very easily, so that it generates nicely indented XML code.
-In the case of the example above (in Figure F), we only need to wrap the \mpsconcept{Content{\_}2} child with indentation and change the sequence separator to a new line character.
-The resulting adjusted aspect (code) is shown below in Figure~\ref{fig:textgen_adjusted}.
-
-\begin{figure}[t!]
-	\centering
-	\includegraphics[width=85mm]{./images/textgen_adjusted.png}
-	\caption{Adjusted indentation inside the TextGen aspect}
-	\label{fig:textgen_adjusted}
-\end{figure}
 
 \subsection{Remarks about Grammars}
 
