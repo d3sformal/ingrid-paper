@@ -437,6 +437,74 @@ Such code may be adjusted manually very easily in order to produce nicely indent
 We only need to wrap the \mpsconcept{Content{\_}2} child node with indentation and change the sequence separator to a new line character.
 A fragment of the resulting adjusted aspect (code) is in Figure~\ref{fig:TEXTGENADJUSTED}.
 
+\subsection{Remarks about Grammars}
+
+During our work on the INGRID method, we have also observed that practical usability of a resulting MPS language depends on the specific manner in which the input ANTLR grammar is defined.
+We discuss several issues and our workarounds in this section.
+
+\paragraph{Adjusting grammars.}
+In some cases, a small adjustment of the input grammar before the run of INGRID might yield a better and more useful MPS language.
+Here we illustrate this on two simple examples.
+
+For the first example, we use the definition of an XML attribute in Figure~\ref{fig:XMLATTRIB}, which is taken from the original XML grammar.
+The lexer rule \antlrlexerrule{STRING} actually says that quotes make a part of the attribute's value.
+If the MPS language would faithfully match the grammar, the user would have to always input the leading and trailing quote together with the value in the projectional editor.
+
+\begin{figure}[ht]
+\begin{framed}
+\begin{alltt}
+  \antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{=} \antlrlexerrule{STRING} ;
+  \antlrlexerrule{STRING} : \antlrliteral{"} \antlrregex{~["]*} \antlrliteral{"}
+         | \antlrliteral{\textbackslash'} \antlrregex{~[']*} \antlrliteral{\textbackslash'} ;
+\end{alltt}
+\end{framed}
+\caption{Definition of an XML attribute}
+\label{fig:XMLATTRIB}
+\end{figure}
+
+In our SimpleXML language, we adjusted the grammar easily in a way that we show in Figure~\ref{fig:XMLADJUST}.
+We turned quotes into literals, ensuring that they will only appear in the projectional editor as string constant cells.
+
+\begin{figure}[ht]
+\begin{framed}
+\begin{alltt}
+  \antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT1} \antlrliteral{"}
+         | \antlrlexerrule{Name} \antlrliteral{=\textbackslash'} \antlrlexerrule{TEXT2} \antlrliteral{\textbackslash'} ;
+  \antlrlexerrule{TEXT1} : \antlrregex{~["]*} ;
+  \antlrlexerrule{TEXT2} : \antlrregex{~[']*} ;
+\end{alltt}
+\end{framed}
+\caption{Adjusted fragment of the SimpleXML grammar}
+\label{fig:XMLADJUST}
+\end{figure}
+
+The second example relates to a fragment of the JavaScript language, also known as ECMAScript\footnote{https://github.com/antlr/grammars-v4/blob/master/ecmascript/ECMAScript.g4}.
+Every statement in JavaScript needs to be terminated by a semicolon, newline, end of the file, or end of the block --- see the Figure~\ref{fig:JAVASCRIPTSTMT}, which contains the corresponding fragment of the ECMAScript grammar.
+Since there are multiple options, a user would have to select one of them for each statement in the editor.
+Technically, every language concept representing a statement would contain one child node of the interface type \mpsinterface{IEos}, which has to be assigned a proper object (i.e., an AST node corresponding to one of the options listed above).
+
+\begin{figure}[ht]
+\begin{framed}
+\begin{alltt}
+\small
+\antlrparserrule{eos} : \antlrlexerrule{SemiColon} | \antlrlexerrule{EOF} | {lineBreakAhead()}? 
+    | {{\_}input.LT(1).type() == \antlrlexerrule{CloseBrace}}? ;
+\textcolor{gray}{// example reference to the eos rule}
+\antlrparserrule{breakStmt} : \antlrlexerrule{Break} \antlrlexerrule{Identifier}? \antlrparserrule{eos} ;
+\end{alltt}
+\end{framed}
+\caption{Statements in JavaScript}
+\label{fig:JAVASCRIPTSTMT}
+\end{figure}
+
+Since MPS can differentiate between statements on the AST level, there is no need for an explicit separator.
+For example, we can put each statement on a distinct line, as is usual for JavaScript code, and keep just the semicolon as a fixed literal in the projectional editor.
+The \antlrparserrule{eos} rule must be changed to this form: \antlrparserrule{eos} : \antlrliteral{;}.
+A small adjustment of the grammar, like this one, is a very quick solution and definitely makes the generated language more usable in MPS.
+On the other hand, this adjustment of the original ANTLR grammar, performed just for the purpose of creating the MPS language, changes the grammar in such a way that it does not precisely describe the standard JavaScript language.
+To ensure compatibility with JavaScript, the TextGen aspect in the MPS language should put the semicolon after each statement in the plain-text representation of a program code.
+
+
 
 
 
@@ -445,102 +513,6 @@ A fragment of the resulting adjusted aspect (code) is in Figure~\ref{fig:TEXTGEN
 
 
 
-\subsection{Remarks about Grammars}
-
-As we have already shown in previous sections, it is very easy to write a grammar in a way that will cause problems during import into MPS (or once it is imported).
-Problems might occur during the creation of any aspect.
-Here we will look at some general problems/issues that grammar import poses (might pose).
-We will talk about these problems with respect to the challenges/obstacles we tried to overcome and which we described in previous sections (dedicated to structure, editor, and texgen, respectively).
-We also show a few examples of additional possible complications.
-
-\paragraph{Adjusting grammars.}
-There are some cases, where altering the input grammar might yield far better MPS language.
-We will show two examples how the usability of the resulting MPS language can be improved.
-Let us look at the definition of an XML attribute in Figure~\ref{fig:xmlattribute}.
-
-\begin{figure}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{=} \antlrlexerrule{STRING} ;
-	\antlrlexerrule{STRING} : \antlrliteral{"} \antlrregex{~["]*} \antlrliteral{"}
-	       | \antlrliteral{\textbackslash'} \antlrregex{~[']*} \antlrliteral{\textbackslash'} ;
-\end{alltt}
-\end{framed}
-\caption{Definition of an XML attribute}
-\label{fig:xmlattribute}
-\end{figure}
-
-The original XML grammar has quotes as a part of the value.
-For the resulting MPS language, it would mean that there would be a placeholder for the attribute value that would expect us to input the leading and trailing quote together with the value too each time.
-It would also be marked red (by the syntax checker) unless we enter both quotes inside the value since the regular expression checking for quotes will not match.
-The user might be confused by this and will not be able to tell why his string value is incorrect.
-
-In our SimpleXML language, we adjusted the grammar easily in the manner that we show in Figure~\ref{fig:xmladjustgrammar}.
-
-\begin{figure}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT1} \antlrliteral{"}
-	       | \antlrlexerrule{Name} \antlrliteral{=\textbackslash'} \antlrlexerrule{TEXT2} \antlrliteral{\textbackslash'} ;
-	\antlrlexerrule{TEXT1} : \antlrregex{~["]*} ;
-	\antlrlexerrule{TEXT2} : \antlrregex{~[']*} ;
-\end{alltt}
-\end{framed}
-\caption{Adjusted grammar of SimpleXML}
-\label{fig:xmladjustgrammar}
-\end{figure}
-
-We turned quotes into literals, thus ensuring that they will only appear in the projectional editor as fixed constant cells.
-We will not have to encapsulate the value in them each time.
-The user will only have to choose, which attribute version he wants to use (single or double quotes).
-
-As the second example, we will use the ECMAScript\footnote{https://github.com/antlr/grammars-v4/blob/master/ecmascript/ECMAScript.g4} language otherwise known as JavaScript.
-Every statement in JavaScript needs to be either followed by a semicolon, newline, file end or end of the block --- see the Figure~\ref{fig:javascriptstmt}.
-
-\begin{figure*}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\antlrparserrule{eos} : \antlrlexerrule{SemiColon} | \antlrlexerrule{EOF} | {lineTerminatorAhead()}? 
-	    | {{\_}input.LT(1).getType() == \antlrlexerrule{CloseBrace}}? ;
-	\textcolor{gray}{// Example reference of the eos rule}
-	\antlrparserrule{breakStmt} : \antlrlexerrule{Break} \antlrlexerrule{Identifier}? \antlrparserrule{eos} ;
-\end{alltt}
-\end{framed}
-\caption{Statements in JavaScript}
-\label{fig:javascriptstmt}
-\end{figure*}
-
-Because there are multiple options, our import plugin would create a placeholder at the end of every statement.
-Every language element representing a statement would have one child of the \mpsinterface{IEos} interface type.
-This placeholder needs to be manually filled in for each statement.
-
-Since the projectional editor has much bigger power over the form of the code, we (a user) might want to have each statement on a separate line.
-Since we can differentiate between statements on the AST level, we do not need an explicit separator between them.
-This means that we might want to simplify the language and leave the semicolon out, or leave it just as a constant fixed part of the projectional editor, but not as something the user must explicitly fill in.
-Then we can just put each statement on a separate line as it is usual for JavaScript code, but we do not need the semicolon anymore.
-This small adjustment is very quick when done inside the grammar.
-We just change the \antlrparserrule{eos} rule to the form shown in Figure~\ref{fig:eosrule}.
-
-\begin{figure}[ht]
-\centering
-\begin{framed}
-\begin{alltt}
-	\antlrparserrule{eos} : \antlrliteral{;} ;
-\end{alltt}
-\end{framed}
-\caption{eos parser rule}
-\label{fig:eosrule}
-\end{figure}
-
-This way, we can change the grammar in a way that it will not describe the same ECMAScript language as before, but will definitely make our MPS language more usable.
-TextGen aspect may be defined in such a way that puts the semicolon back (after each statement) in the generated plain-text representation.
-This would be very important especially when JavaScript is available as another base language (which is actually a plan (future work) of the JetBrains company).
-
-Above, we have shown that adjusting the input grammar might be a very fast mean of tweaking/improving the usability of generated MPS language, and sometimes it may be the only proper solution in some complex situations.
-In general, the question we can ask ourselves is whether one aims for a full precise/faithful port of the input language or for an MPS alternative.
 
 \todo{Nahradit slovo "break" v nasledujicich odstavcich (v kontextu "break the parser") za vhodnejsi slovo ktere pusobi vic odborne.}
 
