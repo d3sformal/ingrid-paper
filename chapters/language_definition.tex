@@ -504,48 +504,11 @@ A small adjustment of the grammar, like this one, is a very quick solution and d
 On the other hand, this adjustment of the original ANTLR grammar, performed just for the purpose of creating the MPS language, changes the grammar in such a way that it does not precisely describe the standard JavaScript language.
 To ensure compatibility with JavaScript, the TextGen aspect in the MPS language should put the semicolon after each statement in the plain-text representation of a program code.
 
+\paragraph{Breaking original grammars and parsers.}
+We also want to point out a general problem with grammar adjustments that we encountered, and which all potential users of the INGRID method should be aware of.
+The original ANTLR grammar for an input language can be very easily changed in a way that, at first, seems harmless and valid inside MPS, but the parser generated out of the adjusted grammar stops accepting the original language.
+In particular, adjustments needed to improve the resulting MPS language can break down the parser.
 
+This problem has two main causes: (1) low-level implementation details of token matching in the ANTLR parser and (2) usage of ANTLR grammars for a different purpose (that was not expected) in our project.
+Since, for practical reasons, it is very important that a parser works even for documents (programs) written according to the original grammar, adjustments have to be performed very carefully by the users of INGRID.
 
-
-
-
-% TODO continue from here
-
-
-
-
-\todo{Nahradit slovo "break" v nasledujicich odstavcich (v kontextu "break the parser") za vhodnejsi slovo ktere pusobi vic odborne.}
-
-\paragraph{Breaking grammars and parsers.}
-However, we have found that there is one big problem with grammar adjustment that we would like to point out.
-The problem is that it is very easy to change the input ANTLR grammar in a way that breaks the ANTLR parser generated out of it.
-By breaking we mean that it stops parsing the original language.
-We illustrate the problem on our SimpleXML language.
-
-As stated before, when creating the SimpleXML grammar, we have started off with the original XML grammar\footnote{https://github.com/antlr/grammars-v4/tree/master/xml} and did some adjustments to it.
-We ended up with a grammar that can be processed by our method/plugin and creates a nice usable MPS language.
-Nevertheless, we noticed that even though the imported language behaves well enough and mimics the XML language quite nicely, the ANTLR parser generated out of this grammar no longer parses XML successfully.
-Some changes we have made, such as the attribute adjustment, broke the grammar down.
-More precisely, our changes improved the MPS language while breaking down the parser, and we have not even noticed it because, from the perspective of MPS, the imported language still corresponds to XML.
-
-What we are trying to say (show here) is that it is very easy to perform a grammar adjustment that will, at first, seem harmless and valid inside MPS, but will break the parser.
-The problem is that the user performing this change probably will not be aware of breaking it.
-
-The main (underlying) cause of this problem is the way the ANTLR parser is implemented and the quite different purpose we are using the grammar for in our project/tool/method.
-There are many ways how various parsers deal with, for example, token matching.
-For instance, ANTLR introduces so called \emph{greedy} and \emph{non-greedy} operators.
-The greedy way, in which ANTLR matches input on defined tokens and prioritizes their selection, makes some rules very dangerous.
-When a rule matches a wide range of input, it might happen during parsing that it is prioritized over other rules and swallows a lot more input than the author of it intended.
-Usually, these dangerous rules are bound to some parser context, which makes them behave well.
-
-However, for practical reasons, it is very important that grammar is not broken by our custom adjustments (and that the ANTLR parser of the language works properly), because we might need to automatically generate parsers of the adjusted language.
-Imagine this very real scenario (that will be supported in the future):
-\begin{enumerate}
-	\item We have imported the language inside MPS.
-	\item MPS now knows the structure of the language, and we can code in MPS using this language.
-	\item We would expect MPS to be able to load an existing source code, written in this language, from a text file and import it inside MPS.
-	\item We would like to use MPS to safely edit this code, using all the features of MPS.
-	\item We would also like to export the code in a plain-text form again and save it back to the source file.
-\end{enumerate}
-In order to make this happen, we must be able to generate a correctly-working ANTLR parser out of the adjusted source grammar that we used to (that helped us) import the language.
-We must also be able to match nodes of the AST coming out of the ANTLR parser to elements of the MPS language, and we must build the MPS AST out of the ANTLR AST.
