@@ -3,7 +3,7 @@
 
 The proposed INGRID method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
 All widely used programming languages have their syntax defined using this notation~\footnote{https://github.com/antlr/grammars-v4}.
-Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
+Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation \PV{Mozna vysvetlit proc (protoze je to dvoji prace) nebo odkazat tam, kde je to vysvetleny?}.
 
 The process of MPS language construction, as performed by INGRID, consists of four phases --- the first is parsing of the input grammar, which is followed by definition of the essential aspects of the language (Structure, Editor, and TextGen).
 Each of the phases 2-4 is exclusively and fully responsible for one aspect.
@@ -30,11 +30,8 @@ The \emph{SimpleXML} language is small but complex enough to be used for illustr
 \antlrparserrule{attrib}    : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT} \antlrliteral{"} ;
 \antlrparserrule{content}   : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
 \antlrlexerrule{Name}      : \antlrlexerrule{NameStartChar} \antlrlexerrule{NameChar}* ;
-\textbf{fragment}
 \antlrlexerrule{DIGIT}     : \antlrregex{[0-9]} ;
-\textbf{fragment}
 \antlrlexerrule{NameChar}  : \antlrlexerrule{NameStartChar} | \antlrliteral{-} | \antlrliteral{\_} | \antlrliteral{.} | \antlrlexerrule{DIGIT} ;
-\textbf{fragment}
 \antlrlexerrule{NameStartChar} : \antlrregex{[:a-zA-Z]} ;
 \antlrlexerrule{TEXT}      : \antlrregex{~[<"]*} ;
 \antlrlexerrule{CDATA}     : \antlrliteral{<![CDATA[} \antlrregex{.*?} \antlrliteral{]]>} ;
@@ -52,7 +49,6 @@ Each color in Figure~\ref{fig:SIMPLEXML} corresponds to a different kind in a wa
 		Alternatives on the right side of a rule are separated by the pipe character ($|$).
 	\item \antlrlexerrule{\textbf{Lexer rules}} describe terminal symbols that the parser matches against the input string.
 		A terminal symbol can be encoded as a string value or using a regular expression.
-		The \textbf{fragment} keyword states that the lexer rule just brings more clarity into the notation but it is not visible in the parser output.
 	\item \antlrliteralnoap{\textbf{String literals}}, always written inside of a pair of single quote marks, also represent terminal symbols, but by exact match to a string constant.
 	\item \antlrregex{\textbf{Regular expressions}} describe string tokens to be matched against regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
 \end{itemize}
@@ -60,16 +56,18 @@ Elements on the right side of a rule can be annotated with standard EBNF operato
 
 \subsection{Phase 1: Parsing Input Grammar}
 
-The first phase in the process of MPS language construction is parsing of the input grammar that is defined using the ANTLR v4 notation.
-An output of this phase is an AST representing the grammar.
-Nodes of the AST correspond to rules and other grammar elements.
-
-Nevertheless, the full AST, which comes out of the automatically generated parser, is quite complex and contains information not relevant for the INGRID algorithm.
+\PV{Nasledujici odstavec jsem lehce vylepsil, asi je to ted vysvetleno lepe.}
+The first phase in the process of MPS language construction is parsing of the input ANTLRv4 grammar.
+This is done using an automatically generated ANTLRv4 parser that was created from the grammar of the ANTLRv4 notation itself.
+The full tree, which comes out of the parser is, however, quite complex and contains information not relevant for the INGRID algorithm.
 In order to get a simple representation that is easy process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the AST have to be performed in this phase.
+An output of this phase is a custom tree-like structure representing the grammar.
 
-A simplified tree of objects is derived from the AST in two passes over the grammar.
+\PV{Tenhle dalsi odstavec bych klidne celej odebral, neprinasi zas tolik informaci, vzhledem k tomu, ze nejde do hloubky.}
+A simplified tree of objects is derived in two passes over the grammar.
 The result of the first pass is a tree where each node contains names of other referenced rules in the form of strings.
 In the second pass, the whole tree is traversed and all the references are resolved to have a form of real pointers to other rule objects.
+\PV{Az sem}
 
 The representation of lexer rules (tokens) in the AST has to be simplified too.
 Note that, in the ANTLR notation, lexer rules can be built from alternatives just like the parser rules --- see, for example, the lexer rule \antlrlexerrule{Name} from our SimpleXML language (Figure~\ref{fig:SIMPLEXML}).
@@ -112,6 +110,7 @@ Each identifier must begin with a letter, followed by any combination of letters
 
 \subsection{Phase 2: Structure}
 
+\PV{Tohle se mi libi, jak si prepsal, asi neni co vylepsit.}
 In the next phase, the complete structure of the MPS language is automatically generated from the AST that represents syntax of the input language.
 Elements of the Structure aspect are derived from the AST nodes, and then linked appropriately.
 Therefore, structure of the MPS language is usually similar to the original ANTLR grammar.
@@ -126,6 +125,7 @@ We show examples illustrating this problem, which we call a \emph{layer problem}
 As a part of the INGRID method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}).
 However, before focusing on the intermediate layers and the shortcut approach, we describe the basic principles of translation from the AST into the language structure.
 
+\PV{Tady bych na zacatek vety pridal neco jako "In MPS...". Neni jasne, jestli mluvime o necem v ingrid nebo o konceptech MPS.}
 Each concept of the language (i.e., every AST node) is represented by an object that may have a parent, some children, and properties of any data type.
 In addition, the object may implement any number of interfaces, and it may also contain references to objects representing other AST nodes.
 The parent-child relationships between objects that make the Structure aspect are derived from rules of the grammar (i.e., from the structure of the AST).
@@ -160,12 +160,17 @@ Consider the parser rule \antlrparserrule{element} from the grammar in Figure~\r
 Its first alternative represents the full XML element with content.
 Figure~\ref{fig:ELEMENTSTRUCT} shows the Structure aspect for the MPS concept (object) named \code{Element{\_}1} that corresponds to the alternative.
 The object contains two properties, one for each reference to the lexer rule \antlrlexerrule{Name}.
+\PV{Dalsi vetu bych nahradil: }
+\PV{Values of these properties will be restricted using the regular expression that corresponds to the \antlrlexerrule{Name} lexer rule.}
+\PV{Protoze }
 Values of these properties should be restricted using the regular expression that corresponds to the \antlrlexerrule{Name} rule, but this is left to the human user.
+\PV{Mozna "for" nahradit necim z XML, treba zavorkami </>, najednou totiz se preskoci na for, ktery se vzal odnikud.}
 String literals, such as the keyword \textbf{for}, are omitted because they will be defined only in the Editor aspect for this concept.
 
 References to other parser rules are captured by pointers to child objects.
 The types of child objects, such as \code{IContent} in the \code{Element{\_}1} concept, are determined as follows.
 Consider the \antlrparserrule{content} rule from the SimpleXML language.
+\PV{Label CONTENTRULE defined multiple times! Pak to ukazuje spatny cislo Figure}
 We show just the relevant fragment of the grammar again in Figure~\ref{fig:CONTENTRULE}.
 An object corresponding to any one of the four alternatives could be the actual value anywhere the \antlrparserrule{content} rule is referenced.
 
@@ -180,6 +185,7 @@ An object corresponding to any one of the four alternatives could be the actual 
 \end{figure}
 
 Our solution is to use interface concepts.
+\PV{Odstranil bych ", i.e. for each AST node with more than one child"}
 For each rule with more than one alternative on the right side, i.e. for each AST node with more than one child, first an interface concept is defined in the MPS language structure, and then one object that implements the given interface is created for each alternative.
 The resulting fragment of the language structure looks like the one in Figure~\ref{fig:ICONTENTITF}.
 It contains one interface \mpsinterface{IContent} that is implemented by four object concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
@@ -300,6 +306,7 @@ When the user wants to delete some end node from the AST of a program or documen
 
 \subsection{Phase 3: Editor}
 
+\PV{K Phase 3 nemam vyhrady, to je prepsano super.}
 Having the complete structure of the new MPS language, the next phase is to define the visual representation of all concepts (AST nodes) in the projectional editor.
 As we said in Section~\ref{sect:MPS}, MPS uses a cellular system that enables the language developer to arrange the children and properties of an AST node in a table-like manner.
 Cells of different types are supported by MPS --- for storing property values, references to child nodes, and keywords (string literals), and also cells that influence layout (e.g., indentation).
@@ -365,6 +372,8 @@ The code appends all literals, properties, and children of \mpsconcept{Element{\
 Like in the case of a projectional editor, the main challenge associated with TextGen is to produce valid code with a reasonable layout.
 An implementation of the TextGen aspect must determine properly where to put line breaks, indentation, and other whitespace characters.
 For example, in the case of the concept representing an XML element, there must be a space between the element's name and the first attribute, while it is not required between the opening bracket \antlrliteral{\textless} and the name (Figure~\ref{fig:TEXTGENBASIC}).
+
+\PV{Nejsem si jisty, jestli to nebylo az pozdeji, ale byl tu nekde odstavec, ktery se zminoval o tom, ze whitespace je silent-polykan parserem a proto pravidla nemusi obsahovat explicitne informaci o tom, kde vsude muze byt mezera \\\texttt{'<' WS* Name WS* attribute* WS* '>' WS*...}.\\To podle me dobre ilustrovalo, ze se tam ztraci ta informace. Prislo mi to jako zajimave poukazani, ale samozrejme to tu byt nemusi, pokud se ti zda, ze to az tak zajimave neni.}
 
 Our INGRID method targets mostly text-based languages, for whose concepts the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
 An obvious choice would therefore be to use the same approach for Editor and TextGen.
