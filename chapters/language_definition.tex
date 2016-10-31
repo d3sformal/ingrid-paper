@@ -3,7 +3,8 @@
 
 The proposed INGRID method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
 All widely used programming languages have their syntax defined using this notation~\footnote{https://github.com/antlr/grammars-v4}.
-Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation \PV{Mozna vysvetlit proc (protoze je to dvoji prace) nebo odkazat tam, kde je to vysvetleny?}.
+Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
+\PV{Mozna vysvetlit proc (protoze je to dvoji prace) nebo odkazat tam, kde je to vysvetleny?}
 
 The process of MPS language construction, as performed by INGRID, consists of four phases --- the first is parsing of the input grammar, which is followed by definition of the essential aspects of the language (Structure, Editor, and TextGen).
 Each of the phases 2-4 is exclusively and fully responsible for one aspect.
@@ -56,12 +57,11 @@ Elements on the right side of a rule can be annotated with standard EBNF operato
 
 \subsection{Phase 1: Parsing Input Grammar}
 
-\PV{Nasledujici odstavec jsem lehce vylepsil, asi je to ted vysvetleno lepe.}
-The first phase in the process of MPS language construction is parsing of the input ANTLRv4 grammar.
-This is done using an automatically generated ANTLRv4 parser that was created from the grammar of the ANTLRv4 notation itself.
-The full tree, which comes out of the parser is, however, quite complex and contains information not relevant for the INGRID algorithm.
+The first phase in the process of MPS language construction is parsing of the input ANTLR v4 grammar.
+It is done using an ANTLR parser that was automatically generated from the grammar of the ANTLR v4 notation itself.
+Nevertheless, the full AST, which comes out of the parser, is quite complex and contains information not relevant for the INGRID algorithm.
 In order to get a simple representation that is easy process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the AST have to be performed in this phase.
-An output of this phase is a custom tree-like structure representing the grammar.
+An output of this phase is a custom AST-like structure representing the grammar.
 
 \PV{Tenhle dalsi odstavec bych klidne celej odebral, neprinasi zas tolik informaci, vzhledem k tomu, ze nejde do hloubky.}
 A simplified tree of objects is derived in two passes over the grammar.
@@ -110,7 +110,6 @@ Each identifier must begin with a letter, followed by any combination of letters
 
 \subsection{Phase 2: Structure}
 
-\PV{Tohle se mi libi, jak si prepsal, asi neni co vylepsit.}
 In the next phase, the complete structure of the MPS language is automatically generated from the AST that represents syntax of the input language.
 Elements of the Structure aspect are derived from the AST nodes, and then linked appropriately.
 Therefore, structure of the MPS language is usually similar to the original ANTLR grammar.
@@ -306,7 +305,6 @@ When the user wants to delete some end node from the AST of a program or documen
 
 \subsection{Phase 3: Editor}
 
-\PV{K Phase 3 nemam vyhrady, to je prepsano super.}
 Having the complete structure of the new MPS language, the next phase is to define the visual representation of all concepts (AST nodes) in the projectional editor.
 As we said in Section~\ref{sect:MPS}, MPS uses a cellular system that enables the language developer to arrange the children and properties of an AST node in a table-like manner.
 Cells of different types are supported by MPS --- for storing property values, references to child nodes, and keywords (string literals), and also cells that influence layout (e.g., indentation).
