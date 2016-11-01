@@ -60,7 +60,7 @@ Elements on the right side of a rule can be annotated with standard EBNF operato
 The first phase in the process of MPS language construction is parsing of the input ANTLR v4 grammar.
 It is done using an ANTLR parser that was automatically generated from the grammar of the ANTLR v4 notation itself.
 Nevertheless, the full AST, which comes out of the parser, is quite complex and contains information not relevant for the INGRID algorithm.
-In order to get a simple representation that is easy process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the AST have to be performed in this phase.
+In order to get a simple representation that is easy to process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the AST have to be performed in this phase.
 An output of this phase is a custom AST-like structure representing the grammar.
 
 \PV{Tenhle dalsi odstavec bych klidne celej odebral, neprinasi zas tolik informaci, vzhledem k tomu, ze nejde do hloubky.}
@@ -373,7 +373,7 @@ For example, in the case of the concept representing an XML element, there must 
 
 \PV{Nejsem si jisty, jestli to nebylo az pozdeji, ale byl tu nekde odstavec, ktery se zminoval o tom, ze whitespace je silent-polykan parserem a proto pravidla nemusi obsahovat explicitne informaci o tom, kde vsude muze byt mezera \\\texttt{'<' WS* Name WS* attribute* WS* '>' WS*...}.\\To podle me dobre ilustrovalo, ze se tam ztraci ta informace. Prislo mi to jako zajimave poukazani, ale samozrejme to tu byt nemusi, pokud se ti zda, ze to az tak zajimave neni.}
 
-Our INGRID method targets mostly text-based languages, for whose concepts the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
+Our INGRID method targets mostly text-based languages, for the concepts of which the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
 An obvious choice would therefore be to use the same approach for Editor and TextGen.
 Nevertheless, since the Editor aspect has to be adjusted manually, we decided to use a different approach for TextGen.
 We designed a procedure based on a simple fully automated heuristic that provides surprisingly good results.
@@ -391,8 +391,8 @@ We discuss all the cases here:
 		On the other hand, it will distinguish language keywords (e.g., \code{function}, \code{var}, \code{in}) from other literals by preserving the space character in between them.
 	\item Spaces can be safely omitted also when specific optional child nodes are not present, and in the case of empty lists of child nodes, so that whitespace does not accumulate.
 \end{itemize}
-A space must be alway inserted when two child nodes are next to each other.
-Elements of a sequence of child nodes are separated with space or a line break.
+A space must be always inserted when two child nodes are next to each other.
+Elements from a sequence of child nodes are separated with spaces or line breaks.
 
 \begin{figure}[ht]
 \begin{alltt}
