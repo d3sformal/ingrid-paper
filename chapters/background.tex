@@ -168,7 +168,11 @@ PE grammars extend the syntax of the ANTLR v4 notation by custom constructs that
 The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
 However, even these few features make the already complex syntax of ANTLR v4 much more complicated.
 
-\PV{Nasledujici dve vety byly vzaty z popisu INGRID, tak funguje INGRID, ne PE4MPS.}
+\PV{Veta ktera zminuje dve faze s Java objekty se tyka INGRID (popisuje fungovani INGRID).}
+\PP{PE4MPS funguje takhle:
+Je tam specialni jazyk, kde uzivatel zada informace k importu. Je tam specialni koncept z nejakeho Import.process jazyka, kde se vyplni jeho atributy: 1) Nazev ciloveho jazyka, 2) Cesta k souboru, 3) A pak se klikne na "Import" v Tools menu. Ten jazyk uz musi existovat (byt zalozeny uvnitr MPS) a neni tam primo vyber souboru, ale musi se rucne vyplnovat cesta.
+Primo z PE souboru to pak nageneruje ten cilovy jazyk. Nejsou tam zadne dve faze.
+}
 An MPS language is created by the PE4MPS tool in two steps.
 First, the PE parser is used to load an input PE file and build its intermediate representation, which has the form of a tree-like structure consisting of Java objects.
 Then, all the concepts (AST nodes) and their aspects are created inside MPS.

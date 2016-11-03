@@ -7,72 +7,37 @@
 % TODO continue from here
 
 
-
-\PP{Zhodnotit jak se podarilo dosahnout automatizace. How much we fulfilled our goal of maximal possible automation.}
-
-We implemented everything (the proposed approach described above) in the form of an MPS plugin that allows users to carry out the import.
-
+We implemented the proposed INGRID method as an (in the form of) an MPS plugin that allows users to run (perform, carry out) the construction of an MPS language from an ANTLR v4 grammar.
 We used a mix of Java and BaseLanguage in our implementation.
 We used the MPS API, which can be called from the BaseLanguage programs too, to generate some of the language elements.
-BaseLanguage is needed to use/call the MPS (language) API, i.e. to programmatically create new language elements and their aspects.
+BaseLanguage is needed to use/call the MPS API, e.g. in order to programmatically create new language elements and their aspects.
+The plugin uses the ANTLR library~\cite{ref:ANTLR4} to work with ANTLR v4 grammar files (to parse them, etc) and several MPS libraries (that implement the MPS API).
+Our complete implementation is available at \todo{url of github repository}.
 
-The plugin uses the ANTLR library to work with ANTLRv4 grammar files (to parse them, etc) and several MPS libraries (that implement the MPS API).
+For the purpose of evaluation, we applied INGRID to several complex mainstream languages, including JSON, JavaScript, and C\#.
+We used the version of JavaScript that is standardized as ECMAScript 5.1 --- the specification was released/finalized in 2011 and it is currently the most frequently adopted version.
+MPS projects that contain definitions of all these three programming languages are available in the public repository at \todo{url}
+In the rest of this section, we discuss our experience with application of INGRID to the selected languages, and then we highlight general observations.
 
-For the first step of automated construction of MPS languages from grammars (i.e., for parsing the grammar), the plugin uses the ANTLR library~\cite{ref:ANTLR4} to generate a Java ANTLR parser of the ANTLRv4 notation, because there exists an ANTLRv4 grammar for the ANTLRv4 notation~\cite{ref:ANTLR4reference}.
+However, before giving details on the experience, we must emphasize that the MPS languages produced by INGRID (the automatically imported languages) are not ready-to-use full-fledged MPS counterparts of the original input languages.
+Imported languages contain full structure found in the respective ANTLR grammars and some more aspect definitions that will help users of the languages in creating code.
+Every imported language has to be manually tweaked/adjusted by the end user (e.g., in particular/especially its Editor aspect).
+The imported language has to be manually adjusted (tweaked, polished) by the end user (developer) and some of its complications have to be resolved manually by a human.
+One of our goals was to show that even though our method (plugin) does not create a perfect MPS language, it can be customized very fast into a very usable form.
+We manually tweaked/customized the editor and the TextGen aspect only, structure aspect was left in its original form.
 
-\todo{
-	We should provide url to the github repository (implementation) and pointer to some package with ANTLR grammars and imported MPS languages (take from Attachments.zip in the master thesis).
-}
+For each of the languages, we provide the result (MPS language) exactly in the form as created by our implementation (plugin), and also the adjusted grammars used as input for INGRID, both/all in the repository with implementation.
 
-\todo{Discuss where INGRID helps the most.}
-
-Automated generation of the Structure aspect is (the part) where INGRID spares the user from many hours of tedious and sometimes quite challenging work.
-
-We discuss our experience with application of INGRID to complex mainstream languages, such as JSON and JavaScript.
-
-\todo{Popsat nase zkusenosti s importem slozitych jazyku (XML, JavaScript, Python, a dalsi).}
-
-From introduction: We will also show some example languages imported with INGRID and discuss our experience.
-
-In order to evaluate INGRID, we tried to import several real/mainstream languages:
-\begin{itemize}
-	\item \textbf{SimpleXML} --- Simplified XML that we used in this thesis for explanatory purposes.
-	\item \textbf{JSON} --- Similar to XML, but this time a full port of the specification.
-	\item \textbf{ECMAScript 5.1} --- Specification of the language known as JavaScript, dated to the year 2011, which is currently the most frequently adopted version.
-\end{itemize}
-Results of the import process are included in the package that is available at \todo{url}.
-The repository \todo{Add url} contains an example MPS project with three languages.
-For each example language, you can find its original import, exactly in the form as created by our plugin.
-
-We experimented with import of XML, JavaScript, Python, Ruby, C\#, Swift, MySQL and some other languages.
-
-Most of these languages are quite complex when it comes to their structure and the overall syntax variety.
-
-We must emphasize that the automatically imported languages are not ready-to-use full-fledged MPS languages.
-We did not expect to achieve that at this stage, as that is a much bigger, if not impossible, challenge.
-Imported languages contain full structure found in the respective grammars and some more aspect definitions that will help users of the languages in creating code.
-\PV{The imported language has to be manually tweaked by the end user.}
-The imported language has to be manually adjusted (tweak, polished) by the end user (developer) and some of its complications have to be resolved manually by a human.
-
-We found out that manual adjusting of the editor/textgen aspect (adding line breaks and indentation) is far more effective and precise than any automated approach we came up with (during our research).
-The imported language can be, in our opinion, adjusted very fast into a more readable form.
-
-The package at \todo{url} contains also adjusted versions of all three languages.
-Then, for each language, there is an adjusted version.
-
-This adjusted version was created from the original import and the author spent no more than between 20 to 60 minutes of working on it.
-The first author spent only a couple of minutes of (manually) adjusting them after the automated import, so that we try to prove our point above.
+\paragraph{JSON.}
+The first language that we tried was JSON \todo{nejaka reference na specifikaci nebo pripadne gramatiku}.
+The adjusted version of the JSON language in MPS was created from the original by the first author in no more than 20 minutes of working on it.
 More specifically, the JSON language was ready for use in no more than 20 minutes of minor adjusting.
 We chose this language because it does not require us to implement complex aspects, such as type checking or data flows.
-Similarly, the SimpleXML turned out very nice.
 
-Our main goal was to prove that even though our method (plugin) does not create a perfect language, it can be customized very fast into a very usable form.
-We manually tweaked/customized the editor and the TextGen aspect only, structure aspect was left in its original form.
-This justifies some of the decisions we have described in Section X (editor aspect) and Section Y (textgen), proving that our approach is quite practical (and the best\PV{?}).
+\paragraph{JavaScript.}
+We have also tried to use the INGRID tool/plugin to import the JavaScript language, which is an example/instance of a widely-used complicated general purpose language.
+Importing the JavaScript language~\cite{ref:javascript} and manually adjusting all editors, that needed it, in a less than hour time.
 
-We have also tried to use the INGRID tool/plugin to import the JavaScript language, which is exactly the type of a complicated general purpose language that might be of interest to other people.
-We have confirmed this assumption (that code layout in the Editor aspect can be adjusted very fast, from the basic default single-row layout) by importing the JavaScript language [12] and manually adjusting all editors, that needed it, in a less than hour time.
-It takes a very short time to reach optimal results (because MPS allows doing this very efficiently), as we show on the example of importing the JavaScript language~\cite{ref:javascript} and manually adjusting all editors that needed it, all that in a less than hour time.
 There are already some projects, where a manual port of JavaScript is being done.
 One of them is the ECMAScript4MPS~\cite{ref:ECMAScript4MPS} from the author of the PE4MPS project~\cite{ref:PE4MPS} that we described in Section X (similar projects, related work).
 The result of import by INGRID is quite good, comparable to the PE4MPS project.
@@ -81,12 +46,31 @@ These aspects improve the usability by a lot, e.g. when the user starts writing 
 These actions are needed in any MPS language and are expected to be implemented after the import step, \todo{Maybe say that INGRID does not generate these actions/aspects/features yet but it is our future work} as it is not possible to generate them automatically.
 However, when it comes to language structure, concept aliases, and auto-completion, we think that INGRID (our method/plugin) did a very good job.
 The structure aspect is very similar to the ECMAScript4MPS's one, which was created manually over the course of a large number of hours.
-INGRID does that (achieves the same result) fully automatically.
+INGRID does that (achieves the same result) fully automatically, and yields very good/nice results.
 
-\PV{Veta se opakuje nize, odstranil bych tuhle}
-To summarize, import languages such as JavaScript or JSON and others are giving nice results.
+\paragraph{C\#}.
+Pred generovanim MPS jazyka pro C\# bylo nutne upravit gramatiku (coz zabralo asi hodinu prace) aby INGRID vyprodukoval pomerne rozumny vysledek.
+The definition of C\# in MPS is quite large and complex.
+Obsahuje asi vic nez 800 konceptu (zkontrolovat).
+Import of the adjusted C\# language funguje docela hezky (ale je hodne velky a dlouho se kompiluje).
+Ale na skutecne dobre pouzitelny jazyk C\# uvnitr MPS by to chtelo jeste vic manualnich uprav gramatiky a take urcitych aspektu vysledneho MPS jazyka (editor, textgen, apod).
 
-Results of our experiments with languages such as JSON or JavaScript show that the proposed approach (INGRID) yields very good results, comparable to existing manual ports, and spares the user from hours of tedious, error prone and time-consuming work.
+\paragraph{Other languages.}
+We also experimented with import of other languages, such as Python and Ruby.
+Import jazyku Python a Ruby moc nefunguje protoze gramatika je napsana stylem ktery neni vhodny pro INGRID.
+INGRID cannot handle cyclic rules (which could be found in Python grammar, for example).
+Cyklicka pravidla to tedy neumi, jen na ne upozorni (a rekne, ktere pravidlo je obsahuje).
+Museli bychom gramatiku rucne upravit (bude to ale nase future work).
 
-\PV{Tohle uz neni pravda, error reporting i cyklicka pravidla jsem pred odevzdanim DP vyladil a kod celkove dodelal. Cyklicka pravidla to tedy neumi, jen na ne upozorni (a rekne, ktere pravidlo je obsahuje).}
-Limitation: the project is lacking proper error reporting and cannot handle cyclic rules (which could be found in Python grammar, for example).
+\paragraph{General observations.}
+Most of the languages (that we tried to define in MPS, use/import into MPS) are quite complex when it comes to their structure and the overall syntax variety, so defining them manually would be a very tedious, error-prone and time-consuming process.
+\todo{Discuss where INGRID helps the most based on the experience.}
+(Our experience/experiments show that) Automated generation of the Structure aspect is (the part) where INGRID spares the user from many hours of tedious and sometimes quite challenging work.
+On the other hand, we found out that manual tweaking/adjusting of the Editor and Textgen aspects (adding line breaks and indentation) is very effective, and takes only a relatively little/short time (much less than we expected).
+The imported language can be, in our opinion, adjusted very fast into a more readable form.
+In fact/total, the adjusted version of each language was created from the original import by the first author, who spent no more than between 20 to 60 minutes of working on each of them.
+The first author spent only a couple of minutes of (manually) adjusting the languages after the automated import.
+Our experience with all the languages confirms our hypothesis (that code layout in the Editor aspect can be adjusted very fast, from the basic default single-row layout), and justifies some of the decisions we have described in Section X (editor aspect) and Section Y (textgen), proving that our approach is quite practical.
+It takes a very short time to reach optimal results (because MPS allows doing this very efficiently), as we show on the example of importing the JavaScript language and manually adjusting all editors that needed it, all that in a less than hour time.
+\todo{Mozna rict:} However, during our work on this project, we also tried to design some/various automated heuristics, but all that we came up with so far give rather suboptimal/bad results especially when compared to results produced by a human user.
+
