@@ -485,7 +485,8 @@ We turned quotes into literals, ensuring that they will only appear in the proje
 \label{fig:XMLADJUST}
 \end{figure}
 
-The second example relates to a fragment of the JavaScript language, also known as ECMAScript\footnote{https://github.com/antlr/grammars-v4/blob/master/ecmascript/ECMAScript.g4}.
+The second example relates to a fragment of the JavaScript language, also known as ECMAScript.
+%\footnote{https://github.com/antlr/grammars-v4/blob/master/ecmascript/ECMAScript.g4}.
 Every statement in JavaScript needs to be terminated by a semicolon, newline, end of the file, or end of the block --- see the Figure~\ref{fig:JAVASCRIPTSTMT}, which contains the corresponding fragment of the ECMAScript grammar.
 Since there are multiple options, a user would have to select one of them for each statement in the editor.
 Technically, every language concept representing a statement would contain one child node of the interface type \mpsinterface{IEos}, which has to be assigned a proper object (i.e., an AST node corresponding to one of the options listed above).
