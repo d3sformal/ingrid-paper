@@ -304,6 +304,7 @@ In each case, the whole chain including possibly multiple intermediary AST nodes
 When the user wants to delete some end node from the AST of a program or document written in the MPS language, the effect of an insertion must be fully reversed.
 
 \subsection{Phase 3: Editor}
+\label{sect:EDITORDEF}
 
 Having the complete structure of the new MPS language, the next phase is to define the visual representation of all concepts (AST nodes) in the projectional editor.
 As we said in Section~\ref{sect:MPS}, MPS uses a cellular system that enables the language developer to arrange the children and properties of an AST node in a table-like manner.
@@ -340,6 +341,7 @@ The key idea would be to derive the code layout from a set of valid input source
 We believe that the user would have to adjust the editor manually a little bit even in this case, because the results of a machine learning-based approach would not be perfect.
 
 \subsection{Phase 4: Text Generation}
+\label{sect:TEXTGENDEF}
 
 The purpose of the last phase of the MPS language construction is to generate the TextGen aspect for each concept.
 We use the \mpsconcept{Element{\_}1} concept again for illustration.
