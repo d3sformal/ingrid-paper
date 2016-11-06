@@ -168,18 +168,12 @@ PE grammars extend the syntax of the ANTLR v4 notation by custom constructs that
 The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
 However, even these few features make the already complex syntax of ANTLR v4 much more complicated.
 
-\PV{Veta ktera zminuje dve faze s Java objekty se tyka INGRID (popisuje fungovani INGRID).}
-\PP{PE4MPS funguje takhle:
-Je tam specialni jazyk, kde uzivatel zada informace k importu. Je tam specialni koncept z nejakeho Import.process jazyka, kde se vyplni jeho atributy: 1) Nazev ciloveho jazyka, 2) Cesta k souboru, 3) A pak se klikne na "Import" v Tools menu. Ten jazyk uz musi existovat (byt zalozeny uvnitr MPS) a neni tam primo vyber souboru, ale musi se rucne vyplnovat cesta.
-Primo z PE souboru to pak nageneruje ten cilovy jazyk. Nejsou tam zadne dve faze.
-}
-An MPS language is created by the PE4MPS tool in two steps.
-First, the PE parser is used to load an input PE file and build its intermediate representation, which has the form of a tree-like structure consisting of Java objects.
-Then, all the concepts (AST nodes) and their aspects are created inside MPS.
-The information about the code layout, extracted from the PE file, is used when generating the projectional editor for every AST node.
+The PE4MPS tool creates an MPS language in a single atomic step.
+An input PE file is loaded and processed by the PE parser, and then all concepts (AST nodes) and their aspects are directly generated inside MPS.
+Information about the code layout, extracted from the PE file, is used when generating the projectional editor for every AST node.
 
 The main disadvantage of the PE4MPS approach is that it only shifts the tedious manual work from creating projectional editors in the MPS IDE to writing PE grammars in plain text.
-\PV{Navrhuji pridat (aby to bylo vice jasne?): User is forced to input the layout information by extending the grammar manually.}
+In particular, language developers are forced to specify the code layout manually in PE grammars, through the corresponding extensions.
 Usage of a standard text editor is inferior (and much more error-prone) with respect to MPS, which has been designed for the purpose of specifying the code layout and provides lot of support to developers.
 Another limitation of PE4MPS is that it does not implement the full ANTLR syntax.
 Every grammar might require non-trivial adjustments before it can be processed using the PE4MPS tool.
@@ -193,16 +187,7 @@ Given some language as input, the textual grammar of the language is imported au
 The next step would be to create a new MPS language from the grammar definition in MPS, but it is not implemented yet.
 
 However, the project has also other important limitations.
-The tool does not generate any parent-child relationships in the Structure aspect, and it completely neglects the Editor and TextGen aspects.
-\PV{Dalsi veta mozna zbytecna?}
-In particular, it does not support creating of the projectional editor at all.
-
-\PV{Navrhuji pridat neco jako (ale mozna uz o tom mluvime jinde, jen si ted nejsem jisty):
-The major take away from this project is the idea of an intermediate grammar representation inside of MPS which we have also considered.
-The advantage of this could be the possibility of extending the ANTLRv4 notation using some graphic tools that MPS has to offer. 
-Using the projectional editor, a user could add the layout information in an effective way.
-The disadvantage is the dual implementation that is needed.
-First to transform the ANTLRv4 text file into the MPS grammar language and secondly to transform this grammar into the target MPS language.}
+The tool does not generate any parent-child relationships in the Structure aspect, and it provides no support for the projectional editor at all (by completely neglecting the Editor and TextGen aspects).
 
 \paragraph{mps-metabnf.}
 The mps-metabnf tool~\cite{ref:MPSMETABNF}, implemented by members of the DSLFoundry group, builds upon similar ideas as the ANTLR{\_}MPS project described above.
@@ -210,10 +195,6 @@ Authors of this project, too, created an MPS language that can be used to captur
 Every imported grammar is represented using this ANTLRv4 MPS language.
 A user is then able to adjust the grammar as he wishes, specifying the code layout in the projectional editor.
 In the last step, the target MPS language is derived from the adjusted grammar definition.
-\PV{Navrhuji odsud dolu smazat.}
-Many iterations of this process, involving adjustments of the grammar followed by recreation of the target language, can be performed.
 
-The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLRv4 MPS language into the actual target language.
-\PV{Smazat az sem.}
-\PV{A pridat: This step has not yet been implemented, because MPS doesn't offer any mechanisms for automatic transformation.
-This means that implementation would require traversing the AST of the grammar and recreating the definition from that.}
+The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLRv4 MPS language into the definition of the actual target MPS language.
+
