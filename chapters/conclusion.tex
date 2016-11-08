@@ -1,17 +1,11 @@
 \section{Conclusion and Future Work}
 
-The proposed INGRID method is only partially-automated, but nevertheless it reduces the amount of necessary manual work/effort (that the user has to perform) to a great degree.
+Our contribution is the INGRID method for constructing language definitions in MPS from their grammars in the ANTLR notation.
+The method is only partially automated, but nevertheless it greatly reduces the amount of manual work that developers of MPS languages have to perform.
+Although we discussed all the challenges, details of our solution and general observations just in the context of ANTLR grammars and JetBrains MPS, we believe they are more general --- and in particular relevant to everyone tackling a similar problem in the field of DSLs and language workbenches.
 
-\todo{Highlight again:} The challenges and problems discussed in this paper, and our solution, are not specific to MPS --- they are common for everyone tackling a similar problem (in the field of DSL and language workbenches).
+In the future, we would like to address the remaining open problems (there are many of them) and increase the level of automation.
+Our primary research goal is to investigate the usage of machine learning for the purpose of generating editors that support nice and readable code layout.
+The information about code layout, once it is available, will be then leveraged and used also to improve TextGen.
+Another subject for future work is generating parsers that would allow users to import existing source code into MPS.
 
-\todo{Write something.}
-
-There is lot of further follow-up work to be done. Many open problems remain.
-
-Besides using some kind of automated (machine) learning to generate the Editor aspect, we would also like to do XYZ.
-Generating nicely designed and user-friendly editors, maybe using artificial intelligence (machine learning) that would evaluate (analyze) existing code in plain text and based on that create the editors.
-Moreover, once we would have some information about the layout for generating better projectional editor, we could leverage the same information and use it to improve TextGen.
-
-Follow-up work might look more into the problem of code layout detection, possibly exploring suggested approaches such as the learning approach described in Section XY \todo{Tohle se snad podari aspon castecne implementovat}.
-This could lead to better results in editor and TextGen aspect generation which could definitely use some improvement.
-Another future endeavors will definitely touch the subject of generating parsers that would enable the user to import existing source code into MPS.
