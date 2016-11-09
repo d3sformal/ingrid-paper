@@ -109,7 +109,6 @@
 	{Charles University, Faculty of Mathematics and Physics, Prague, Czech Republic}
 	{premek.vysoky@gmail.com, parizek@d3s.mff.cuni.cz}
 
-% TODO pridat nekoho dalsiho z JetBrains (Alex Shatalin?)
 % TODO upravit affiliation pro JetBrains -> doplnit "s.r.o" nebo radsi "Inc."
 % TODO muzeme taky napsat jejich emaily pokud budou lidi z JetBrains souhlasit
 \authorinfo{V\'aclav Pech}
@@ -119,20 +118,19 @@
 \maketitle
 
 \begin{abstract}
-% TODO
-\todo{write later}
+JetBrains MPS is a language workbench, an IDE that allows developers both to write code and manipulate language definitions.
+It leverages the concept of projectional editing, where the developer directly manipulates the AST representation of program code.
+While MPS focuses on domain-specific languages (DSL), it needs to support also general-purpose programming languages (GPLs) --- for example, to compile and run programs written in some DSL, or to enable combination of GPLs with languages created in MPS.
 
-\todo{Copy from master thesis.}
-JetBrains MPS is a language workbench focusing on domain-specific languages.
-Unlike many other language workbenches and IDEs, it uses a projectional editor for code.
-The developer directly manipulates the program in its tree form (AST) and not by editing a text source code.
-This brings many advantages, but on the other hand requires time-consuming and complicated MPS language definition.
-The thesis elaborates on the possibility of automating the process of creating MPS language definition from its grammar description.
-It introduces the MPS editor, evaluates approaches of related projects and describes author's efforts to implement an MPS plugin that allows this import.
-The chosen approach and the selection of tools used for implementation are justified in the thesis.
-We point out important problems that any similar project might deal with and we introduce some possible solutions.
-Furthermore, the thesis contains examples of imported languages, showing the potency of the chosen approach.
-The thesis also aims to lay groundwork for future extensions and suggest possible improvements.
+We present \textsc{Ingrid}, a new method for construction of a language definition in MPS based on its ANTLR grammar.
+The structure of a language is generated automatically, but its other aspects --- including the projectional editor --- must be adjusted manually by the user.
+During the development of \textsc{Ingrid}, we encountered several challenges related to the mapping between (i) grammars written in an EBNF-like notation and (ii) the language definitions in MPS based on object-oriented principles.
+Another difficulty is that grammars do not hold any information about code layout.
+
+We implemented \textsc{Ingrid} as a plugin for MPS and evaluated it on several full-fledged programming languages, such as JavaScript and C\#.
+Results show that our approach is practical.
+Even though it is only partially automated, it saves the user from many hours of tedious and error-prone work.
+Necessary manual adjustments take only a short time.
 \end{abstract}
 
 
