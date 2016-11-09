@@ -47,20 +47,20 @@ The overall goal of our project is to automatize the process of language definit
 We believe that such an automated process would encourage and speed-up the migration of more GPLs into MPS, thus giving the authors of DSLs more options.
 Other possible applications include the support for writing programs in GPLs using the projectional editor and combination of GPLs with domain-specific languages natively created in MPS.
 
-In this paper we present INGRID, a method and a tool for semi-automated construction of the definition of a programming language in MPS that uses an ANTLR grammar of the language as a description of its syntax.
-We discuss the main challenges that we encountered during the development of INGRID and our solution to them.
+In this paper we present \textsc{Ingrid}, a method and a tool for semi-automated construction of the definition of a programming language in MPS that uses an ANTLR grammar of the language as a description of its syntax.
+We discuss the main challenges that we encountered during the development of \textsc{Ingrid} and our solution to them.
 Although we explain everything on the examples of MPS languages and ANTLR grammars, we emphasize that most of the challenges are general. 
 They apply to the relation between the two approaches to the definition of a programming language --- (i) one that uses grammars in an EBNF-like notation, with rules and tokens written in plain text, and the corresponding parser generators, and (ii) the structured object-oriented approach used in MPS and other language workbenches.
 Specifically, the description of a language in the form of a grammar does not hold any information about the code layout, and the grammar typically contains many rules that do not directly correspond to AST nodes and programming language constructs.
 We provide more details in Section~\ref{sect:LANGDEF}.
 
-The INGRID tool can help also to make the construction of DSLs more efficient.
-Based on our experience, we believe that, especially for simple languages, it is less time consuming to write their grammar by hand and then create the language definition in MPS using INGRID, than to create the language manually using the MPS GUI.
+The \textsc{Ingrid} tool can help also to make the construction of DSLs more efficient.
+Based on our experience, we believe that, especially for simple languages, it is less time consuming to write their grammar by hand and then create the language definition in MPS using \textsc{Ingrid}, than to create the language manually using the MPS GUI.
 
-%INGRID allows developers to leverage all the features that MPS has to offer together with general purpose languages such as C++, JavaScript or Python.
+%\textsc{Ingrid} allows developers to leverage all the features that MPS has to offer together with general purpose languages such as C++, JavaScript or Python.
 
 The rest of the paper has the following structure.
-In the next section, we provide necessary information about MPS and a brief overview of projects with similar goals as INGRID.
+In the next section, we provide necessary information about MPS and a brief overview of projects with similar goals as \textsc{Ingrid}.
 Then, in Section~\ref{sect:LANGDEF}, we describe our approach to the construction of a language definition in MPS from its ANTLR grammar, discussing the major challenges together with our solution along the way.
-We also discuss our experience with usage of INGRID on complex mainstream languages, such as JavaScript and C\#, and highlight open problems (Section~\ref{sect:EVAL}), and then we conclude.
+We also discuss our experience with usage of \textsc{Ingrid} on complex mainstream languages, such as JavaScript and C\#, and highlight open problems (Section~\ref{sect:EVAL}), and then we conclude.
 
