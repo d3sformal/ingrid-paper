@@ -4,10 +4,10 @@ The prevailing approach to define valid syntaxes for programming languages is th
 Many popular tools exist for automated generation of parsers from the grammar definitions --- for example, ANTLR~\cite{ref:ANTLRBOOK,ref:ANTLR} and Bison/Flex~\cite{ref:BISONFLEX}.
 The source code of programs is written in a text editor, usually embedded into an IDE. Parsers are used to create an abstract syntax tree (AST) representation of the code, e.g. inside the compiler.
 
-An alternative approach is projectional (or structural) editing, where a developer directly manipulates the AST representation of the source code instead of plain text.
+An alternative approach is projectional (or structural) editing~\cite{ref:VWK15}, where a developer directly manipulates the AST representation of the source code instead of plain text.
 This idea emerged as early as in 1970s, but it failed to get adopted widely, mostly due to inconvenient and unnatural way of manipulating code.
 A recent revival of projectional editing has been observed in the area of language workbenches --- IDE-like tools that enable the developers to manipulate the actual language definition.
-The Meta Programming System (MPS)~\cite{ref:MPS} by JetBrains is an open-source language workbench that focuses on domain specific languages (DSL) and leverages the concept of projectional editing.
+The Meta Programming System (MPS)~\cite{ref:MPS,ref:MPSBOOK} by JetBrains is an open-source language workbench that focuses on domain specific languages (DSL) and leverages the concept of projectional editing.
 MPS provides the whole IDE infrastructure that enables developers to design custom languages, use them to write program code, and compile the code into executables.
 We provide more technical details about MPS in Section~\ref{sect:MPS}.
 In the rest of the paper, we will use MPS to illustrate the general concepts and issues that apply also to other language workbenches.
