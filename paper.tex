@@ -118,11 +118,9 @@
 \maketitle
 
 \begin{abstract}
-\PV{Manipulate language definitions mozna uplne neevokuje tvorbu jazyku. Slo by to rict vic polopaticky? Tady mozna pomuze vic Vaclav.}
-\JB{"Manipulate language definitions" - navrhuji "create or modify language definitions"}
-JetBrains MPS is a language workbench, an IDE that allows developers both to write code and manipulate language definitions.
+JetBrains MPS is a language workbench, an IDE that allows developers both to write code and create or modify language definitions.
 It leverages the concept of projectional editing, where the developer directly manipulates the AST representation of program code.
-While MPS focuses on domain-specific languages (DSL), it needs to support also general-purpose programming languages (GPLs) --- for example, to compile and run programs written in some DSL, or to enable combination of GPLs with \JB{Navrhuji nahradit "languages" za "DSLs"} languages created in MPS.
+While MPS focuses on domain-specific languages (DSL), it needs to support also general-purpose programming languages (GPLs) --- for example, to compile and run programs written in some DSL, or to enable combination of GPLs with DSLs created in MPS.
 
 We present \textsc{Ingrid}, a new method for construction of a language definition in MPS based on its ANTLR grammar.
 The structure of a language is generated automatically, but its other aspects --- including the projectional editor --- must be adjusted manually by the user.
