@@ -6,7 +6,7 @@ In this section, first we introduce basic features of the MPS platform, and then
 \subsection{JetBrains MPS}
 \label{sect:MPS}
 
-JetBrains MPS is a complete language workbench --- an integrated development environment that allows developers to create their own languages and use them to write code.
+JetBrains MPS is a language workbench --- an IDE that allows developers to create their own languages and use them to write code.
 The code can then be transformed into a target language, typically a GPL, such as Java or C, and eventually compiled into executable programs.
 
 As we already indicated, MPS differs from typical IDEs in one important aspect --- the projectional editor.
@@ -38,13 +38,13 @@ Therefore, a definition of a whole language in MPS typically has an object-orien
 
 \paragraph{Structure.}
 The fundamental aspect of any MPS language is Structure.
-It must be created first for each intended element (concept) of the language.
-Structure specifies core attributes of an MPS concept such as the name, inheritance relationships, possible child concepts (including their types and cardinalities), the implemented interfaces, and references to other AST nodes.
+It must be created first for each intended language element (concept).
+Structure specifies core attributes of an MPS concept such as the name, inheritance relationships, child concepts (including their types and cardinalities), the implemented interfaces, and references to other AST nodes.
 % other properties (fields of any type that can hold values), etc.
-Figure~\ref{fig:if_statement_structure} shows definition of the Structure aspect for the \code{if-else} statement.
+Figure~\ref{fig:if_statement_structure} shows definition of the Structure aspect for the \code{if-then-else} statement.
 
-The definition of Structure restricts the type of AST nodes that can appear at a particular place in the tree.
-For example, one can restrict the condition in the \code{if-then-else} statement to be a boolean expression, and the \code{then}-block to be a list of statements.
+Structure also restricts the type of AST nodes that can appear at a particular place in the tree.
+For example, one can restrict the condition in \code{if-then-else} to be a boolean expression, and the \code{then}-block to be a list of statements.
 
 \begin{figure}[ht]
 \centering
@@ -72,7 +72,7 @@ For example, one can restrict the condition in the \code{if-then-else} statement
   \mpsstkeyword{references:}
   \mpsstplaceholder{<< ... >>}
 \end{alltt}
-\caption{Structure aspect of the \code{if-else} statement}
+\caption{Structure aspect of the \code{if-then-else} statement}
 \label{fig:if_statement_structure}
 \end{figure}
 
@@ -83,7 +83,7 @@ The author usually incorporates all of the node's children, references, and prop
 Additionally, cells of the editor can be styled using a language similar to CSS.
 The supported visual characteristics include text color and indentation.
 
-Figure~\ref{fig:if_editor_definition} shows an example of what the definition of the Editor aspect for the \code{if-else} statement might look like.
+Figure~\ref{fig:if_editor_definition} shows an example of what the definition of the Editor aspect for the \code{if-then-else} statement might look like.
 While here we indicate positions of cell borders on each line by spaces (just for the purpose of illustration), MPS GUI actually uses a graphically much more appealing way of displaying the Editor aspects, which involves vertical and horizontal lines of different colors and also background colors other than white for some cells.
 The symbols \verb|[-| and \verb|-]| represent layout information (cells), which define rules for mutual positioning of the contained cells (vertical, horizontal, indentation).
 
@@ -152,9 +152,8 @@ Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:i
 \subsection{Related Projects}
 \label{sect:RELATED}
 
-The BaseLanguage~\cite{ref:BASELANG} is an almost full port of the Java language, extended with MPS-specific features.
-It was created manually by JetBrains, and it is still undergoing changes as Java itself is evolving.
-
+The BaseLanguage~\cite{ref:BASELANG} is an almost full port of Java, which was created manually by JetBrains and extended with MPS-specific features.
+% and it is still undergoing changes as Java itself is evolving.
 The C language has also been manually tailored for MPS within the mbeddr project~\cite{ref:MBEDDR}.
 
 Besides that, we are aware of three other projects that provide certain support for GPLs in the context of MPS --- namely PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
@@ -164,9 +163,9 @@ We describe their main features and limitations in this section.
 PE4MPS~\cite{ref:PE4MPS} is a project that addresses the lack of information about code layout in grammars by using so called PE grammars~\cite{ref:PE}, which is a new grammar notation proposed by the same author.
 The abbreviation PE stands for projectional editing.
 
-PE grammars extend the syntax of the ANTLR v4 notation by custom constructs that provide information about the possible layout of AST nodes.
+PE grammars extend the syntax of the ANTLR v4 notation by constructs that provide information about the possible layout of AST nodes.
 The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
-However, even these few features make the already complex syntax of ANTLR v4 much more complicated.
+However, even these few features make the syntax much more complicated.
 
 The PE4MPS tool creates an MPS language in a single atomic step.
 An input PE file is loaded and processed by the PE parser, and then all concepts (AST nodes) and their aspects are directly generated inside MPS.
@@ -182,8 +181,8 @@ To compare, the goals behind our \textsc{Ingrid} approach are (1) to enable impo
 \paragraph{ANTLR{\_}MPS.}
 The ANTLR{\_}MPS project~\cite{ref:ANTLR2MPS} also uses the ANTLR v4 grammar notation, but otherwise works quite differently from PE4MPS.
 We provide only a brief mention here because this project is in an early stage of development.
-Its author created an ANTLRv4 MPS language, which captures the syntax of ANTLRv4 notation using MPS concepts.
-Given some language as input, the textual grammar of the language is imported automatically into MPS, taking the form of the ANTLRv4 MPS language.
+Its author created an ANTLR v4 MPS language, which captures the syntax of ANTLR v4 notation using MPS concepts.
+Given some language as input, the textual grammar of the language is imported automatically into MPS, taking the form of the ANTLR v4 MPS language.
 The next step would be to create a new MPS language from the grammar definition in MPS, but it is not implemented yet.
 
 However, the project has also other important limitations.
@@ -191,10 +190,10 @@ The tool does not generate any parent-child relationships in the Structure aspec
 
 \paragraph{mps-metabnf.}
 The mps-metabnf tool~\cite{ref:MPSMETABNF}, implemented by members of the DSLFoundry group, builds upon similar ideas as the ANTLR{\_}MPS project described above.
-Authors of this project, too, created an MPS language that can be used to capture ANTLR grammars.
-Every imported grammar is represented using this ANTLRv4 MPS language.
+Authors of this project, too, created an MPS language to capture ANTLR grammars.
+Every imported grammar is represented using this ANTLR v4 MPS language.
 A user is then able to adjust the grammar as he wishes, specifying the code layout in the projectional editor.
 In the last step, the target MPS language is derived from the adjusted grammar definition.
 
-The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLRv4 MPS language into the definition of the actual target MPS language.
+The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLR v4 MPS language into the definition of the actual target MPS language.
 

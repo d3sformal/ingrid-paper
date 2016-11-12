@@ -14,7 +14,7 @@ However, first we must emphasize that MPS languages automatically produced by th
 The structure of such a generated MPS language fully corresponds to the respective ANTLR grammar, but its other aspects (e.g., the Editor) have to be manually tweaked (or defined from scratch) by the end user.
 \textsc{Ingrid} also does not support advanced features of MPS, such as type checking.
 
-For each of the three languages (JSON, JavaScript, and C\#), we provide (1) its MPS definition in the form that incorporates all tweaks performed by authors of this paper and (2) the adjusted ANTLR v4 grammar used as input for \textsc{Ingrid}, both in the repository that contains also our implementation.
+For each of the three languages (JSON, JavaScript, and C\#), we provide (1) its MPS definition in the form that incorporates all tweaks performed manually by authors of this paper and (2) the adjusted ANTLR v4 grammar used as input for \textsc{Ingrid}, both in the repository that contains also our implementation.
 
 \paragraph{JSON.}
 The least amount of manual adjusting after the import into MPS was needed in case of the JSON language~\cite{ref:JSON}, because it is the simplest language from all that we used for our experiments.
@@ -52,7 +52,7 @@ Most of the languages discussed above, which we tried to create in MPS by using 
 Therefore, completely manual definition would be a very time-consuming and error-prone process.
 Fully automated generation of the Structure aspect is where \textsc{Ingrid} spares the user from many hours of tedious and sometimes quite challenging work.
 
-On the other hand, our experiments with complex languages show that, in the case of the Editor and Textgen aspects, manual adjustment (e.g., adding line breaks and indentation) is a very effective approach that takes only a short time --- in particular, much less time than we expected.
+On the other hand, our experiments with complex languages show that, in the case of the Editor and TextGen aspects, manual adjustment (e.g., adding line breaks and indentation) is a very effective approach that takes only a short time --- in particular, much less time than we expected.
 The first author spent between 20 and 60 minutes of work on each language, when adjusting the result of automated generation into a more useful and readable form.
 MPS IDE provides good support for efficient tweaking of the code layout in Editor and TextGen, allowing users to reach optimal results very fast.
 All of this justifies some of our decisions that we have described in Section~\ref{sect:EDITORDEF} and Section~\ref{sect:TEXTGENDEF}, proving that our approach is quite practical.

@@ -62,10 +62,10 @@
   % ANTLR
 \newcommand{\antlrap}{\textquotesingle}
 \newcommand{\antlrparserrule}[1]{\textcolor{Blue}{#1}}
-\newcommand{\antlrlexerrule}[1]{\textcolor{RedOrange}{#1}}
+\newcommand{\antlrlexerrule}[1]{\textcolor{BrickRed}{#1}}
 \newcommand{\antlrliteralnoap}[1]{\textcolor{Maroon}{#1}}
 \newcommand{\antlrliteral}[1]{\antlrap\antlrliteralnoap{#1}\antlrap}
-\newcommand{\antlrregex}[1]{\textcolor{PineGreen}{#1}}
+\newcommand{\antlrregex}[1]{\textcolor{OliveGreen}{#1}}
   % MPS in general
 \newcommand{\mpsconcept}[1]{\textcolor{OliveGreen}{#1}}
 \newcommand{\mpsinterface}[1]{\textcolor{Plum}{#1}}
@@ -74,18 +74,18 @@
 \newcommand{\mpsstalias}[1]{\textcolor{Green}{\textbf{#1}}}
 \newcommand{\mpsstproperty}[1]{\textcolor{Fuchsia}{\textbf{#1}}}
 \newcommand{\mpsstplaceholder}[1]{\textcolor{Gray}{\textbf{#1}}}
-\newcommand{\mpsstcardinality}[1]{\textcolor{RoyalBlue}{#1}}
+\newcommand{\mpsstcardinality}[1]{\textcolor{RoyalBlue}{\textbf{#1}}}
   % MPS editor
 \newcommand{\mpsedkeyword}[1]{\textcolor{Black}{\textbf{#1}}}
-\newcommand{\mpsedtarget}[1]{\textcolor{Fuchsia}{#1}}
+\newcommand{\mpsedtarget}[1]{\textcolor{RubineRed}{\textbf{#1}}}
 \newcommand{\mpsedannotation}[1]{\textcolor{Gray}{\textbf{#1}}}
   % MPS textgen
 \newcommand{\mpstgkeyword}[1]{\textcolor{Blue}{\textbf{#1}}}
-\newcommand{\mpstgtarget}[1]{\textcolor{Fuchsia}{#1}}
-\newcommand{\mpstgparam}[1]{\textcolor{Violet}{#1}}
+\newcommand{\mpstgtarget}[1]{\textcolor{RubineRed}{\textbf{#1}}}
+\newcommand{\mpstgparam}[1]{\textcolor{RoyalPurple}{\textbf{#1}}}
 \newcommand{\mpstgaction}[1]{\textcolor{Fuchsia}{\textbf{#1}}}
 \newcommand{\mpstgliteral}[1]{\textcolor{Green}{\textbf{#1}}}
-\newcommand{\mpstgnodeprop}[1]{\textcolor{darkgray}{#1}}
+\newcommand{\mpstgnodeprop}[1]{\textcolor{darkgray}{\textbf{#1}}}
 
 
 
@@ -109,10 +109,9 @@
 	{Charles University, Faculty of Mathematics and Physics, Prague, Czech Republic}
 	{premek.vysoky@gmail.com, parizek@d3s.mff.cuni.cz}
 
-% TODO upravit affiliation pro JetBrains -> doplnit "s.r.o" nebo radsi "Inc."
-% TODO muzeme taky napsat jejich emaily pokud budou lidi z JetBrains souhlasit
 \authorinfo{V\'aclav Pech}
 	{JetBrains}
+	{vaclav@jetbrains.com}
 
 
 \maketitle
@@ -122,14 +121,13 @@ JetBrains MPS is a language workbench, an IDE that allows developers both to wri
 It leverages the concept of projectional editing, where the developer directly manipulates the AST representation of program code.
 While MPS focuses on domain-specific languages (DSL), it needs to support also general-purpose programming languages (GPLs) --- for example, to compile and run programs written in some DSL, or to enable combination of GPLs with DSLs created in MPS.
 
-We present \textsc{Ingrid}, a new method for construction of a language definition in MPS based on its ANTLR grammar.
-The structure of a language is generated automatically, but its other aspects --- including the projectional editor --- must be adjusted manually by the user.
-During the development of \textsc{Ingrid}, we encountered several challenges related to the mapping between (i) grammars written in an EBNF-like notation and (ii) the language definitions in MPS based on object-oriented principles.
+We present \textsc{Ingrid}, a method for construction of a language definition in MPS based on its ANTLR grammar.
+The structure of a language is generated automatically, but its projectional editor and other aspects must be adjusted manually by the user.
+During the development of \textsc{Ingrid}, we encountered several challenges related to the mapping between grammars and language definitions in MPS that are based on object-oriented principles.
 Another difficulty is that grammars do not hold any information about code layout.
 
-We implemented \textsc{Ingrid} as a plugin for MPS and evaluated it on several full-fledged programming languages, such as JavaScript and C\#.
-Results show that our approach is practical.
-Even though it is only partially automated, it saves the user from many hours of tedious and error-prone work.
+We implemented \textsc{Ingrid} as a plugin for MPS and evaluated it on several mainstream GPLs, such as JavaScript and C\#.
+Results show that our approach is practical, and it saves the user from many hours of tedious and error-prone work.
 Necessary manual adjustments take only a short time.
 \end{abstract}
 
@@ -155,8 +153,8 @@ language workbench, projectional editor, grammar, domain-specific language, ANTL
 
 
 \acks
-% TODO
-This research was supported by JetBrains. \todo{Pridat jeste nejaky grant a kompletne preformulovat.}
+% TODO mozna pridat jeste nejaky dalsi grant (az clanek nekam vezmou)
+This work was partially supported by JetBrains.
 
 \bibliographystyle{abbrvnat}
 

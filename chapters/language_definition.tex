@@ -5,8 +5,8 @@ The proposed \textsc{Ingrid} method accepts grammars in the ANTLR v4 notation~\c
 All widely used programming languages have their syntax defined using this notation~\footnote{https://github.com/antlr/grammars-v4}.
 Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
 
-The process of MPS language construction, as performed by \textsc{Ingrid}, consists of four phases --- the first is parsing of the input grammar, which is followed by definition of the essential aspects of the language (Structure, Editor, and TextGen).
-Each of the phases 2-4 is exclusively and fully responsible for one aspect.
+The process of MPS language construction, as performed by \textsc{Ingrid}, consists of four phases --- the first is parsing of the input grammar, which is followed by definition of the essential aspects of the language (Structure, Editor, and TextGen, respectively).
+%Each of the phases 2-4 is exclusively and fully responsible for one aspect.
 
 \textsc{Ingrid} is currently able to create (i) a full Structure aspect for each element (type of an AST node) of the given language, (ii) a very basic Editor, and (iii) a basic TextGen aspect.
 Therefore, the resulting MPS language typically still has to be adjusted manually to improve its usability, and the human users must also define the remaining aspects not yet supported by \textsc{Ingrid}.
@@ -22,6 +22,7 @@ The \emph{SimpleXML} language is small but complex enough to be used for illustr
 \centering
 \begin{framed}
 \begin{alltt}
+\small
 \textbf{grammar} \textit{SimpleXML};
 \antlrparserrule{document}  : \antlrparserrule{prolog}? \antlrparserrule{comment}? \antlrparserrule{element} ;
 \antlrparserrule{prolog}    : \antlrliteral{<?xml } \antlrparserrule{attrib}* \antlrliteral{?>} ;
@@ -67,13 +68,14 @@ Note that, in the ANTLR notation, lexer rules can be built from alternatives jus
 For each lexer rule, the parser produces a tree that captures the structure of the rule.
 However, the lexer rules are, in fact, just regular expressions used to recognize tokens in the input string.
 
-Every tree that represents a lexer rule is flattened into the equivalent regular expression by the recursive algorithm specified in Figure~\ref{fig:ALGFLATTEN}.
-A distinct sequence is created from the elements of each alternative, and then all those sequences are joined by the alternation operator \code{$|$} to form a regular expression.
+Every tree that represents a lexer rule is flattened into the equivalent regular expression by the recursive algorithm in Figure~\ref{fig:ALGFLATTEN}.
+A sequence is created from the elements of each alternative, and then all those sequences are joined by the alternation operator \code{$|$} to form a regular expression.
 
 \begin{figure}[ht]
 \centering
 \begin{framed}
 \begin{alltt}
+\small
 Flatten(\textit{R}):
   \textit{T} = empty list
   \textbf{for each} alternative \textit{A} \textbf{in} rule \textit{R}:
@@ -115,7 +117,7 @@ However, presence of the intermediate layers significantly complicates usage of 
 We show examples illustrating this problem, which we call a \emph{layer problem}, later in the subsection where we describe our solution.
 
 As a part of the \textsc{Ingrid} method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}).
-However, before focusing on the intermediate layers and the shortcut approach, we describe the basic principles of translation from the AST into the language structure.
+However, before focusing on the intermediate layers, we describe the basic principles of translation from the AST into the language structure.
 
 In MPS, each concept of the language (i.e., every AST node) is represented by an object that may have a parent, some children, and properties of any data type.
 Additionally, the object may implement any number of interfaces, and it may also contain references to objects representing other AST nodes.
@@ -151,7 +153,7 @@ Consider the parser rule \antlrparserrule{element} from the grammar in Figure~\r
 Its first alternative represents the full XML element with content.
 Figure~\ref{fig:ELEMENTSTRUCT} shows the Structure aspect for the MPS concept (object) named \code{Element{\_}1} that corresponds to the alternative.
 The object contains two properties, one for each reference to the lexer rule \antlrlexerrule{Name}.
-Values of these properties will be restricted using the regular expression that corresponds to the lexer rule \antlrlexerrule{Name}.
+Values of these properties will be restricted using the regular expression that corresponds to the rule.
 String literals, such as the opening and closing brackets (\antlrliteral{\textless}, \antlrliteral{/\textgreater}) in XML, are omitted because they will be defined only in the Editor aspect for this concept.
 
 References to other parser rules are captured by pointers to child objects.
@@ -220,6 +222,7 @@ Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, whi
 \centering
 \begin{framed}
 \begin{alltt}
+\small
   \antlrparserrule{content} : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
   \antlrparserrule{element} : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attrib}* \antlrliteral{/>} ;
   \antlrparserrule{comment} : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
@@ -231,6 +234,7 @@ Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, whi
 
 \begin{figure}[ht]
 \begin{framed}
+\small
 \textbf{Content{\_}1} (TEXT) \\
 \ \ \ Content{\_}2 $\rightarrow$ \textbf{Element{\_}1} \\
 \ \ \ Content{\_}2 $\rightarrow$ \textbf{Element{\_}2} \\
@@ -247,6 +251,7 @@ Such nodes cannot expand further based on any rule in the grammar, and for that 
 \begin{figure*}[ht]
 \begin{framed}
 \begin{alltt}
+\small
  1 FindAllPathsToEndNodes(\textit{R}):
  2   \textit{CurPath} = empty list of rules and nodes
  3   \textbf{return} FindPaths(\textit{R}, \textit{CurPath})
@@ -275,7 +280,7 @@ The algorithm is based on recursive traversal of the parser tree.
 At each level of recursion, it gathers all paths that lead from the current parser rule $R$ to some end node through its alternatives (line~7).
 Two cases may occur:
 \begin{itemize}
-	\item When a particular alternative $A$ of the rule $R$ contains only a single element $E$, and the element is a reference to another parser rule (line 9), the alternative $A$ is an intermediary layer that can be transparently hidden from the user of the MPS language.
+	\item When a particular alternative $A$ of the rule $R$ contains only a single element $E$ that is a reference to another rule (line 9), the alternative $A$ is an intermediary layer that can be hidden from the user of the MPS language.
 		  A run of the algorithm continues, at line 11, by recursively processing alternatives of the rule corresponding to $E$, which lies at the next level of the parser tree.
 	\item Otherwise, an end node of a derivation chain was found and the recursion stops (lines 13-16).
 \end{itemize}
@@ -446,6 +451,7 @@ If the MPS language would faithfully match the grammar, the user would have to a
 \begin{figure}[ht]
 \begin{framed}
 \begin{alltt}
+\small
   \antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{=} \antlrlexerrule{STRING} ;
   \antlrlexerrule{STRING} : \antlrliteral{"} \antlrregex{~["]*} \antlrliteral{"}
          | \antlrliteral{\textbackslash'} \antlrregex{~[']*} \antlrliteral{\textbackslash'} ;
@@ -461,6 +467,7 @@ We turned quotes into literals, ensuring that they will only appear in the proje
 \begin{figure}[ht]
 \begin{framed}
 \begin{alltt}
+\small
   \antlrparserrule{attrib} : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT1} \antlrliteral{"}
          | \antlrlexerrule{Name} \antlrliteral{=\textbackslash'} \antlrlexerrule{TEXT2} \antlrliteral{\textbackslash'} ;
   \antlrlexerrule{TEXT1} : \antlrregex{~["]*} ;
@@ -499,10 +506,10 @@ On the other hand, this adjustment of the original ANTLR grammar, performed just
 To ensure compatibility with JavaScript, the TextGen aspect in the MPS language should put the semicolon after each statement in the plain-text representation of a program code.
 
 \paragraph{Breaking original grammars and parsers.}
-We also want to point out a general problem with grammar adjustments that we encountered, and which all potential users of the \textsc{Ingrid} method should be aware of.
+We also want to point out a general problem with grammar adjustments, which all potential users of the \textsc{Ingrid} method should be aware of.
 The original ANTLR grammar for an input language can be very easily changed in a way that, at first, seems harmless and valid inside MPS, but the parser generated out of the adjusted grammar stops accepting the original language.
 In particular, adjustments needed to improve the resulting MPS language can break down the parser.
 
 This problem has two main causes: (1) low-level implementation details of token matching in the ANTLR parser and (2) usage of ANTLR grammars for a different purpose (that was not expected) in our project.
-Since, for practical reasons, it is very important that a parser works even for documents (programs) written according to the original grammar, adjustments have to be performed very carefully by the users of \textsc{Ingrid}.
+Since, for practical reasons, it is very important that a parser works for programs written according to the original grammar, adjustments have to be performed carefully by the users of \textsc{Ingrid}.
 
