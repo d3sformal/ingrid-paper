@@ -2,6 +2,7 @@
 \label{sect:LANGDEF}
 
 The proposed \textsc{Ingrid} method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
+\todo{Zmenit nasledujici vetu: There exist ANTLR v4 grammars for all widely used programming languages ...}
 All widely used programming languages have their syntax defined using this notation~\footnote{https://github.com/antlr/grammars-v4}.
 Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
 
@@ -70,6 +71,7 @@ However, the lexer rules are, in fact, just regular expressions used to recogniz
 
 Every tree that represents a lexer rule is flattened into the equivalent regular expression by the recursive algorithm in Figure~\ref{fig:ALGFLATTEN}.
 A sequence is created from the elements of each alternative, and then all those sequences are joined by the alternation operator \code{$|$} to form a regular expression.
+\todo{Algorithm seems to fail if the grammar has right-recursion (according to one reviewer) --- check that and describe how we handle that case.}
 
 \begin{figure}[ht]
 \centering
@@ -114,7 +116,7 @@ The main challenge related to the structure, as we already mentioned in the intr
 Such rules exist at the intermediate layers of a syntax hierarchy.
 Their main purpose is to enable easier understanding and maintenance of the grammar by humans.
 However, presence of the intermediate layers significantly complicates usage of the given language in MPS, and the layers are actually not necessary for construction of an MPS language.
-We show examples illustrating this problem, which we call a \emph{layer problem}, later in the subsection where we describe our solution.
+We show examples illustrating this problem, which we call a \emph{layer problem}, later in the subsection where we describe our solution \todo{Pridat odkaz na konkretni section a opravit gramatickou chybu}.
 
 As a part of the \textsc{Ingrid} method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}).
 However, before focusing on the intermediate layers, we describe the basic principles of translation from the AST into the language structure.
@@ -246,7 +248,7 @@ Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, whi
 \end{figure}
 
 For the input that consists of a particular AST node $N$ and the grammar rule $R$ that expands $N$, the procedure implementing the shortcut approach systematically traverses the parser tree (AST) built in the earlier phases in order to identify each AST node that may appear at the end of some derivation chain starting by the rule $R$ from the node $N$.
-Such nodes cannot expand further based on any rule in the grammar, and for that reason we call them \emph{end nodes}.
+Such nodes cannot expand further based on any rule in the grammar, and for that reason we call them \emph{end nodes}. \todo{Srovnat pojem "end nodes" vzhledem ke terminal symbols from grammars (jako analogie). Mozna existuje dalsi vhodny termin.}
 
 \begin{figure*}[ht]
 \begin{framed}
@@ -306,7 +308,7 @@ The main problem that we had to address is the absence of information about the 
 Rules forming the grammar only tell what the syntax tree looks like and how the program code is decomposed into AST nodes.
 Here we present a solution that is only partially automated for reasons explained below.
 
-We experimented with several heuristics to derive a useful code layout, but all of them produced rather suboptimal results.
+We experimented with several heuristics to derive a useful code layout, but all of them produced rather suboptimal results \todo{Give examples or quantify this result}.
 However, we observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept that should appear in its visual representation.
 This step can be very easily automated.
 
@@ -327,7 +329,7 @@ We expect that a typical user of the \textsc{Ingrid} method will be able to use 
 More details are provided in Section~\ref{sect:EVAL}, including our experience with several mainstream programming languages.
 
 We have found that the combination of two steps, (1) automated placing of cells into a single row and (2) subsequent manual adjustment of the layout, is a very fast and efficient way of creating a nice code layout.
-Nevertheless, we plan to work on a more automated approach to the definition of Editor aspects in the future, probably using some techniques of machine learning.
+Nevertheless, we plan to work on a more automated approach to the definition of Editor aspects in the future, using automated learning.
 The key idea would be to derive the code layout from a set of valid input source files.
 We believe that the user would have to adjust the editor manually a little bit even in this case, because the results of a machine learning-based approach would not be perfect.
 
@@ -367,7 +369,7 @@ For example, in the case of the concept representing an XML element, there must 
 Our \textsc{Ingrid} method targets mostly text-based languages, for the concepts of which the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
 An obvious choice would therefore be to use the same approach for Editor and TextGen.
 Nevertheless, since the Editor aspect has to be adjusted manually, we decided to use a different approach for TextGen.
-We designed a procedure based on a simple fully automated heuristic that provides surprisingly good results.
+We designed a procedure based on a simple fully automated heuristic that provides surprisingly good results \todo{Quantify this}.
 
 The procedure creates the TextGen aspect for a given language concept (AST node) in two steps.
 First, it generates a basic variant that inserts spaces in between every two tokens of the textual representation of the concept.
@@ -430,6 +432,7 @@ Elements from a sequence of child nodes are separated with spaces or line breaks
 \label{fig:TEXTGENADJUSTED}
 \end{figure}
 
+\todo{Figure 15: whitespace is just blank space instead of quoted string, mozna jsem neco smazal omylem (za "with ").}
 Figure~\ref{fig:TEXTGENFINAL} contains the complete, automatically generated, TextGen aspect for the \mpsconcept{Element{\_}1} concept, which represents the full SimpleXML element.
 Such code may be adjusted manually very easily in order to produce nicely indented XML documents.
 We only need to wrap the \mpsconcept{Content{\_}2} child node with indentation and change the sequence separator to a new line character.

@@ -6,6 +6,8 @@ In this section, first we introduce basic features of the MPS platform, and then
 \subsection{JetBrains MPS}
 \label{sect:MPS}
 
+\todo{For each MPS term (Structure, Editor, TextGen, concept, and so on) say which generally/widely known terms (from related academic work) are similar/analogous. Relate the MPS-specific terms to the large body of academic work.}
+
 JetBrains MPS is a language workbench --- an IDE that allows developers to create their own languages and use them to write code.
 The code can then be transformed into a target language, typically a GPL, such as Java or C, and eventually compiled into executable programs.
 
@@ -17,7 +19,7 @@ On the other hand, in traditional IDEs it is the parser that constructs an AST o
 
 The building blocks of MPS models are called nodes.
 Code of any program in MPS is built from nodes, which represent instances of concepts defined in one of the languages that the program declares to be using.
-In the context of MPS, a concept is, in fact, a building block of a language definition.
+\todo{zvyraznit slovo "concept"} In the context of MPS, a concept is, in fact, a building block of a language definition.
 We use the terms \emph{MPS concept} and \emph{AST node} when needed to avoid confusion.
 
 One of the key advantages of projectional editing stems from the separation of abstract and concrete syntax.
@@ -196,4 +198,20 @@ A user is then able to adjust the grammar as he wishes, specifying the code layo
 In the last step, the target MPS language is derived from the adjusted grammar definition.
 
 The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLR v4 MPS language into the definition of the actual target MPS language.
+
+\todo{
+S. Erdweg, T. Rendel, C. K\"{a}stner, and K. Ostermann. Layout-Sensitive Generalized Parsing. In Proceedings of SLE 2012, LNCS 7745.
+	Source code layout specified declaratively through constraints on shape and relative positions of syntax trees (AST).
+	Layout constraints are represented/encoded using annotations on production rules of context-free grammars.
+	Useful for layout-sensitive programming language (e.g., Python).
+	Their proposed approach: grammar rule applies only if the input satisfied the constraint (on shape and positioning of source code fragments).
+		Parsing algorithm that accepts only inputs with valid layout (that satisfies the constraints attached to grammar rules).
+	Constraints support (can express): indentation, number of line breaks, alignment.
+	Hand-coded approach used in Python (how the annotated grammar is processed) --- mentioned for comparison.
+		Special tokens that indicate layout aspects (indentation, alignment) are added to stream of tokens by preprocessor.
+		Layout handled by algorithm that works with syntax trees (ASTs) and token streams.
+	The main difference from our approach (INGRID): layout inferred automatically (via automated learning) from several input files.
+		No layout annotations in the grammar are used.
+		Currently, simple heuristics are used to create editor and textgen.
+}
 
