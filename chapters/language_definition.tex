@@ -420,12 +420,12 @@ Elements from a sequence of child nodes are separated with spaces or line breaks
 \begin{alltt}
 \small
 \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2}.\textbf{size} > 0) \{
-  \mpstgaction{append} \textcolor{Blue}{\textbf{\textbackslash{}n;}}
+  \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n;}}
   \mpstgaction{indent buffer;}
   \mpstgkeyword{with indent} \{
     \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2} with  \};
   \}
-  \mpstgaction{append} \textcolor{Blue}{\textbf{\textbackslash{}n;}}
+  \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n;}}
 \} 
 \end{alltt}
 \caption{Fragment of the TextGen aspect of \mpsconcept{Element{\_}1} with adjusted indentation}

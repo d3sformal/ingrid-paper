@@ -131,13 +131,13 @@ MPS calls the corresponding method on the root AST nodes of the given program.
 \small
 \mpstgkeyword{text gen component for concept} \mpstgtarget{IfStatement} \{
   \mpstgparam{(context, buffer, node)->void} \{
-    \mpstgaction{append} \textcolor{Blue}{\textbf{\textbackslash{}n;}}
+    \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n;}}
     \mpstgaction{indent buffer;}
     \mpstgaction{append} \{\mpstgliteral{if (}\} \$\{\mpstgparam{node}.\mpstgnodeprop{condition}\} \{\mpstgliteral{) \{}\};
     \mpstgkeyword{with indent} \{
       \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{ifTrue}\};
     \}
-    \mpstgaction{append} \textcolor{Blue}{\textbf{\textbackslash{}n}} \{\mpstgliteral{\}}\} \$list\{\mpstgparam{node}.\mpstgnodeprop{elsifClauses}\};
+    \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n}} \{\mpstgliteral{\}}\} \$list\{\mpstgparam{node}.\mpstgnodeprop{elsifClauses}\};
     \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{ifFalseStatement}.\textbf{isNotNull}) \{
       \mpstgaction{append} \{ \mpstgliteral{else}\} \$\{\mpstgparam{node}.\mpstgnodeprop{isFalseStatement}\};
     \}
