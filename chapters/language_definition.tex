@@ -12,7 +12,7 @@ The process of MPS language construction, as performed by \textsc{Ingrid}, consi
 \textsc{Ingrid} is currently able to create (i) a full Structure aspect for each element (type of an AST node) of the given language, (ii) a very basic Editor, and (iii) a basic TextGen aspect.
 Therefore, the resulting MPS language typically still has to be adjusted manually to improve its usability, and the human users must also define the remaining aspects not yet supported by \textsc{Ingrid}.
 
-Our approach differs from the related projects (Section~\ref{sect:RELATED}) especially in the level of automation. It also has much better support for the definition of Editor and TextGen.
+Our approach differs from the \todo{existing} related projects (Section~\ref{sect:RELATED}) especially in the level of automation. It also has much better support for the definition of Editor and TextGen.
 
 \subsection{Running Example}
 
@@ -51,8 +51,8 @@ Each color in Figure~\ref{fig:SIMPLEXML} corresponds to a different kind in a wa
 		Alternatives on the right side of a rule are separated by the pipe character ($|$).
 	\item \antlrlexerrule{\textbf{Lexer rules}} describe terminal symbols that the parser matches against the input string.
 		A terminal symbol can be encoded as a string value or using a regular expression.
-	\item \antlrliteralnoap{\textbf{String literals}}, always written inside of a pair of single quote marks, also represent terminal symbols, but by exact match to a string constant.
-	\item \antlrregex{\textbf{Regular expressions}} describe string tokens to be matched against regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
+	\item \antlrliteralnoap{\textbf{String literals}} \todo{tohle urcite ztmavit}, always written inside of a pair of single quote marks, also represent terminal symbols, but by exact match to a string constant.
+	\item \antlrregex{\textbf{Regular expressions}} \todo{tohle mozna ztmavit} describe string tokens to be matched against regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
 \end{itemize}
 Elements on the right side of a rule can be annotated with standard EBNF operators (\code{?}, \code{+}, \code{*}) that specify the allowed number of occurrences.
 

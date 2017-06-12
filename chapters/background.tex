@@ -7,10 +7,11 @@ In this section, first we introduce basic features of the MPS platform, and then
 \label{sect:MPS}
 
 \todo{For each MPS term (Structure, Editor, TextGen, concept, and so on) say which generally/widely known terms (from related academic work) are similar/analogous. Relate the MPS-specific terms to the large body of academic work.}
+\todo{Mozna rict jak se zakladni aspekty (Structure, Editor, TextGen) nazyvaji v jinych IDE (Spoofax, apod).}
 
 \todo{Napsat sem nebo pripadne do Introduction (ale radsi sem): MPS platform, and tools built upon it (e.g., mbeddr) addresses to a large degree known limitations of projectional editors, such as usability of editors for languages based on textual notation (e.g., non-linear typing) and support for version control [citovat "M. Voelter, J. Siegmund, T. Berger, and B. Kolb. Towards User-Friendly Projectional Editors. SLE 2014, LNCS 8706"].}
 
-\todo{Mozna pouzit termin "language concept" misto samotneho "concept".}
+\todo{Mozna pouzit termin "language concept" misto samotneho "concept" - ale jen pri definici.}
 
 JetBrains MPS is a language workbench --- an IDE that allows developers to create their own languages and use them to write code.
 The code can then be transformed into a target language, typically a GPL, such as Java or C, and eventually compiled into executable programs.
@@ -22,8 +23,8 @@ The definition of a language in MPS dictates, where in the AST can certain eleme
 On the other hand, in traditional IDEs it is the parser that constructs an AST of a program using the language's elements.
 
 The building blocks of MPS models are called nodes.
-Code of any program in MPS is built from nodes, which represent instances of concepts defined in one of the languages that the program declares to be using.
-\todo{zvyraznit slovo "concept"} In the context of MPS, a concept is, in fact, a building block of a language definition.
+Code of any program in MPS is built from nodes, which represent instances of concepts from the languages that the program declares to be using.
+\todo{zvyraznit slovo "concept"} In the context of MPS, a concept is, in fact, \todo{a language element or} a building block of a language definition.
 We use the terms \emph{MPS concept} and \emph{AST node} when needed to avoid confusion.
 
 One of the key advantages of projectional editing stems from the separation of abstract and concrete syntax.
@@ -34,7 +35,7 @@ In particular, the visual representations are not bound to be just textual at al
 For example, blocks corresponding to branches of an \code{if-then-else} statement can be aligned next to each other and displayed with different background colors.
 
 The definition of an MPS concept (language element) consists of several aspects, where each aspect codifies a different part of the AST nodes' behavior.
-The essential aspects are the following: \emph{Structure} (abstract syntax), \emph{Editor} (concrete syntax) and \emph{TextGen}.
+The essential aspects are the following: \emph{Structure} (abstract syntax), \emph{Editor} and \emph{TextGen}.
 Editor defines the concrete syntax (i.e., how the code is visualized and edited) and TextGen specifies how AST nodes are transformed into textual representation.
 If, instead of generating text directly, programs in the language are supposed to be transformed into another language that is available in MPS, the Generator aspect must be used to specify the model-to-model transformation rules.
 Since only the Structure, Editor and TextGen aspects are relevant for the contribution of this paper, we describe these three below in more detail, and neglect other aspects such as type system and data-flow.
@@ -124,7 +125,7 @@ The conversion to textual Java is handled by BaseLanguage without any further ma
 \paragraph{TextGen.}
 The TextGen aspect specifies how a given AST node will be translated into plain text representation.
 It is typically needed only for the bottom-line base languages.
-DSLs, on the other hand, need to define rules for model-to-model conversions (Generators), since these are rarely converted to text directly.
+DSLs, on the other hand, need to define rules for model-to-model conversions (Generators), since \todo{programs in these languages} are rarely converted to text directly.
 After TextGen has generated textual sources from an AST, a compiler for the particular GPL is invoked to compile the textual sources into binary code.
 The TextGen definition follows a very straightforward pattern --- each node outputs its textual representation into a buffer, while calling TextGen of its children nodes at the right moments.
 MPS calls the corresponding method on the root AST nodes of the given program.
@@ -155,8 +156,10 @@ MPS calls the corresponding method on the root AST nodes of the given program.
 TextGen aspect for each AST node (concept of the language) has to be defined using the BaseLanguage.
 Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:if_statement_textgen}).
 
-\subsection{Related Projects}
+\subsection{Related Work}
 \label{sect:RELATED}
+
+\todo{We are aware of only few attempts to create ports of general-purpose languages into (IDEs based on) projectional editors/editing. All of them were conducted manually.}
 
 The BaseLanguage~\cite{ref:BASELANG} is an almost full port of Java, which was created manually by JetBrains and extended with MPS-specific features.
 % and it is still undergoing changes as Java itself is evolving.
@@ -164,13 +167,16 @@ The C language has also been manually tailored for MPS within the mbeddr project
 
 Besides that, we are aware of three other projects that provide certain support for GPLs in the context of MPS --- namely PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
 We describe their main features and limitations in this section.
+\todo{Check what has been done for Spoofax.}
+
+\todo{Pro vsechny nasledujici projekty (PE4MPS, ANTLR{\_}MPS, mps{\_}metabnf) mention GPPLs for which there projects have been used (e.g., JavaScript). We discuss application of PE4MPS on JavaScript in Section 4.}
 
 \paragraph{PE4MPS.}
 PE4MPS~\cite{ref:PE4MPS} is a project that addresses the lack of information about code layout in grammars by using so called PE grammars~\cite{ref:PE}, which is a new grammar notation proposed by the same author.
 The abbreviation PE stands for projectional editing.
 
 PE grammars extend the syntax of the ANTLR v4 notation by constructs that provide information about the possible layout of AST nodes.
-The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
+\todo{Check if there is a new (more recent) version with more features.} The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
 However, even these few features make the syntax much more complicated.
 
 The PE4MPS tool creates an MPS language in a single atomic step.
@@ -203,6 +209,8 @@ In the last step, the target MPS language is derived from the adjusted grammar d
 
 The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLR v4 MPS language into the definition of the actual target MPS language.
 
+\todo{Najit dalsi podobne systemy (treba Spoofax) a kratce popsat existujici reseni podobnych uloh (automated import of general-purpose languages) v jejich kontextu.}
+
 \todo{
 S. Erdweg, T. Rendel, C. K\"{a}stner, and K. Ostermann. Layout-Sensitive Generalized Parsing. In Proceedings of SLE 2012, LNCS 7745.
 	Source code layout specified declaratively through constraints on shape and relative positions of syntax trees (AST).
@@ -214,9 +222,7 @@ S. Erdweg, T. Rendel, C. K\"{a}stner, and K. Ostermann. Layout-Sensitive General
 	Hand-coded approach used in Python (how the annotated grammar is processed) --- mentioned for comparison.
 		Special tokens that indicate layout aspects (indentation, alignment) are added to stream of tokens by preprocessor.
 		Layout handled by algorithm that works with syntax trees (ASTs) and token streams.
-	The main difference from our approach (INGRID): layout inferred automatically (via automated learning) from several input files.
-		No layout annotations in the grammar are used.
-		Currently, simple heuristics are used to create editor and textgen.
+	The main difference from our approach (INGRID): No layout annotations in the grammar are used. Currently, simple heuristics are used to create editor and textgen (i.e., to determine layout).
 }
 
 \todo{
