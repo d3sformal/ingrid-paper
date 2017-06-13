@@ -7,14 +7,14 @@ In this section, first we introduce basic features of the MPS platform, and then
 \label{sect:MPS}
 
 \todo{For each MPS term (Structure, Editor, TextGen, concept, and so on) say which generally/widely known terms (from related academic work) are similar/analogous. Relate the MPS-specific terms to the large body of academic work.}
-\todo{Mozna rict jak se zakladni aspekty (Structure, Editor, TextGen) nazyvaji v jinych IDE (Spoofax, apod).}
+\todo{Mozna rict jak se zakladni aspekty (Structure, Editor, TextGen) nazyvaji v jinych IDE (MetaCase MWB, apod).}
 
 \todo{Napsat sem nebo pripadne do Introduction (ale radsi sem): MPS platform, and tools built upon it (e.g., mbeddr) addresses to a large degree known limitations of projectional editors, such as usability of editors for languages based on textual notation (e.g., non-linear typing) and support for version control [citovat "M. Voelter, J. Siegmund, T. Berger, and B. Kolb. Towards User-Friendly Projectional Editors. SLE 2014, LNCS 8706"].}
 
 \todo{Mozna pouzit termin "language concept" misto samotneho "concept" - ale jen pri definici.}
 
 JetBrains MPS is a language workbench --- an IDE that allows developers to create their own languages and use them to write code.
-The code can then be transformed into a target language, typically a GPL, such as Java or C, and eventually compiled into executable programs.
+The code can then be transformed into a target language, typically a GPPL, such as Java or C, and eventually compiled into executable programs.
 
 As we already indicated, MPS differs from typical IDEs in one important aspect --- the projectional editor.
 The developer does not work with the textual representation of the source code directly, but rather with its AST that is the model of the code.
@@ -126,7 +126,7 @@ The conversion to textual Java is handled by BaseLanguage without any further ma
 The TextGen aspect specifies how a given AST node will be translated into plain text representation.
 It is typically needed only for the bottom-line base languages.
 DSLs, on the other hand, need to define rules for model-to-model conversions (Generators), since \todo{programs in these languages} are rarely converted to text directly.
-After TextGen has generated textual sources from an AST, a compiler for the particular GPL is invoked to compile the textual sources into binary code.
+After TextGen has generated textual sources from an AST, a compiler for the particular GPPL is invoked to compile the textual sources into binary code.
 The TextGen definition follows a very straightforward pattern --- each node outputs its textual representation into a buffer, while calling TextGen of its children nodes at the right moments.
 MPS calls the corresponding method on the root AST nodes of the given program.
 
@@ -165,9 +165,9 @@ The BaseLanguage~\cite{ref:BASELANG} is an almost full port of Java, which was c
 % and it is still undergoing changes as Java itself is evolving.
 The C language has also been manually tailored for MPS within the mbeddr project~\cite{ref:MBEDDR}.
 
-Besides that, we are aware of three other projects that provide certain support for GPLs in the context of MPS --- namely PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
+Besides that, we are aware of three other projects that provide certain support for GPPLs within projectional editors, however all of them target MPS.
+The projects are named PE4MPS, ANTLR{\_}MPS, and mps-metabnf.
 We describe their main features and limitations in this section.
-\todo{Check what has been done for Spoofax.}
 
 \todo{Pro vsechny nasledujici projekty (PE4MPS, ANTLR{\_}MPS, mps{\_}metabnf) mention GPPLs for which there projects have been used (e.g., JavaScript). We discuss application of PE4MPS on JavaScript in Section 4.}
 
@@ -209,7 +209,7 @@ In the last step, the target MPS language is derived from the adjusted grammar d
 
 The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLR v4 MPS language into the definition of the actual target MPS language.
 
-\todo{Najit dalsi podobne systemy (treba Spoofax) a kratce popsat existujici reseni podobnych uloh (automated import of general-purpose languages) v jejich kontextu.}
+\todo{Najit dalsi podobne systemy a kratce popsat existujici reseni podobnych uloh (automated import of general-purpose languages) v jejich kontextu.}
 
 \todo{
 S. Erdweg, T. Rendel, C. K\"{a}stner, and K. Ostermann. Layout-Sensitive Generalized Parsing. In Proceedings of SLE 2012, LNCS 7745.
@@ -226,11 +226,11 @@ S. Erdweg, T. Rendel, C. K\"{a}stner, and K. Ostermann. Layout-Sensitive General
 }
 
 \todo{
-Mention other state-of-the-art language workbenches: Spoofax.
-	Reference: L.C.L. Kats and E. Visser. The Spoofax Language Workbench: Rules for Declarative Specification of Languages and IDEs. OOPSLA 2010
-	Eclipse-based IDE support for SDF-based languages.
-	Parser-based language workbench.
-		Syntax essentially restricted to linear text.
-		But it supports language extension and composition.
+\paragraph{Other IDEs.}
+There also exist several language workbenches that are based on parser generators (such as ANTLR) and allow free editing of textual source code (unlike the projectional editor in MPS).
+A prominent example/tooo in this category is Spoofax [ref].
+	Reference: L.C.L. Kats and E. Visser. The Spoofax Language Workbench: Rules for Declarative Specification of Languages and IDEs. OOPSLA 2010, ACM.
+	Syntax of DSLs is essentially restricted to linear text.
+INGRID is not applicable to such tool/workbenches (for creating languages inside them).
 }
 
