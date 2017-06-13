@@ -27,6 +27,7 @@ Projectional editing, keeping the code in the AST form, and the absence of parse
 \end{itemize}
 All of this is useful especially for DSLs, which are frequently used by domain experts who may not be professional software developers.
 The mbeddr project~\cite{ref:MBEDDR}, which extends C with numerous domain-specific constructs and data types, illustrates the abilities of language workbenches in general and of JetBrains MPS in particular.
+\todo{Benefits of projectional editing: language composition (using multiple languages in a single program), diverse notations and layouts can be used within one program.}
 \todo{Popsat dalsi benefits of projectional editors/IDEs (and of MPS in particular): Projectional editors never have to parse the concrete syntax, so they can support/use more complicated syntax/layout. Support for non-linear notations (mathematical expressions, graphical or tabular layout), notations that use two-dimensional layout. Projectional editors mix different notations/styles.}
 \todo{Nekam pridat text: Benefits and limitations of projectional editors are thoroughly discussed in [M. Voelter, J. Siegmund, T. Berger, and B. Kolb. Towards User-Friendly Projectional Editors. SLE 2014, LNCS 8706].}
 
@@ -79,6 +80,7 @@ Based on our experience, we believe that, especially for simple languages, it is
 	\begin{itemize}
 		\item Metoda pro konstrukci language definitions usable/suitable for IDEs based on projectional editing, in particular for JetBrains MPS, from ANTLR grammars, ktera je pouzitelna pro (1) import of general-purpose programming languages a (2) efficient construction of DSLs. To our belief, the method can be easily adapted to other language workbenches (e.g., Spoofax).
 		\item Discussion of general challenges that apply to differences between (1) the definition of a programming language that uses grammars in an EBNF-like notation and (2) the structured object-oriented approach used in projectional editors.
+		\item We discuss how practical usability of generated MPS languages depends on the specific definition of ANTLR grammar and its manual adjustments that improve usability (details in Section 3.6).
 	\end{itemize}
 }
 
