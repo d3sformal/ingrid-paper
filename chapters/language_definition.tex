@@ -2,8 +2,7 @@
 \label{sect:LANGDEF}
 
 The proposed \textsc{Ingrid} method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
-\todo{Zmenit nasledujici vetu: There exist ANTLR v4 grammars for all widely used programming languages ...}
-All widely used programming languages have their syntax defined using this notation~\footnote{https://github.com/antlr/grammars-v4}.
+Syntax definition in the form of an ANTLR v4 grammar exist for all widely used programming languages~\footnote{https://github.com/antlr/grammars-v4}.
 Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
 
 The process of MPS language construction, as performed by \textsc{Ingrid}, consists of four phases --- the first is parsing of the input grammar, which is followed by definition of the essential aspects of the language (Structure, Editor, and TextGen, respectively).
@@ -12,7 +11,7 @@ The process of MPS language construction, as performed by \textsc{Ingrid}, consi
 \textsc{Ingrid} is currently able to create (i) a full Structure aspect for each element (type of an AST node) of the given language, (ii) a very basic Editor, and (iii) a basic TextGen aspect.
 Therefore, the resulting MPS language typically still has to be adjusted manually to improve its usability, and the human users must also define the remaining aspects not yet supported by \textsc{Ingrid}.
 
-Our approach differs from the \todo{existing} related projects (Section~\ref{sect:RELATED}) especially in the level of automation. It also has much better support for the definition of Editor and TextGen.
+Our approach differs from the existing projects with similar goals (Section~\ref{sect:RELATED}) especially in the level of automation. It also has much better support for the definition of Editor and TextGen.
 
 \subsection{Running Example}
 
@@ -51,8 +50,8 @@ Each color in Figure~\ref{fig:SIMPLEXML} corresponds to a different kind in a wa
 		Alternatives on the right side of a rule are separated by the pipe character ($|$).
 	\item \antlrlexerrule{\textbf{Lexer rules}} describe terminal symbols that the parser matches against the input string.
 		A terminal symbol can be encoded as a string value or using a regular expression.
-	\item \antlrliteralnoap{\textbf{String literals}} \todo{tohle urcite ztmavit}, always written inside of a pair of single quote marks, also represent terminal symbols, but by exact match to a string constant.
-	\item \antlrregex{\textbf{Regular expressions}} \todo{tohle mozna ztmavit} describe string tokens to be matched against regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
+	\item \antlrliteralnoap{\textbf{String literals}}, always written inside of a pair of single quote marks, also represent terminal symbols, but by exact match to a string constant.
+	\item \antlrregex{\textbf{Regular expressions}} describe string tokens to be matched against regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
 \end{itemize}
 Elements on the right side of a rule can be annotated with standard EBNF operators (\code{?}, \code{+}, \code{*}) that specify the allowed number of occurrences.
 
@@ -71,7 +70,6 @@ However, the lexer rules are, in fact, just regular expressions used to recogniz
 
 Every tree that represents a lexer rule is flattened into the equivalent regular expression by the recursive algorithm in Figure~\ref{fig:ALGFLATTEN}.
 A sequence is created from the elements of each alternative, and then all those sequences are joined by the alternation operator \code{$|$} to form a regular expression.
-\todo{Algorithm seems to fail if the grammar has right-recursion (according to one reviewer) --- check that and describe how we handle that case.}
 
 \begin{figure}[ht]
 \centering
@@ -116,7 +114,7 @@ The main challenge related to the structure, as we already mentioned in the intr
 Such rules exist at the intermediate layers of a syntax hierarchy.
 Their main purpose is to enable easier understanding and maintenance of the grammar by humans.
 However, presence of the intermediate layers significantly complicates usage of the given language in MPS, and the layers are actually not necessary for construction of an MPS language.
-We show examples illustrating this problem, which we call a \emph{layer problem}, later in the subsection where we describe our solution \todo{Pridat odkaz na konkretni section a opravit gramatickou chybu}.
+We show examples illustrating this problem, which we call a \emph{layer problem}, later in this section at a point where we describe our solution.
 
 As a part of the \textsc{Ingrid} method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}).
 However, before focusing on the intermediate layers, we describe the basic principles of translation from the AST into the language structure.
@@ -191,7 +189,7 @@ It contains one interface \mpsinterface{IContent} that is implemented by four ob
 \end{figure}
 
 Now we can illustrate the layer problem on the behavior of auto-completion in MPS.
-Suppose that a user is creating a new document in the SimpleXML language, just inserted a fresh node of the type \todo{ztmavit} \mpsconcept{Element{\_1}} (see above), and would like to insert another nested XML element inside.
+Suppose that a user is creating a new document in the SimpleXML language, just inserted a fresh node of the type \mpsconcept{Element{\_1}} (see above), and would like to insert another nested XML element inside.
 The auto-completion mechanism of MPS offers four options that are displayed in the left part of Figure~\ref{fig:LAYERPROBLEM}.
 Each option represents one of the MPS concepts that implement the interface \mpsinterface{IContent}, and therefore also one alternative of the \antlrparserrule{content} rule.
 
@@ -204,7 +202,7 @@ Each option represents one of the MPS concepts that implement the interface \mps
 
 However, in order to correctly insert another nested element, a user has to perform two steps:
 \begin{enumerate}
-	\item Insert an object (node) of the type \todo{ztmavit} \mpsconcept{Content{\_}2} inside the \mpsconcept{Element{\_}1} node. The \mpsconcept{Content{\_}2} object has only a single child node of the interface type \mpsinterface{IElement}.
+	\item Insert an object (node) of the type \mpsconcept{Content{\_}2} inside the \mpsconcept{Element{\_}1} node. The \mpsconcept{Content{\_}2} object has only a single child node of the interface type \mpsinterface{IElement}.
 	\item Then, the user must trigger the auto-complete again and insert either an \mpsconcept{Element{\_}1} node or an \mpsconcept{Element{\_}2} node into the \mpsconcept{Content{\_}2} node. See the right part of Figure~\ref{fig:LAYERPROBLEM}.
 \end{enumerate}
 The main difficulty here is that, in the first step, the user has to (i) either correctly guess what option offered by the auto-complete menu to select, or (2) to remember the order of alternatives in the grammar rule.
@@ -217,8 +215,8 @@ The layer problem is addressed by the shortcut approach, which we describe in th
 \subsubsection{The Shortcut Approach}
 \label{sect:SHORTCUT}
 
-The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree and consider just the leaf nodes, e.g., to be directly offered to the user through the auto-completion menu.
-Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, which is given in Figure~\ref{fig:CONTENTHIERARCHY} together with rules that determine the relevant fragment of the syntax hierarchy, expands ultimately into the leaf nodes that are highlighted using the bold font in Figure~\ref{fig:CONTENTEXPAND}.
+The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree, and consider just the nodes to be directly offered to the user through the auto-completion menu.
+Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, which is given in Figure~\ref{fig:CONTENTHIERARCHY} together with rules that determine the relevant fragment of the syntax hierarchy, expands ultimately into the nodes that are highlighted using the bold font in Figure~\ref{fig:CONTENTEXPAND}.
 
 \begin{figure*}[ht]
 \centering
@@ -247,9 +245,9 @@ Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, whi
 \label{fig:CONTENTEXPAND}
 \end{figure}
 
-For the input that consists of a particular AST node $N$ and the grammar rule $R$ that expands $N$, the procedure implementing the shortcut approach systematically traverses the parser tree (AST) built in the earlier phases in order to identify each AST node that may appear at the end of some derivation chain starting by the rule $R$ from the node $N$.
-Such nodes cannot expand further based on any rule in the grammar, and for that reason we call them \emph{end nodes}.
-\todo{Srovnat pojem "end nodes" vzhledem ke terminal symbols from grammars (jako analogie). Nebo pouzit jiny termin (mozna existuje dalsi vhodny).}
+For the input that consists of a particular AST node $N$ and the grammar rule $R$ that expands $N$, the procedure implementing the shortcut approach systematically traverses the parser tree (AST) built in the earlier phases in order to identify each AST node that (i) may appear in some derivation chain starting by the rule $R$ from the node $N$ and (ii) does not belong to any intermediary layer.
+We call them \emph{end nodes}.
+Here we must emphasize that end nodes do not correspond to terminal symbols from grammars, because they may represent AST nodes with children (i.e., syntax elements that can be further expanded using grammar rules).
 
 \begin{figure*}[ht]
 \begin{framed}
@@ -309,13 +307,12 @@ The main problem that we had to address is the absence of information about the 
 Rules forming the grammar only tell what the syntax tree looks like and how the program code is decomposed into AST nodes.
 Here we present a solution that is only partially automated for reasons explained below.
 
-We experimented with several heuristics to derive a useful code layout, but all of them produced rather suboptimal results \todo{Give examples or quantify this result --- spis examples}.
-However, we observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept that should appear in its visual representation.
+We observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept that should appear in its visual representation.
 This step can be very easily automated.
 
 Our solution that we implemented in the current version of the \textsc{Ingrid} method is to create all the cells and place them in a single row.
 The resulting basic layout is illustrated on the example of the \mpsconcept{Element{\_}1} concept in the upper left corner of Figure~\ref{fig:EDITORADJUST}.
-Further adjustments of the layout, such as indentation and line breaks, can be done very efficiently \todo{by the user} in the MPS IDE.
+Further adjustments of the layout, such as indentation and line breaks, can be done very efficiently by the user in the MPS IDE.
 The bottom right part of Figure~\ref{fig:EDITORADJUST} shows a fully customized layout for the \mpsconcept{Element{\_}1} concept.
 
 \begin{figure*}[ht]
@@ -326,7 +323,8 @@ The bottom right part of Figure~\ref{fig:EDITORADJUST} shows a fully customized 
 \end{figure*}
 
 Based on our experience, it takes a very short time to manually adjust the layout into a form much better than any fully automated heuristic could achieve.
-We expect that a typical user of the \textsc{Ingrid} method will be able to use the projectional editor in MPS quite efficiently.
+A typical user of the \textsc{Ingrid} method will be able to use the projectional editor in MPS quite efficiently.
+We actually experimented with several heuristics to derive a useful code layout, but all of them produced rather suboptimal results --- it is quite hard to automatically identify language concepts for which the default layout should be refactored, and the user would have to adjust the layout by hand anyway.
 More details are provided in Section~\ref{sect:EVAL}, including our experience with several mainstream programming languages.
 
 We have found that the combination of two steps, (1) automated placing of cells into a single row and (2) subsequent manual adjustment of the layout, is a very fast and efficient way of creating a nice code layout.
