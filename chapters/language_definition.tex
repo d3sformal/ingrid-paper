@@ -70,6 +70,8 @@ However, the lexer rules are, in fact, just regular expressions used to recogniz
 
 Every tree that represents a lexer rule is flattened into the equivalent regular expression by the recursive algorithm in Figure~\ref{fig:ALGFLATTEN}.
 A sequence is created from the elements of each alternative, and then all those sequences are joined by the alternation operator \code{$|$} to form a regular expression.
+Our implementation of the algorithm detects rules defined in a recursive way (e.g., using the pattern \antlrlexerrule{N} : \antlrliteral{text} \antlrlexerrule{N}) and rejects the input grammar if it contains such rules.
+However, note that we use the flatenning algorithm only for lexer rules, where recursion is quite rare --- specifically, the algorithm is not applied to parser rules.
 
 \begin{figure}[ht]
 \centering
@@ -368,7 +370,7 @@ For example, in the case of the concept representing an XML element, there must 
 Our \textsc{Ingrid} method targets mostly text-based languages, for the concepts of which the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
 An obvious choice would therefore be to use the same approach for Editor and TextGen.
 Nevertheless, since the Editor aspect has to be adjusted manually, we decided to use a different approach for TextGen.
-We designed a procedure based on a simple fully automated heuristic that provides surprisingly good results \todo{Quantify this}.
+We designed a procedure based on a simple fully automated heuristic that provides acceptable results --- the output is human-readable and close to standard formatting of source code used by popular IDE tools, although minor tweaks are often needed.
 
 The procedure creates the TextGen aspect for a given language concept (AST node) in two steps.
 First, it generates a basic variant that inserts spaces in between every two tokens of the textual representation of the concept.
@@ -431,7 +433,6 @@ Elements from a sequence of child nodes are separated with spaces or line breaks
 \label{fig:TEXTGENADJUSTED}
 \end{figure}
 
-\todo{Figure 15: whitespace is just blank space instead of quoted string, mozna jsem neco smazal omylem (za "with ").}
 Figure~\ref{fig:TEXTGENFINAL} contains the complete, automatically generated, TextGen aspect for the \mpsconcept{Element{\_}1} concept, which represents the full SimpleXML element.
 Such code may be adjusted manually very easily in order to produce nicely indented XML documents.
 We only need to wrap the \mpsconcept{Content{\_}2} child node with indentation and change the sequence separator to a new line character.

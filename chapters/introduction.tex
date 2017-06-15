@@ -7,7 +7,7 @@ The source code of programs is written in a text editor, usually embedded into a
 An alternative approach is projectional (or structural) editing~\cite{ref:VWK15,ref:VSB14}, where a developer directly manipulates the AST representation of the source code instead of plain text.
 This idea emerged as early as in 1970s, but it failed to get adopted widely, mostly due to inconvenient and unnatural way of manipulating code.
 A recent revival of projectional editing has been observed in the area of language workbenches --- IDE-like tools that enable the developers to manipulate the actual language definition.
-Popular IDEs (examples) include JetBrains MPS~\cite{ref:MPS,ref:MPSBOOK} and Spoofax~\cite{ref:KV10}.
+Popular examples are JetBrains MPS~\cite{ref:MPS,ref:MPSBOOK} and Spoofax~\cite{ref:KV10}.
 In particular, JetBrains MPS (Meta Programming System) is an open-source language workbench that focuses on domain specific languages (DSL) and leverages the concept of projectional editing.
 MPS provides the whole IDE infrastructure that enables developers to design custom languages, use them to write program code, and compile the code into executables.
 %We provide more technical details about MPS in Section~\ref{sect:MPS}.
@@ -19,62 +19,67 @@ In the rest of the paper, we will often use examples from MPS to illustrate the 
 
 Projectional editing, keeping the code in the AST form, and the absence of parsers, brings along several benefits.
 \begin{itemize}
-	\item The developers practically cannot enter syntactically invalid code, because a projectional editor controls the interaction between the user and the code.
+	\item The developers practically cannot enter syntactically invalid code, because a projectional editor controls the interaction between the user and the program code.
 		%An AST created by the editor can represent only a syntactically valid code.
-	\item Programming languages can be defined in a modular way, and multiple languages can be easily combined together in a single program or one can extend another, while parsers seriously limit language modularity for traditional parsed languages.
-	\item The languages may support diverse contextual or non-parseable notations with complex layout, such as tables, mathematical expressions, diagrams and positional syntax.
-	\item Since the projection is detached from the physical representation of code (AST), authors of languages can define multiple notations and allow the developers to switch between different representations of the code on the screen.
+	\item Programming languages can be defined in a modular way, and multiple languages can be easily combined together in a single program or one can extend another.
+		%, while parsers seriously limit language modularity for traditional parsed languages.
+	\item The languages may support diverse contextual or non-parseable notations with complex layout, such as tables, diagrams, and mathematical expressions.
+	\item Since the projection is detached from the physical representation of code (AST), authors of languages can define multiple notations and allow the developers to switch between them on the screen.
 \end{itemize}
 All of this is useful especially for DSLs, which are frequently used by domain experts who may not be professional software developers.
-The mbeddr project~\cite{ref:MBEDDR}, which extends C with numerous domain-specific constructs and data types, illustrates the abilities of language workbenches in general and of JetBrains MPS in particular.
-Voelter et al.~\cite{ref:VSB14} discuss the benefits and limitations of projectional editors.
+The mbeddr project~\cite{ref:MBEDDR} illustrates the abilities of language workbenches in general and of JetBrains MPS in particular.
+Voelter et al.~\cite{ref:VSB14} discuss the benefits and limitations of projectional editors in more detail.
 
 Nevertheless, the usage of projectional editors introduces some new problems.
-Before a language can be used inside an editor such as MPS, it has to be defined through the specific infrastructure, so that the IDE can understand the language and work with it.
+Before a language can be used inside an editor, it has to be defined through the specific infrastructure, so that the IDE can understand the language and work with it.
 More precisely, an author of a language has to create:
 \begin{enumerate}
 	\item the abstract syntax (structure of the language), which defines the types of allowed AST nodes,
-	\item the concrete syntax used for editing, i.e. projection of the AST on the screen and its interactions with the user, and
-	\item text generation scripts to enable creation of plain text files used as input for compilers.
+	\item the concrete syntax for editing, i.e. projection of the AST on the screen and interactions with the user, and
+	\item text generation scripts to enable creation of plain text representation used as input for compilers.
 \end{enumerate}	
 
 %Again, we provide additional technical details in Section~\ref{sect:MPS}.
 
-IDE tools based on projectional editors are typically used for syntactically rich DSLs, which are likely to benefit most from overcoming the limitations of parser-based languages.
-In the specific case of MPS, before a program written in a rich DSL can be executed, it is transformed on the AST level by a series of model-to-model transformations to an AST model that represents the desired semantics in a general-purpose programming language (GPPL), such as C or Java.
+IDE tools based on projectional editors are typically used for syntactically rich DSLs.
+%, which are likely to benefit most from overcoming the limitations of parser-based languages.
+In the specific case of MPS, before a program written in a DSL can be executed, it is transformed on the AST level by a series of model-to-model transformations to an AST model that represents the desired semantics in a general-purpose programming language (GPPL), such as C or Java.
 This model is then converted to a textual representation of that language and compiled by the standard means of the target platform.
 Therefore, the target GPPL must also be defined by the MPS means in order to allow the DSLs to have their models transformed into a model in the GPPL.
 
-However, very few mainstream GPPLs are now fully supported by MPS, because it requires substantial effort to manually create a full definition of a GPPL in MPS.
-Only Java and C have been implemented to date, which limits the authors of DSLs to only target these supported GPPLs.
-The overall goal of our project is to automatize the process of language definition in MPS as much as possible, exploiting the fact that a big part of this process is quite straightforward.
-We believe that such an automated process would encourage and speed-up the migration of more GPPLs into MPS, thus giving the authors of DSLs more options.
-Other possible applications include the support for writing programs in GPPLs using the projectional editor and combination of GPPLs with domain-specific languages natively created in MPS.
+However, very few mainstream GPPLs are now supported by MPS, because it requires substantial effort to manually create a full definition of a language in MPS.
+Only Java and C have been implemented to date.
+%, which limits the authors of DSLs to only target these supported GPPLs.
+The overall goal of our project is to automatize the process of language definition in MPS as much as possible.
+%, exploiting the fact that a big part of this process is quite straightforward.
+We believe that such an automated process would encourage and speed-up the migration of more GPPLs into MPS, thus giving the authors of DSLs more options regarding target general languages.
+Another possible application is the combination of general-purpose languages with DSLs natively created in MPS.
+%include the support for writing programs in GPPLs using the projectional editor and 
 
-In this paper we present \textsc{Ingrid}, a method and a tool for semi-automated construction of the definition of a programming language in MPS that uses an ANTLR grammar of the language as a description of its syntax.
-The process of construction is semi-automated for two reasons: (1) input ANTLR grammars have to be adjusted before \textsc{Ingrid} can process them, and (2) some aspects of the generated MPS languages typically must be tweaked or created manually in order to improve usability of the language.
+In this paper we present \textsc{Ingrid}, a method and a tool for semi-automated construction of a language definition in MPS that uses an ANTLR grammar as a description of its syntax.
+The process of construction is semi-automated for two reasons: (1) ANTLR grammars have to be adjusted before \textsc{Ingrid} can process them, and (2) some aspects of the generated MPS languages typically must be tweaked or created manually in order to improve languages' usability.
 
 We also discuss the main challenges that we encountered during the development of \textsc{Ingrid} and our solution to them.
-They are related to the principal differences between the two approaches to the definition of a programming language --- (i) one that uses grammars in an EBNF-like notation, with rules and tokens written in plain text, and the corresponding parser generators, and (ii) the structured object-oriented approach used in MPS and other language workbenches.
+They are related to principal differences between the two approaches to the definition of a programming language --- (i) one that uses grammars in an EBNF-like notation, with rules and tokens written in plain text, and parser generators, and (ii) the structured object-oriented approach used in MPS and other language workbenches.
 Specifically, the description of a language in the form of a grammar does not hold any information about the code layout, and the grammar typically contains many rules that do not directly correspond to AST nodes and programming language constructs.
 
-The \textsc{Ingrid} tool can help also to make the construction of DSLs more efficient.
-Based on our experience, we believe that, especially for simple languages, it is less time consuming to write their grammar by hand and then create the language definition in MPS using \textsc{Ingrid}, than to create the language manually using the MPS GUI.
+\textsc{Ingrid} can also make the construction of DSLs more efficient.
+Based on our experience, we believe that, especially for simple languages, it is less time consuming to write their grammar by hand and then create the language definition in MPS with the help of \textsc{Ingrid}, than to create everything manually using the MPS GUI.
 
 %\textsc{Ingrid} allows developers to leverage all the features that MPS has to offer together with general purpose languages such as C++, JavaScript or Python.
 
-Although we define the \textsc{Ingrid} method in the context of MPS, and illustrate everything using examples from MPS and ANTLR grammars, it can be easily adapted to construction of language definitions in other language workbenches (i) that use projectional editing and (ii) where the language definition is based on a structural object-oriented approach.
-Most of the challenges that we discuss and key principles behind our method apply also to such other language workbenches.
+Although we define the \textsc{Ingrid} method in the context of MPS, and illustrate everything using examples from MPS and ANTLR grammars, it can be easily adapted to other language workbenches (i) that use projectional editing and (ii) where the language definition is based on a structural object-oriented approach.
+Most of the challenges that we discuss and key principles behind our method are general and therefore apply also to other language workbenches.
 
 We make the following key contributions:
 \begin{itemize}
-	\item The \textsc{Ingrid} method for construction of MPS language definitions from ANTLR grammars, which can be used (1) for the import of general-purpose programming languages into MPS and (2) for efficient construction of DSLs. Besides MPS, the method can be adapted to other language workbenches based on similar principles as MPS (especially projectional editing).
-	\item Identification and discussion of general challenges related to the differences between (1) definitions of programming languages that use grammars in an EBNF-like notation and (2) the structured object-oriented approach used in projectional editors such as MPS.
-	\item Discussion about the dependence of practical usability of generated MPS languages on (1) the specific form of ANTLR grammars and (2) the manual adjustments of input grammars and specific aspects of MPS languages (e.g., with respect to code layout). Details are provided in Section~\ref{sect:EDITORDEF} and Section~\ref{sect:REMARKSGRAMMARS}.
+	\item The \textsc{Ingrid} method for construction of MPS language definitions from ANTLR grammars, which can be used (1) for the import of general-purpose languages into MPS and (2) for efficient construction of DSLs. \textsc{Ingrid} can be adapted also to other language workbenches based on similar principles as MPS.
+	\item Identification and discussion of general challenges related to the differences between (1) language definitions that use grammars and (2) the structured object-oriented approach used in projectional editors.
+	\item Discussion of the practical usability of generated MPS languages and its dependence on (1) the specific form of ANTLR grammars and (2) the manual adjustments of input grammars and specific aspects of MPS languages (e.g., with respect to code layout). Details are provided in Section~\ref{sect:EDITORDEF} and Section~\ref{sect:REMARKSGRAMMARS}.
 \end{itemize}
 
 The rest of the paper has the following structure.
-In the next section, we provide (i) all information about MPS that is necessary to understand the examples from MPS presented in the paper and (ii) a brief overview of related work, including projects with similar goals as \textsc{Ingrid}.
-Then, in Section~\ref{sect:LANGDEF}, we describe our approach to the construction of a language definition in MPS from its ANTLR grammar, discussing the major challenges together with our solution along the way.
-We also discuss our experience with application of \textsc{Ingrid} on complex mainstream languages, such as JavaScript and C\#, and highlight open problems (Section~\ref{sect:EVAL}), and then we conclude.
+In the next section, we provide (i) all information about MPS that is necessary to understand the examples presented in the paper and (ii) a brief overview of related work, including projects with similar goals as \textsc{Ingrid}.
+Then, in Section~\ref{sect:LANGDEF}, we describe in detail our approach to the construction of a language definition in MPS from its ANTLR grammar, discussing the major challenges together with our solution along the way.
+We also discuss our experience with application of \textsc{Ingrid} on complex mainstream languages, such as JavaScript and C\# (Section~\ref{sect:EVAL}), and then we conclude.
 

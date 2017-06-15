@@ -1,11 +1,12 @@
 \section{Conclusion and Future Work}
 
 Our contribution is the \textsc{Ingrid} method for constructing language definitions in MPS from their grammars in the ANTLR notation.
-The method is only partially automated, but nevertheless it greatly reduces the amount of manual work \todo{Jak to vime?} that developers of MPS languages have to perform.
-Although we discussed all the challenges, details of our solution and general observations just in the context of ANTLR grammars and JetBrains MPS, we believe they are more general \todo{Discuss this more thoroughly (it would be valuable)} --- and in particular relevant to everyone tackling a similar problem in the field of DSLs and language workbenches.
+The method is only partially automated, but nevertheless it greatly reduces the amount of manual work that developers of MPS languages have to perform.
+Although we discussed all the challenges, details of our solution and general observations just in the context of ANTLR grammars and JetBrains MPS, we believe they are more general --- and in particular relevant to everyone tackling a similar problem in the field of DSLs and language workbenches.
 
-In the future, we would like to address the remaining open problems (there are many of them) \todo{Provide more concrete details here} and increase the level of automation.
-Our primary research goal is to investigate the usage of automated (machine) learning for the purpose of generating editors that support nice and readable code layout \todo{User study would be valuable here, because such a thing may not exist among multiple users}.
+In the future, we would like to add support for generating other aspects of MPS languages and increase the level of automation.
+Our primary research goal is to investigate the usage of automated (machine) learning for the purpose of generating editors that support nice and readable code layout.
+First, we would have to collect a set of input source code files to be used for training. This step might involve a user study designed in order to identify examples of layout that a majority considers as nice and readable.
 The information about code layout, once it is available, will be then leveraged and used also to improve TextGen.
-Another subject for future work is generating parsers that would allow users to import existing source code into MPS \todo{Vysvetlit podrobneji ze chceme automaticky generovat parsery textovych zdrojaku ktere budou vytvaret interni reprezentace (ASTs) postavene na zaklade MPS concepts pro dany jazyk}.
+Another subject for future work is automated construction of parser-based tools that could be used for translating source code in plain-text to instances of MPS languages.
 
