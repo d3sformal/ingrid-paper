@@ -132,12 +132,14 @@
 
 
 \begin{abstract}
-JetBrains MPS is a language workbench, an IDE that allows developers both to write code and create or modify language definitions.
+JetBrains MPS is a language workbench, an IDE that allows developers both to write code and create language definitions.
 It leverages the concept of projectional editing, where the developer directly manipulates the AST representation of program code.
-While MPS focuses on domain-specific languages (DSL), it needs to support also general-purpose programming languages (GPPLs) --- for example, to compile and run programs written in some DSL, or to enable combination of GPPLs with DSLs created in MPS.
+While MPS focuses on domain-specific languages (DSL), it needs to support also general-purpose programming languages (GPPLs) --- for example, to compile and run programs written in some DSL.
+%, or to enable combination of GPPLs with DSLs created in MPS.
 
 We present \textsc{Ingrid}, a method for construction of a language definition in MPS based on its ANTLR grammar.
-The structure of a language is generated automatically, but its projectional editor and other aspects must be adjusted manually by the user.
+The structure of a language is generated automatically, but its projectional editor and other aspects has to be adjusted manually.
+%by the user.
 During the development of \textsc{Ingrid}, we encountered several challenges related to the mapping between grammars and language definitions in MPS that are based on object-oriented principles.
 Another difficulty is that grammars do not hold any information about code layout.
 
