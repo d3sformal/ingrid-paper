@@ -4,7 +4,7 @@ The prevailing approach to define valid syntaxes for programming languages is th
 Many tools exist for automated generation of parsers from the grammar definitions --- for example, ANTLR~\cite{ref:ANTLRBOOK,ref:ANTLR} and Bison/Flex~\cite{ref:BISONFLEX}.
 The source code of programs is written in a text editor, usually embedded into an IDE. Parsers are used to create an abstract syntax tree (AST) representation of the code, e.g. inside the compiler.
 
-An alternative approach is projectional (or structural) editing~\cite{ref:VWK15,ref:VSB14}, where a developer directly manipulates the AST representation of the source code instead of plain text.
+An alternative approach is projectional (or structural) editing~\cite{ref:VWK15,ref:VSB14,ref:DHL80}, where a developer directly manipulates the AST representation of the source code instead of plain text.
 This idea emerged as early as in 1970s, but it failed to get adopted widely, mostly due to inconvenient and unnatural way of manipulating code.
 A recent revival of projectional editing has been observed in the area of language workbenches --- IDE-like tools that enable the developers to manipulate the actual language definition.
 Popular examples are JetBrains MPS~\cite{ref:MPS,ref:MPSBOOK} and Spoofax~\cite{ref:KV10}.
@@ -19,7 +19,7 @@ In the rest of the paper, we will often use examples from MPS to illustrate the 
 
 Projectional editing, keeping the code in the AST form, and the absence of parsers, brings along several benefits.
 \begin{itemize}
-	\item The developers practically cannot enter syntactically invalid code, because a projectional editor controls the interaction between the user and the program code.
+	\item A projectional editor does not allow the developers to enter syntactically invalid code, because it controls the interaction between the user and the program code.
 		%An AST created by the editor can represent only a syntactically valid code.
 	\item Programming languages can be defined in a modular way, and multiple languages can be easily combined together in a single program or one can extend another.
 		%, while parsers seriously limit language modularity for traditional parsed languages.
@@ -45,7 +45,7 @@ IDE tools based on projectional editors are typically used for syntactically ric
 %, which are likely to benefit most from overcoming the limitations of parser-based languages.
 In the specific case of MPS, before a program written in a DSL can be executed, it is transformed on the AST level by a series of model-to-model transformations to an AST model that represents the desired semantics in a general-purpose programming language (GPPL), such as C or Java.
 This model is then converted to a textual representation of that language and compiled by the standard means of the target platform.
-Therefore, the target GPPL must also be defined by the MPS means in order to allow the DSLs to have their models transformed into a model in the GPPL.
+Therefore, the target GPPL must also be defined in MPS, using the respective infrastructure, in order to allow the DSLs to have their models transformed into a model in the GPPL.
 
 However, very few mainstream GPPLs are now supported by MPS, because it requires substantial effort to manually create a full definition of a language in MPS.
 Only Java and C have been implemented to date.
@@ -57,7 +57,7 @@ Another possible application is the combination of general-purpose languages wit
 %include the support for writing programs in GPPLs using the projectional editor and 
 
 In this paper we present \textsc{Ingrid}, a method and a tool for semi-automated construction of a language definition in MPS that uses an ANTLR grammar as a description of its syntax.
-The process of construction is semi-automated for two reasons: (1) ANTLR grammars have to be adjusted before \textsc{Ingrid} can process them, and (2) some aspects of the generated MPS languages typically must be tweaked or created manually in order to improve languages' usability.
+The process of construction is semi-automated for two reasons: (1) ANTLR grammars have to be adjusted before \textsc{Ingrid} can process them, and (2) some aspects of the language definitions in MPS typically must be tweaked or created manually in order to improve languages' usability.
 
 We also discuss the main challenges that we encountered during the development of \textsc{Ingrid} and our solution to them.
 They are related to principal differences between the two approaches to the definition of a programming language --- (i) one that uses grammars in an EBNF-like notation, with rules and tokens written in plain text, and parser generators, and (ii) the structured object-oriented approach used in MPS and other language workbenches.

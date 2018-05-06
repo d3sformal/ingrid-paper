@@ -60,11 +60,11 @@ Elements on the right side of a rule can be annotated with standard EBNF operato
 
 The first phase in the process of MPS language construction is parsing of the input ANTLR v4 grammar.
 It is done using an ANTLR parser that was automatically generated from the grammar of the ANTLR v4 notation itself.
-Nevertheless, the full AST, which comes out of the parser, is quite complex and contains information not relevant for the \textsc{Ingrid} algorithm.
-In order to get a simple representation that is easy to process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the AST are performed in this phase.
-An output is a custom AST-like structure representing the grammar, especially the hierarchy of parser rules.
+Nevertheless, the full parse tree, which comes out of the parser, is quite complex and contains information not relevant for the \textsc{Ingrid} algorithm.
+In order to get a simple representation that is easy to process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the parse tree are performed in this phase.
+An output is a custom AST-like structure that represents the grammar, especially the hierarchy of parser rules, in a way more suitable for MPS.
 
-The representation of lexer rules (tokens) in the AST has to be simplified too.
+The representation of lexer rules (tokens) in the full parse tree has to be simplified too.
 In the ANTLR notation, lexer rules can be built from alternatives just like the parser rules --- see, for example, the lexer rule \antlrlexerrule{Name} from our SimpleXML language (Figure~\ref{fig:SIMPLEXML}).
 For each lexer rule, the parser produces a tree that captures its structure.
 The lexer rules are, in fact, just regular expressions used to recognize tokens in the input string.
@@ -308,7 +308,7 @@ Cells of different types are supported by MPS --- for storing property values, r
 The specific goal of this phase is to create the Editor aspect for each language concept, such that all its attributes --- name, properties, children --- are projected using the respective cell types.
 
 The main problem that we had to address is the absence of information about the code layout and whitespace in ANTLR grammars.
-Rules forming the grammar only tell what the syntax tree looks like and how the program code is decomposed into AST nodes.
+Rules forming the grammar only tell what the syntax tree looks like and how the program text is decomposed into AST nodes.
 Here we present a solution that is only partially automated for reasons explained below.
 
 We observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept that should appear in its visual representation.

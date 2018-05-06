@@ -11,7 +11,7 @@ The code can then be transformed into a target language, typically a GPPL such a
 
 When using the MPS projectional editor, the developer does not work with the textual representation of the source code, but rather directly with its AST that is the model of the code.
 Programs are created by assembling the tree (AST) out of predefined building blocks of selected languages.
-The definition of a language in MPS dictates, where in the AST can certain elements be placed and how they can be nested inside other elements.
+The definition of a language in MPS dictates where in the AST certain elements can be placed and how they can be nested inside other elements.
 
 The building blocks of MPS models are called nodes.
 Code of any program in MPS is built from nodes, which represent instances of concepts from the languages that the program is written in.
@@ -173,7 +173,7 @@ PE stands for projectional editing.
 
 PE grammars extend the syntax of the ANTLR v4 notation by constructs that provide information about the possible layout of AST nodes.
 The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
-However, even these few features make the syntax much more complicated.
+However, even these few features make the extended syntax of ANTLR v4 much more complicated.
 
 The PE4MPS tool creates an MPS language in a single atomic step.
 An input PE file is loaded and processed by the PE parser, and then all concepts (AST nodes) and their aspects are directly generated inside MPS.
@@ -190,7 +190,7 @@ We discuss application of PE4MPS on JavaScript in Section~\ref{sect:EVAL}, and c
 \paragraph{ANTLR{\_}MPS~\cite{ref:ANTLR2MPS}.} This project also uses the ANTLR v4 grammar notation, but otherwise works quite differently from PE4MPS.
 %We provide only a brief mention here because this project is in an early stage of development.
 Its author created an ANTLR v4 MPS language, which captures the syntax of ANTLR v4 notation using MPS concepts.
-Given some language as input, the textual grammar of the language is imported automatically into MPS, taking the form of the ANTLR v4 MPS language.
+Given the textual grammar of some language as input, the grammar is imported automatically into MPS, taking the form of the ANTLR v4 MPS language.
 The next step would be to create a new MPS language from the grammar definition in MPS, but it is not implemented yet.
 
 However, the project has also other important limitations.
