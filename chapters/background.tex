@@ -1,46 +1,38 @@
-\section{Background and Related Work}
-\label{sect:BACKGRELWORK}
+\section{Background}
+\label{sect:BACKGROUND}
 
-In this section, we introduce basic features of the MPS platform, and then we discuss other existing projects that aim to add support for general purpose languages into MPS.
+In this section, we introduce basic features of the MPS platform, and then we briefly discuss existing projects that aim to add support for general purpose languages into MPS.
 
 \subsection{JetBrains MPS}
 \label{sect:MPS}
 
-JetBrains MPS is a language workbench --- an IDE that allows developers to create their own languages and use them to write code.
-The code can then be transformed into a target language, typically a GPPL such as Java or C, and eventually compiled into executable programs.
+MPS is a language workbench --- an IDE that allows developers to create new languages and use them to write code.
+The code can be transformed into a target language, typically a GPPL such as Java or C, and compiled into executables.
 
-When using the MPS projectional editor, the developer does not work with the textual representation of the source code, but rather directly with its AST that is the model of the code.
-Programs are created by assembling the tree (AST) out of predefined building blocks of selected languages.
+When using the MPS projectional editor, the developer creates programs by assembling the AST out of predefined building blocks of selected languages.
 The definition of a language in MPS dictates where in the AST certain elements can be placed and how they can be nested inside other elements.
 
-The building blocks of MPS models are called nodes.
 Code of any program in MPS is built from nodes, which represent instances of concepts from the languages that the program is written in.
 In MPS, a \emph{concept} is a language element, i.e. a building block of a language definition.
-We use the terms \emph{MPS concept} and \emph{AST node} when needed to avoid confusion.
 
 One of the key advantages of projectional editing stems from the separation of abstract and concrete syntax.
-While AST provides a complete and precise representation of the code, the way it is displayed on the screen and the way the user interacts with it are unconstrained.
-The editor can take any visual form and shape.
+While AST provides a complete and precise representation of the code, the way it is displayed on the screen and the way the user edits it are unconstrained.
+The editor can take any visual form and shape (i.e., not just textual).
 The language author can define multiple alternative visualizations and let the developer choose one that fits best the task at hand.
-%--- for example, editing, debugging, reviewing, resolving merge conflicts, etc.
-In particular, the visual representations are not bound to be just textual at all.
-%For example, blocks corresponding to branches of an \code{if-then-else} statement can be aligned next to each other and displayed with different background colors.
 
 The definition of an MPS concept (language element) consists of several aspects, where each aspect codifies a different part of the AST nodes' behavior.
 The essential aspects are the following: \emph{Structure}, \emph{Editor} and \emph{TextGen}.
 Structure represents the abstract syntax (types and hierarchy of AST nodes), Editor defines the concrete syntax (i.e., how the code is visualized and edited) and TextGen specifies how AST nodes are transformed into textual representation.
-If, instead of generating text directly, programs in the language are supposed to be transformed into another language that is available in MPS, the Generator aspect must be used to specify the model-to-model transformation rules.
-Since only the Structure, Editor and TextGen aspects are relevant for the contribution of this paper, we describe them below in more detail, and neglect other aspects such as type constraints.
+If programs in the language are supposed to be transformed into another language that is available in MPS, the Generator aspect must be used to specify the model-to-model transformation rules.
+Since only the Structure, Editor and TextGen aspects are relevant for the contribution of this paper, we neglect other aspects such as type constraints.
 
-Languages are built from the concepts using techniques known from object-oriented programming --- containment, inheritance, interfaces, and so on.
-Therefore, a definition of a whole language in MPS typically has an object-oriented and hierarchical nature.
+Languages are built from the concepts using techniques known from object-oriented programming --- containment, inheritance, and so on.
+Therefore, the definition of a language in MPS has an object-oriented and hierarchical nature.
 
 \paragraph{Structure.}
 The fundamental aspect of any MPS language is Structure.
-It must be created first for each intended language concept.
-Structure specifies core attributes of an MPS concept such as the name, inheritance relationships, child concepts (their types and cardinalities), implemented interfaces, and references to other AST nodes.
-% other properties (fields of any type that can hold values), etc.
-Figure~\ref{fig:if_statement_structure} shows the Structure aspect for the \code{if-then-else} statement.
+It specifies core attributes of a language concept such as the name, inheritance relationships, child concepts (their types and cardinalities), and references to other AST nodes.
+Figure~\ref{fig:if_statement_structure} shows the most important fragments of the Structure aspect for the \code{if-then-else} statement.
 
 Structure also restricts the type of AST nodes that can appear at a particular place in the tree.
 For example, one can restrict the condition in \code{if-then-else} to be a boolean expression, and the \code{then}-block to be a list of statements.
@@ -52,25 +44,15 @@ For example, one can restrict the condition in \code{if-then-else} to be a boole
 \small
 \mpsstkeyword{concept} IfStatement \mpsstkeyword{extends} Statement
         \mpsstkeyword{implements} IContainsStatementList
-                   IDontSubstituteByDefault
-                   IConditional
 
   \mpsstkeyword{instance can be root:} false
   \mpsstkeyword{alias:} \mpsstalias{if}
-  \mpsstkeyword{short description:} \mpsstplaceholder{<no short description>}
 
-  \mpsstkeyword{properties:}
-  \mpsstproperty{forceOneLine}   : boolean
-  \mpsstproperty{forceMultiLine} : boolean
-  
   \mpsstkeyword{children:}
   \mpsstproperty{condition}        : Expression[\mpsstcardinality{1}]
   \mpsstproperty{ifFalseStatement} : Statement[\mpsstcardinality{0..1}]
   \mpsstproperty{ifTrue}           : StatementList[\mpsstcardinality{1}]
   \mpsstproperty{elsifClauses}     : ElsifClause[\mpsstcardinality{0..n}]
-  
-  \mpsstkeyword{references:}
-  \mpsstplaceholder{<< ... >>}
 \end{alltt}
 \caption{Structure aspect of the \code{if-then-else} statement}
 \label{fig:if_statement_structure}
@@ -80,8 +62,7 @@ For example, one can restrict the condition in \code{if-then-else} to be a boole
 \paragraph{Editor.}
 The Editor aspect is where the language designer specifies what the projectional representation of a code fragment (an AST) looks like on the screen and how the user interacts with the code.
 JetBrains have developed a cellular system that enables placing properties and children of a node (concept) into different cells.
-The author usually incorporates all of the node's children, references, and properties inside the representation, so that future users of the language can insert all values that the node expects.
-Additionally, cells of the editor can be styled using a language similar to CSS.
+Individual cells of the editor can be styled using a language similar to CSS.
 Supported visual characteristics include color and indentation.
 
 Figure~\ref{fig:if_editor_definition} shows an example of what the definition of the Editor aspect for the \code{if-then-else} statement might look like.
@@ -100,8 +81,8 @@ The symbols \verb|[-| and \verb|-]| represent layout information, which specifie
       \textbf{\{}
       [- \% ifTrue % -]
       \textbf{\}}
-    -]
-    ?[- \mpsedkeyword{else} \% ifFalseStatement \% -]
+      -]
+      ?[- \mpsedkeyword{else} \% ifFalseStatement \% -]
     -]
 \end{alltt}
 \vspace{-1mm}
@@ -111,19 +92,15 @@ The symbols \verb|[-| and \verb|-]| represent layout information, which specifie
 \end{figure}
 
 \paragraph{BaseLanguage.}
-Another important feature of MPS that we need to describe is \emph{BaseLanguage}~\cite{ref:BASELANG}, a clone of Java implemented using the MPS constructs.
-BaseLanguage was developed in the early days of MPS in order to implement MPS itself and also to support the basic set of language-definition DSLs,
-Although BaseLanguage is syntactically almost identical to Java, it is edited in a projectional editor, just like all the languages in MPS.
-The language-definition DSLs, used to define custom languages by their authors, are generated into the BaseLanguage.
-Similarly, all the custom DSLs that are meant to be generated into Java choose BaseLanguage as their generation target.
-The conversion to textual Java sources is handled by BaseLanguage (without any further manual effort), through its TextGen aspect.
+Another very important feature of MPS is \emph{BaseLanguage}~\cite{ref:BASELANG}, a clone of Java implemented using the MPS constructs.
+BaseLanguage is syntactically almost identical to Java, but it is edited in a projectional editor, just like all the languages in MPS.
+Custom DSLs meant to be generated into Java choose BaseLanguage as their generation target.
 
 \paragraph{TextGen.}
 The TextGen aspect specifies how a given AST node will be translated into plain text representation.
 It is typically needed only for the bottom-line base languages.
 DSLs, on the other hand, need to define rules for model-to-model conversions (Generators), since programs in such languages are rarely converted to text directly.
-After TextGen has generated textual sources from an AST, a compiler for the particular GPPL is invoked to compile the textual sources into binary code.
-The TextGen definition follows a very straightforward pattern --- each node outputs its textual representation into a buffer, while calling TextGen of its children nodes at the right moments.
+The TextGen definition follows a straightforward pattern --- each node outputs its textual representation into a buffer, while calling TextGen of its children nodes.
 MPS calls the corresponding method on the root AST nodes of the given program.
 
 \begin{figure}[ht]
@@ -161,51 +138,37 @@ Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:i
 We are aware just of a few attempts to create ports of general-purpose languages into IDE tools based on projectional editing.
 All of them (described below) were conducted manually.
 
-The BaseLanguage~\cite{ref:BASELANG} is an almost full port of Java, which was created by JetBrains and extended with MPS-specific features.
-% and it is still undergoing changes as Java itself is evolving.
+The BaseLanguage~\cite{ref:BASELANG} is an almost full port of Java, extended with MPS-specific features.
 The C language has also been manually tailored for MPS within the mbeddr project~\cite{ref:MBEDDR}.
 
 The following three projects --- PE4MPS, ANTLR{\_}MPS, and mps-metabnf --- aim to provide certain support for GPPLs within the MPS platform.
 We describe their main features and limitations in this section.
 
-\paragraph{PE4MPS~\cite{ref:PE4MPS}.} This is a project that addresses the lack of information about code layout in grammars by using so called PE grammars~\cite{ref:PE}, which is a new notation proposed by the same author.
+\paragraph{PE4MPS~\cite{ref:PE4MPS}.}
+This project addresses the lack of information about code layout in grammars by using so called PE grammars~\cite{ref:PE}, which is a new notation proposed by the same author.
 PE stands for projectional editing.
 
 PE grammars extend the syntax of the ANTLR v4 notation by constructs that provide information about the possible layout of AST nodes.
-The current version, as of November 2016, supports just horizontal lists, vertical lists, and some indentation rules.
-However, even these few features make the extended syntax of ANTLR v4 much more complicated.
-
 The PE4MPS tool creates an MPS language in a single atomic step.
-An input PE file is loaded and processed by the PE parser, and then all concepts (AST nodes) and their aspects are directly generated inside MPS.
 Information about the code layout, extracted from the PE file, is used when generating the projectional editor for every AST node.
 
 The main disadvantage of the PE4MPS approach is that it only shifts the tedious manual work from creating projectional editors in the MPS IDE to writing PE grammars in plain text.
-Language developers are forced to specify the code layout manually in PE grammars, through the corresponding extensions.
 Usage of a standard text editor is inferior (and much more error-prone) with respect to MPS, which has been designed for the purpose of specifying the code layout and provides lot of support to developers.
-Like for \textsc{Ingrid}, every grammar might require non-trivial adjustments before it can be processed using the PE4MPS tool.
-%To compare, the goals behind our \textsc{Ingrid} approach are (1) to enable import of as many languages as possible out-of-the-box with maximal automation and (2) to adopt the full specification of every imported language.
 
-We discuss application of PE4MPS on JavaScript in Section~\ref{sect:EVAL}, and compare its results to our \textsc{Ingrid} approach.
-
-\paragraph{ANTLR{\_}MPS~\cite{ref:ANTLR2MPS}.} This project also uses the ANTLR v4 grammar notation, but otherwise works quite differently from PE4MPS.
-%We provide only a brief mention here because this project is in an early stage of development.
-Its author created an ANTLR v4 MPS language, which captures the syntax of ANTLR v4 notation using MPS concepts.
+\paragraph{ANTLR{\_}MPS~\cite{ref:ANTLR2MPS}.}
+This project also uses the ANTLR v4 grammar notation, but otherwise works quite differently from PE4MPS.
+Its author created an MPS language that captures the syntax of ANTLR v4 notation using MPS concepts.
 Given the textual grammar of some language as input, the grammar is imported automatically into MPS, taking the form of the ANTLR v4 MPS language.
 The next step would be to create a new MPS language from the grammar definition in MPS, but it is not implemented yet.
 
-However, the project has also other important limitations.
-The tool does not generate any parent-child relationships in the Structure aspect, and it provides no support for the projectional editor at all (by completely neglecting the Editor and TextGen aspects).
+However, the project has several important limitations.
+The tool does not generate any parent-child relationships in the Structure aspect, and it completely neglects the Editor and TextGen aspects.
 
-\paragraph{mps-metabnf~\cite{ref:MPSMETABNF}.} This tool, implemented by members of the DSLFoundry group, builds upon similar ideas as the ANTLR{\_}MPS project described above.
-Authors of this project, too, created an MPS language to capture ANTLR grammars.
-Every imported grammar is represented using this ANTLR v4 MPS language.
+\paragraph{mps-metabnf~\cite{ref:MPSMETABNF}.}
+This tool builds upon similar ideas as the ANTLR{\_}MPS project.
+Every imported grammar is represented using an ANTLR v4 MPS language.
 A user is then able to adjust the grammar as he wishes, specifying the code layout in the projectional editor.
 In the last step, the target MPS language is derived from the adjusted grammar definition.
 
 The main limitation of this approach is the need to perform the last step manually, because MPS currently does not provide any support for automated transformation of a grammar captured by the ANTLR v4 MPS language into the definition of the actual target MPS language.
-
-\paragraph{Other IDEs.}
-Note that while the \textsc{Ingrid} method has been designed primarily for MPS, and can be easily adapted to other IDE tools based on projectional editing, there also exist several language workbenches that use parser generators (such as ANTLR) and support free editing of textual source code.
-A prominent member of the latter category of tools is Spoofax~\cite{ref:KV10}, which essentially restricts the syntax of DSLs to linear text.
-\textsc{Ingrid} is not applicable for creating languages inside such language workbenches.
 
