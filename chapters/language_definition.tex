@@ -2,11 +2,10 @@
 \label{sect:LANGDEF}
 
 The proposed \textsc{Ingrid} method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
-Syntax definition in the form of an ANTLR v4 grammar exists for all widely used programming languages~\footnote{https://github.com/antlr/grammars-v4}.
-Unlike some of the related projects, we did not extend the notation with any custom features, and we also did not create an MPS language for the ANTLR notation.
+Syntax definition in the form of an ANTLR v4 grammar exists for all widely used programming languages. It is available at \url{https://github.com/antlr/grammars-v4}.
+Unlike some of the related projects, we did not extend the notation with any custom features.
 
-The process of language construction by \textsc{Ingrid} consists of four phases --- the first is parsing of the input grammar, followed by definition of the essential aspects of the language (Structure, Editor, and TextGen, respectively).
-%Each of the phases 2-4 is exclusively and fully responsible for one aspect.
+The process of language construction by \textsc{Ingrid} consists of four phases --- the first is parsing of the input grammar, followed by definition of the essential aspects of the language.
 
 \textsc{Ingrid} is currently able to create (i) a full Structure aspect for each element of the given language, (ii) a very basic Editor, and (iii) a basic TextGen aspect.
 Therefore, the resulting MPS language typically still has to be adjusted manually to improve its usability, and the remaining aspects not yet supported by \textsc{Ingrid} must also be defined.
@@ -15,8 +14,7 @@ Our approach differs from the existing projects with similar goals (Section~\ref
 
 \subsection{Running Example}
 
-We will describe the \textsc{Ingrid} method using a simplified XML language defined in Figure~\ref{fig:SIMPLEXML}.
-The \emph{SimpleXML} language is small but complex enough to be used for illustration of the main challenges and behavior of the proposed algorithms.
+We describe the \textsc{Ingrid} method, and illustrate the main challenges, using a simplified XML language defined in Figure~\ref{fig:SIMPLEXML}.
 
 \begin{figure}[ht]
 \vspace{-2mm}
@@ -48,10 +46,9 @@ Each color in Figure~\ref{fig:SIMPLEXML} corresponds to one kind in a way indica
 \begin{itemize}
 	\item \textbf{ANTLR v4 keywords} are required by the notation.
 	\item \antlrparserrule{\textbf{Parser rules}} describe the structure of a language.
-		Alternatives on the right side of a rule are separated by the pipe character ($|$).
 	\item \antlrlexerrule{\textbf{Lexer rules}} describe terminal symbols that the parser matches against the input.
 		A terminal symbol can be encoded as a string value or a regular expression.
-	\item \antlrliteralnoap{\textbf{String literals}}, always written inside of a pair of single quote marks, also represent terminal symbols, but by exact match to a string constant.
+	\item \antlrliteralnoap{\textbf{String literals}} also represent terminal symbols, but by exact match to a string constant.
 	\item \antlrregex{\textbf{String tokens}} are described by regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
 \end{itemize}
 Elements on the right side of a rule can be annotated with standard EBNF operators (\code{?}, \code{+}, \code{*}) that specify the allowed number of occurrences.
@@ -60,52 +57,14 @@ Elements on the right side of a rule can be annotated with standard EBNF operato
 
 The first phase in the process of MPS language construction is parsing of the input ANTLR v4 grammar.
 It is done using an ANTLR parser that was automatically generated from the grammar of the ANTLR v4 notation itself.
-Nevertheless, the full parse tree, which comes out of the parser, is quite complex and contains information not relevant for the \textsc{Ingrid} algorithm.
-In order to get a simple representation that is easy to process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the parse tree are performed in this phase.
+The full parse tree, which comes out of the parser, is quite complex and contains information not relevant for \textsc{Ingrid}.
+In order to get a simple representation that is easy to process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the parse tree are performed.
 An output is a custom AST-like structure that represents the grammar, especially the hierarchy of parser rules, in a way more suitable for MPS.
 
 The representation of lexer rules (tokens) in the full parse tree has to be simplified too.
 In the ANTLR notation, lexer rules can be built from alternatives just like the parser rules --- see, for example, the lexer rule \antlrlexerrule{Name} from our SimpleXML language (Figure~\ref{fig:SIMPLEXML}).
-For each lexer rule, the parser produces a tree that captures its structure.
-The lexer rules are, in fact, just regular expressions used to recognize tokens in the input string.
-
-Every tree that represents a lexer rule is flattened into the equivalent regular expression by the recursive algorithm in Figure~\ref{fig:ALGFLATTEN}.
-A sequence is created from the elements of each alternative, and then all those sequences are joined by the alternation operator \code{$|$} to form a regular expression.
-Our implementation of the algorithm detects rules defined in a recursive way (e.g., using the pattern \antlrlexerrule{N} : \antlrliteral{text} \antlrlexerrule{N}) and rejects the input grammar if it contains such rules.
-However, note that we use the flatenning algorithm only for lexer rules, where recursion is quite rare --- specifically, the algorithm is not applied to parser rules.
-
-\begin{figure}[ht]
-\vspace{-2mm}
-\centering
-\begin{framed}
-\begin{alltt}
-\small
-Flatten(\textit{R}):
-  \textit{T} = empty list
-  \textbf{for each} alternative \textit{A} \textbf{in} rule \textit{R}:
-    \textit{R} = \antlrap\antlrap
-    \textbf{for each} element \textit{E} \textbf{of} \textit{A}:
-      \textbf{if} \textit{E} is not yet flattened \textbf{then} Flatten(\textit{E})
-      \textit{R}.append(\textit{E})
-      \textit{R}.append(\textit{E}.operator)
-    \textit{T}.add(\textit{R})
-  build string S from elements of \textit{T}:
-    \textit{S} = \(t\sb{1}\) | \(t\sb{2}\) | \(\ldots\) | \(t\sb{n}\)
-  \textbf{return} \textit{S}
-\end{alltt}
-\end{framed}
-\caption{Flattening algorithm}
-\label{fig:ALGFLATTEN}
-\vspace{-2mm}
-\end{figure}
-
-The output of \texttt{Flatten(Name)}, i.e. application of the algorithm to the \antlrlexerrule{Name} rule, is this regular expression:
-
-\begin{center}
-  \texttt{[:a-zA-Z]([:a-zA-Z]|\textbackslash-|{\_}|\textbackslash.|[0-9])*}
-\end{center}
-It defines the syntactically valid identifiers of elements and attributes in SimpleXML.
-Each identifier must begin with a letter, followed by any combination of letters, digits, underscore, dash, or a dot.
+Every tree that represents a lexer rule is flattened into the equivalent regular expression.
+We describe the flattening algorithm in the full version of this paper~\cite{ref:TRFULL}.
 
 \subsection{Phase 2: Structure}
 
@@ -118,16 +77,15 @@ The main challenge, as we already mentioned, is that a grammar typically contain
 Such rules exist at the intermediate layers of a syntax hierarchy.
 Their main purpose is to enable easier understanding and maintenance of the grammar by humans.
 Nevertheless, presence of the intermediate layers would significantly complicate usage of the given language in MPS, and the layers are actually not necessary for construction of an MPS language.
-We show examples illustrating this problem, which we call a \emph{layer problem}, later in this section at a point where we describe our solution.
-As a part of the \textsc{Ingrid} method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach (Section~\ref{sect:SHORTCUT}).
-However, before focusing on the intermediate layers, we describe the basic principles of translation from the AST into the language structure.
+We show examples illustrating this problem, which we call a \emph{layer problem}, later in this section.
+As a part of the \textsc{Ingrid} method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach.
+However, before focusing on the intermediate layers, we describe the basic principles of translation from AST into Structure.
 
 In MPS, each concept of the language (i.e., every AST node) is represented by an object that may have a parent, some children, and properties of any data type.
-Additionally, the object may implement any number of interfaces, and it may also contain references to objects representing other AST nodes.
+Additionally, the object may also contain references to objects representing other AST nodes.
 The parent-child relationships between objects that make the Structure aspect are derived from rules of the grammar.
-For each rule, the object corresponding to the left-hand side is in the parent-child relationships with sets of objects that represent language elements referenced by the right-hand side.
 If a rule has multiple alternatives, then a distinct object (MPS concept) has to be created in the structure for each alternative.
-The name of a concept (object) in MPS is composed from (1) the name of the AST node, which is equivalent to the string encoding of the left-hand side of the corresponding rule, and (2) the number indicating the position of the respective alternative on the right-hand side of the rule.
+The name of a concept (object) in MPS is composed from (1) the name of the AST node and (2) the number indicating the position of the respective alternative on the right-hand side of the rule.
 
 \begin{figure}[ht]
 \vspace{-3mm}
@@ -136,10 +94,6 @@ The name of a concept (object) in MPS is composed from (1) the name of the AST n
 \small
 \mpsstkeyword{concept} Element\_1 \mpsstkeyword{extends} BaseConcept
         \mpsstkeyword{implements} IContent, IElement
-
-  \mpsstkeyword{instance can be root:} false
-  \mpsstkeyword{alias:} \mpsstalias{< > </ >}
-  \mpsstkeyword{short description:} \mpsstalias{Element}
 
   \mpsstkeyword{properties:}
   \mpsstproperty{Name\_1} : Name
@@ -156,28 +110,14 @@ The name of a concept (object) in MPS is composed from (1) the name of the AST n
 
 Consider the parser rule \antlrparserrule{element} from the grammar in Figure~\ref{fig:SIMPLEXML}.
 Its first alternative represents the full XML element with content.
-Figure~\ref{fig:ELEMENTSTRUCT} shows the Structure aspect for the MPS concept (object) named \code{Element{\_}1} that corresponds to the alternative.
+Figure~\ref{fig:ELEMENTSTRUCT} shows the relevant fragments of the Structure aspect for the MPS concept (object) named \code{Element{\_}1} that corresponds to the alternative.
 The object contains two properties, one for each reference to the lexer rule \antlrlexerrule{Name}.
-Values of these properties will be restricted using the regular expression that corresponds to the rule.
 String literals, such as the opening and closing brackets (\antlrliteral{\textless}, \antlrliteral{/\textgreater}) in XML, are omitted because they will be defined only in the Editor aspect for this concept.
 
 References to other parser rules are captured by pointers to child objects.
 The types of child objects, such as \code{IContent} in the \code{Element{\_}1} concept, are determined as follows.
 Consider the \antlrparserrule{content} rule from the SimpleXML language.
-We show just the relevant fragment of the grammar again in Figure~\ref{fig:CONTENTRULE}.
 An object corresponding to any one of the four alternatives could be the actual value anywhere the \antlrparserrule{content} rule is referenced.
-
-\begin{figure}[ht]
-\vspace{-1mm}
-\centering
-\begin{alltt}
-\small
-\antlrparserrule{content} : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
-\end{alltt}
-\caption{Parser rule \antlrparserrule{content}}
-\label{fig:CONTENTRULE}
-\vspace{-1mm}
-\end{figure}
 
 Our solution is to use interface concepts.
 For each rule with more than one alternative on the right side, first an interface concept is defined in the MPS language structure, and then one object that implements the given interface is created for each alternative.
@@ -196,9 +136,9 @@ It contains one interface \mpsinterface{IContent} that is implemented by four ob
 \end{figure}
 
 Now we can illustrate the layer problem on the behavior of auto-completion in MPS.
-Suppose that a user is creating a new document in the SimpleXML language, just inserted a fresh node of the type \mpsconcept{Element{\_1}} (see above), and would like to insert another nested XML element inside.
+Suppose that a user just inserted a fresh node of the type \mpsconcept{Element{\_1}}, and would like to insert another nested XML element inside.
 The auto-completion mechanism of MPS offers four options that are displayed in the left part of Figure~\ref{fig:LAYERPROBLEM}.
-Each option represents one of the MPS concepts that implement the interface \mpsinterface{IContent}, and therefore also one alternative of the \antlrparserrule{content} rule.
+Each option represents one of the MPS concepts that implement the interface \mpsinterface{IContent}.
 
 \begin{figure*}[ht]
 	\centering
@@ -217,25 +157,11 @@ The main difficulty here is that, in the first step, the user has to (i) either 
 Similarly, if the user would like to replace a nested \mpsconcept{Element{\_}1} node with, for example, an XML comment (i.e., the \mpsconcept{Comment} node), then both intermediary layers have to be deleted before she gets back to the original selection among the concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
 
 Intermediary layers have no visual appearance, and therefore it is very difficult for users to see what is actually happening and they may get confused very easily.
-The layer problem is addressed by the shortcut approach, which we describe in the next subsection.
+The layer problem is addressed by the shortcut approach, which we describe briefly in the following paragraphs.
 
-\subsubsection{The Shortcut Approach}
-\label{sect:SHORTCUT}
-
+\paragraph{The Shortcut Approach.}
 The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree, and consider just the nodes to be directly offered to the user through the auto-completion menu.
-Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, given in Figure~\ref{fig:CONTENTHIERARCHY} together with rules that determine the relevant fragment of the syntax hierarchy, expands ultimately into the nodes highlighted using the bold font in Figure~\ref{fig:CONTENTEXPAND}.
-
-\begin{figure*}[ht]
-\centering
-\begin{alltt}
-\small
-  \antlrparserrule{content} : \antlrlexerrule{TEXT} | \antlrparserrule{element} | \antlrparserrule{comment} | \antlrlexerrule{CDATA} ;
-  \antlrparserrule{element} : \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attr}* \antlrliteral{>} \antlrparserrule{content}* \antlrliteral{</} \antlrlexerrule{Name} \antlrliteral{>} | \antlrliteral{<} \antlrlexerrule{Name} \antlrparserrule{attr}* \antlrliteral{/>} ;
-  \antlrparserrule{comment} : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
-\end{alltt}
-\caption{The parser rule \antlrparserrule{content} with other rules that determine the relevant fragment of the syntax hierarchy}
-\label{fig:CONTENTHIERARCHY}
-\end{figure*}
+Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar expands ultimately into the nodes highlighted using the bold font in Figure~\ref{fig:CONTENTEXPAND}.
 
 \begin{figure}[ht]
 \small
@@ -251,48 +177,9 @@ Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar, giv
 
 For the input that consists of a particular AST node $N$ and the grammar rule $R$ that expands $N$, the procedure implementing the shortcut approach systematically traverses the parser tree (AST) built in the earlier phases in order to identify each AST node that (i) may appear in some derivation chain starting by the rule $R$ from the node $N$ and (ii) does not belong to any intermediary layer.
 We call them \emph{end nodes}.
-Here we must emphasize that end nodes do not correspond to terminal symbols from grammars, because they may represent AST nodes with children (i.e., syntax elements that can be further expanded using grammar rules).
+Our algorithm that can recognize intermediary layers is, too, described in the full version~\cite{ref:TRFULL}.
 
-\begin{figure*}[ht]
-\begin{framed}
-\begin{alltt}
-\small
- 1 FindAllPathsToEndNodes(\textit{R}):
- 2   \textit{CurPath} = empty list of rules and nodes
- 3   \textbf{return} FindPaths(\textit{R}, \textit{CurPath})
- 4
- 5 FindPaths(\textit{R}, \textit{CurPath}):
- 6  \textit{Paths} = empty list
- 7  \textbf{for each} alternative \textit{A} \textbf{in} rule \textit{R}:
- 8    \textit{NewCurPath} = Clone(\textit{CurPath})
- 9    \textbf{if} \textit{A} contains only a single element \textit{E}:
-10      \textit{NewCurPath}.Add(\(N\sb{E}\)) \textbf{where} \(N\sb{E}\) is the node representing \textit{E}
-11      \textit{P} = FindPaths(\(R\sb{E}\), \textit{NewCurPath}) \textbf{where} \(R\sb{E}\) is the rule that expands \textit{E}
-12      \textit{Paths} = Merge(\textit{Paths}, \textit{P})
-13    \textbf{else}:
-14      \textit{NewCurPath}.Add(\textit{R})
-15      \textit{NewCurPath}.Add(\(N\sb{A}\)) \textbf{where} \(N\sb{A}\) is the node representing \textit{A}
-16      \textit{Paths}.Add(\textit{NewCurPath})
-17  \textbf{return} \textit{Paths}
-\end{alltt}
-\end{framed}
-\caption{Algorithm to find all paths to end nodes for a parser rule}
-\label{fig:SHORTCUTALG}
-\end{figure*}
-
-Figure~\ref{fig:SHORTCUTALG} shows the algorithm that finds all paths to some end node from a given parser rule $R$.
-The algorithm is based on recursive traversal of the parser tree.
-At each level of recursion, it gathers all paths that lead from the current parser rule $R$ to some end node through its alternatives (line~7).
-Two cases may occur:
-\begin{itemize}
-	\item When a particular alternative $A$ of the rule $R$ contains only a single element $E$ that is a reference to another rule (line 9), the alternative $A$ is an intermediary layer that can be hidden from the user of the MPS language.
-		  A run of the algorithm continues, at line 11, by recursively processing alternatives of the rule corresponding to $E$, which lies at the next level of the parser tree.
-	\item Otherwise, an end node of a derivation chain was found and the recursion stops (lines 13-16).
-\end{itemize}
-By appending the node corresponding to the current alternative (lines 10 and 15) and to the rule that leads to the alternative (line 14), the algorithm creates a full path that contains the target end node as the last element of the chain.
-
-We use the name \emph{shortcut approach} for this algorithm, because the paths collected by the algorithm provide shortcuts from the given rule to end nodes, by the virtue of hiding all intermediary layers.
-For example, the result of this algorithm for the \antlrparserrule{content} rule (Figure~\ref{fig:CONTENTHIERARCHY}) is the list shown in Figure~\ref{fig:CONTENTEXPAND}.
+We use the name \emph{shortcut approach} for this algorithm, because it creates shortcuts from the given rule to end nodes, by the virtue of hiding all intermediary layers.
 
 The primary use case for shortcuts is to generate options for the auto-completion menus, such that only the end nodes are offered.
 Shortcuts have to be considered when nodes are inserted, and also when they are deleted.
@@ -304,11 +191,9 @@ When the user wants to delete some end node from the AST of a program or documen
 
 Having the complete structure of the new MPS language, the next phase is to define the visual representation of all concepts (AST nodes) in the projectional editor.
 As we said in Section~\ref{sect:MPS}, MPS uses a cellular system that enables the language developer to arrange the children and properties of an AST node in a table-like manner.
-Cells of different types are supported by MPS --- for storing property values, references to child nodes, and keywords (string literals), and also cells that influence layout (e.g., indentation).
 The specific goal of this phase is to create the Editor aspect for each language concept, such that all its attributes --- name, properties, children --- are projected using the respective cell types.
 
 The main problem that we had to address is the absence of information about the code layout and whitespace in ANTLR grammars.
-Rules forming the grammar only tell what the syntax tree looks like and how the program text is decomposed into AST nodes.
 Here we present a solution that is only partially automated for reasons explained below.
 
 We observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept that should appear in its visual representation.
@@ -328,13 +213,7 @@ The bottom right part of Figure~\ref{fig:EDITORADJUST} shows a fully customized 
 
 Based on our experience, it takes a very short time to manually adjust the layout into a form much better than any fully automated heuristic could achieve.
 A typical user of the \textsc{Ingrid} method will be able to use the projectional editor in MPS quite efficiently.
-We actually experimented with several heuristics to derive a useful code layout automatically, but all of them produced rather suboptimal results --- it is quite hard to automatically identify language concepts for which the default layout should be refactored, and the user would have to adjust the layout by hand anyway.
-More details are provided in Section~\ref{sect:EVAL}, including our experience with several mainstream programming languages.
-
-We have found that the combination of two steps, (1) automated placing of cells into a single row and (2) subsequent manual adjustment of the layout, is a very fast and efficient way of creating a nice code layout.
-Nevertheless, we plan to work on a more automated approach to the definition of Editor aspects in the future, based on machine learning.
-The key idea would be to derive the code layout from a set of valid input source files.
-%We believe that the user would have to adjust the editor manually a little bit even in this case, because the results of a machine learning-based approach would not be perfect.
+We actually experimented with several heuristics to derive a useful code layout automatically, but all of them produced rather suboptimal results.
 
 \subsection{Phase 4: Text Generation}
 \label{sect:TEXTGENDEF}
