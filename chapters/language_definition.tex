@@ -254,7 +254,7 @@ During our work on the \textsc{Ingrid} method, we have observed that practical u
 
 \noindent\textbf{Adjusting grammars.}
 In some cases, a small adjustment of the input grammar before the run of \textsc{Ingrid} might yield a better and more useful MPS language.
-Here we illustrate this on a simple example.
+Here we illustrate this on a simple example (some additional examples are provided in~\cite{ref:TRFULL}).
 
 Figure~\ref{fig:XMLATTRIB} shows the definition of an XML attribute, which is taken from the original XML grammar.
 The lexer rule \antlrlexerrule{STRING} actually says that quotes make a part of the attribute's value.
@@ -273,8 +273,6 @@ If the MPS language would faithfully match the grammar, the user would have to a
 
 In our SimpleXML language, we adjusted the grammar easily in a way that we show in Figure~\ref{fig:XMLADJUST}.
 We turned quotes into literals, ensuring that they will only appear in the projectional editor as string constant cells.
-
-Additional examples are provided in~\cite{ref:TRFULL}.
 
 \begin{figure}[ht]
 \begin{alltt}
