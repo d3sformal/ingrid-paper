@@ -1,4 +1,4 @@
-\documentclass[sigplan,10pt,preprint]{acmart}
+\documentclass[sigconf]{acmart}
 
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -16,9 +16,28 @@
 \usepackage{alltt}
 \usepackage{xcolor}
 
-\setcounter{tocdepth}{3}
 
-\settopmatter{printfolios=true}
+% TODO
+% copyright
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+
+
+% TODO
+%\acmDOI{10.475/123_4}
+
+% TODO
+%\acmISBN{123-4567-24-567/08/06}
+
+% TODO
+%\acmConference[WOODSTOCK'97]{ACM Woodstock conference}{July 1997}{El Paso, Texas USA}
+%\acmYear{2018}
+%\copyrightyear{2018}
+
+% TODO
+%\acmArticle{4}
+%\acmPrice{15.00} 
+
 
 
 % configures style of source code listings
@@ -89,18 +108,6 @@
 
 
 
-% TODO
-%\acmConference[PL'17]{ACM SIGPLAN Conference on Programming Languages}{January 01--03, 2017}{New York, NY, USA}
-%\acmYear{2017}
-%\acmISBN{978-x-xxxx-xxxx-x/YY/MM}
-%\acmDOI{10.1145/nnnnnnn.nnnnnnn} 
-
-
-% TODO
-%\setcopyright{acmlicensed} 
-
-
-
 \begin{document}
 
 
@@ -149,7 +156,7 @@ Necessary manual adjustments take only a short time.
 \end{abstract}
 
 
- \begin{CCSXML}
+\begin{CCSXML}
 <ccs2012>
 <concept>
 <concept_id>10011007.10011006.10011008.10011009.10011019</concept_id>
@@ -198,27 +205,27 @@ This work was partially supported by JetBrains.
 \end{acks}
 
 
-\bibliographystyle{abbrvnat}
+\bibliographystyle{ACM-Reference-Format}
 
 \begin{thebibliography}{}
 
-\bibitem{ref:MPSBOOK} F. Campagne. The MPS Language Workbench, Volume I. CreateSpace Independent Publishing Platform, 2014.
+\bibitem{ref:MPSBOOK} F. Campagne. 2014. The MPS Language Workbench, Volume I. CreateSpace Independent Publishing Platform.
 
-\bibitem{ref:DHL80} V. Donzeau-Gouge, G. Huet, B. Lang, and G. Kahn. Programming Environments Based on Structured Editors: The Mentor Experience. Research Report RR-0026, INRIA, 1980.
+\bibitem{ref:DHL80} V. Donzeau-Gouge, G. Huet, B. Lang, and G. Kahn. 1980. Programming Environments Based on Structured Editors: The Mentor Experience. Research Report RR-0026, INRIA.
 
-\bibitem{ref:BISONFLEX} J. Levine. Flex \& Bison: Text Processing Tools. O'Reilly Media, 2009.
+\bibitem{ref:BISONFLEX} J. Levine. 2009. Flex \& Bison: Text Processing Tools. O'Reilly Media.
 
-\bibitem{ref:KV10} L.C.L. Kats and E. Visser. The Spoofax Language Workbench: Rules for Declarative Specification of Languages and IDEs. OOPSLA 2010, ACM.
+\bibitem{ref:KV10} L.C.L. Kats and E. Visser. 2010. The Spoofax Language Workbench: Rules for Declarative Specification of Languages and IDEs. In Proceedings of OOPSLA 2010, ACM.
 
-\bibitem{ref:ANTLRBOOK} T. Parr. The Definitive ANTLR 4 Reference. Pragmatic Bookshelf, 2013.
+\bibitem{ref:ANTLRBOOK} T. Parr. 2013. The Definitive ANTLR 4 Reference. Pragmatic Bookshelf.
 
-\bibitem{ref:MBEDDR} M. Voelter, D. Ratiu, B. Schaetz, and B. Kolb. mbeddr: an Extensible C-based Programming Language and IDE for Embedded Systems. SPLASH 2012, ACM.
+\bibitem{ref:MBEDDR} M. Voelter, D. Ratiu, B. Schaetz, and B. Kolb. 2012. mbeddr: an Extensible C-based Programming Language and IDE for Embedded Systems. In Proceedings of SPLASH 2012, ACM.
 
-\bibitem{ref:VSB14} M. Voelter, J. Siegmund, T. Berger, and B. Kolb. Towards User-Friendly Projectional Editors. SLE 2014, LNCS, 8706.
+\bibitem{ref:VSB14} M. Voelter, J. Siegmund, T. Berger, and B. Kolb. 2014. Towards User-Friendly Projectional Editors. In Proceedings of SLE 2014, LNCS, 8706.
 
-\bibitem{ref:VWK15} M. Voelter, J. Warmer, and B. Kolb. Projecting a Modular Future. IEEE Software, 32(5), 2015.
+\bibitem{ref:VWK15} M. Voelter, J. Warmer, and B. Kolb. 2015. Projecting a Modular Future. IEEE Software, 32(5).
 
-\bibitem{ref:TRFULL} P. Vysoky, P. Parizek, and V. Pech. INGRID: Creating Languages in MPS from ANTLR Grammars (Full version). Tech. Report No. D3S-TR-2018-01, Dep. of Distributed and Dependable Systems, Charles University, 2018.
+\bibitem{ref:TRFULL} P. Vysoky, P. Parizek, and V. Pech. 2018. INGRID: Creating Languages in MPS from ANTLR Grammars (Full version). Tech. Report No. D3S-TR-2018-01, Dep. of Distributed and Dependable Systems, Charles University.
 
 \bibitem{ref:CSHARP} C\# Language Specification, Version 5.0 (2012), Microsoft Corporation, \url{https://msdn.microsoft.com/en-us/library/ms228593.aspx}
 
@@ -243,6 +250,8 @@ This work was partially supported by JetBrains.
 \bibitem{ref:BASELANG} MPS BaseLanguage, \url{https://confluence.jetbrains.com/display/MPSD34/Base+Language}
 
 \end{thebibliography}
+
+\input{chapters/appendix}
 
 \end{document}
 

@@ -29,108 +29,31 @@ Since only the Structure, Editor and TextGen aspects are relevant for the contri
 Languages are built from the concepts using techniques known from object-oriented programming --- containment, inheritance, and so on.
 Therefore, the definition of a language in MPS has an object-oriented and hierarchical nature.
 
-\paragraph{Structure.}
+\noindent\textbf{Structure.}
 The fundamental aspect of any MPS language is Structure.
 It specifies core attributes of a language concept such as the name, inheritance relationships, child concepts (their types and cardinalities), and references to other AST nodes.
-Figure~\ref{fig:if_statement_structure} shows the most important fragments of the Structure aspect for the \code{if-then-else} statement.
+Figure~\ref{fig:if_statement_structure} in Appendix~\ref{sect:APX} shows the most important fragments of the Structure aspect for the \code{if-then-else} statement.
 
 Structure also restricts the type of AST nodes that can appear at a particular place in the tree.
 For example, one can restrict the condition in \code{if-then-else} to be a boolean expression, and the \code{then}-block to be a list of statements.
 
-\begin{figure}[ht]
-\vspace{-2mm}
-\centering
-\begin{alltt}
-\small
-\mpsstkeyword{concept} IfStatement \mpsstkeyword{extends} Statement
-        \mpsstkeyword{implements} IContainsStatementList
-
-  \mpsstkeyword{instance can be root:} false
-  \mpsstkeyword{alias:} \mpsstalias{if}
-
-  \mpsstkeyword{children:}
-  \mpsstproperty{condition}        : Expression[\mpsstcardinality{1}]
-  \mpsstproperty{ifFalseStatement} : Statement[\mpsstcardinality{0..1}]
-  \mpsstproperty{ifTrue}           : StatementList[\mpsstcardinality{1}]
-  \mpsstproperty{elsifClauses}     : ElsifClause[\mpsstcardinality{0..n}]
-\end{alltt}
-\caption{Structure aspect of the \code{if-then-else} statement}
-\label{fig:if_statement_structure}
-\vspace{-4mm}
-\end{figure}
-
-\paragraph{Editor.}
+\noindent\textbf{Editor.}
 The Editor aspect is where the language designer specifies what the projectional representation of a code fragment (an AST) looks like on the screen and how the user interacts with the code.
 JetBrains have developed a cellular system that enables placing properties and children of a node (concept) into different cells.
 Individual cells of the editor can be styled using a language similar to CSS.
 Supported visual characteristics include color and indentation.
 
-Figure~\ref{fig:if_editor_definition} shows an example of what the definition of the Editor aspect for the \code{if-then-else} statement might look like.
-While here we indicate positions of cell borders on each line by spaces (just for illustration), MPS GUI actually uses a graphically much more appealing way of displaying the Editor aspects, which involves vertical and horizontal lines of different colors and also background colors other than white for some cells.
-The symbols \verb|[-| and \verb|-]| represent layout information, which specifies mutual positioning of the contained cells (vertical, horizontal, indentation).
-
-\begin{figure}[ht]
-\vspace{-1mm}
-\centering
-\begin{alltt}
-\small
-\mpsedannotation{<default>} \mpsedkeyword{editor for concept} \mpsedtarget{IfStatement}
-  \mpsedkeyword{node cell layout:}
-    [-
-      \mpsedkeyword{if} \textbf{(} \% conditions \% \textbf{)} [-
-      \textbf{\{}
-      [- \% ifTrue % -]
-      \textbf{\}}
-      -]
-      ?[- \mpsedkeyword{else} \% ifFalseStatement \% -]
-    -]
-\end{alltt}
-\vspace{-1mm}
-\caption{Editor aspect for the \code{if-else} statement}
-\label{fig:if_editor_definition}
-\vspace{-2mm}
-\end{figure}
-
-\paragraph{BaseLanguage.}
+\noindent\textbf{BaseLanguage.}
 Another very important feature of MPS is \emph{BaseLanguage}~\cite{ref:BASELANG}, a clone of Java implemented using the MPS constructs.
 BaseLanguage is syntactically almost identical to Java, but it is edited in a projectional editor, just like all the languages in MPS.
 Custom DSLs meant to be generated into Java choose BaseLanguage as their generation target.
 
-\paragraph{TextGen.}
+\noindent\textbf{TextGen.}
 The TextGen aspect specifies how a given AST node will be translated into plain text representation.
 It is typically needed only for the bottom-line base languages.
 DSLs, on the other hand, need to define rules for model-to-model conversions (Generators), since programs in such languages are rarely converted to text directly.
-The TextGen definition follows a straightforward pattern --- each node outputs its textual representation into a buffer, while calling TextGen of its children nodes.
-MPS calls the corresponding method on the root AST nodes of the given program.
 
-\begin{figure}[ht]
-\vspace{-2mm}
-\centering
-\begin{alltt}
-\small
-\mpstgkeyword{text gen component for concept} \mpstgtarget{IfStatement} \{
-  \mpstgparam{(context, buffer, node)->void} \{
-    \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n;}}
-    \mpstgaction{indent buffer;}
-    \mpstgaction{append} \{\mpstgliteral{if (}\} \$\{\mpstgparam{node}.\mpstgnodeprop{condition}\} \{\mpstgliteral{) \{}\};
-    \mpstgkeyword{with indent} \{
-      \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{ifTrue}\};
-    \}
-    \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n}} \{\mpstgliteral{\}}\} \$list\{\mpstgparam{node}.\mpstgnodeprop{elsifClauses}\};
-    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{ifFalseStatement}.\textbf{isNotNull}) \{
-      \mpstgaction{append} \{ \mpstgliteral{else}\} \$\{\mpstgparam{node}.\mpstgnodeprop{isFalseStatement}\};
-    \}
-  \}
-\}
-\end{alltt}
-\vspace{-1mm}
-\caption{TextGen aspect definition for the \code{if-else} statement}
-\label{fig:if_statement_textgen}
-\vspace{-2mm}
-\end{figure}
-
-TextGen aspect for each AST node (concept of the language) has to be defined using the BaseLanguage.
-Again, we include an example for the \code{if-else} statement (Figure~\ref{fig:if_statement_textgen}).
+We provide examples of the Editor and TextGen aspects for the \code{if-else} statement in the Appendix~\ref{sect:APX}.
 
 \subsection{Related Projects with Similar Goals}
 \label{sect:RELATED}
@@ -144,7 +67,7 @@ The C language has also been manually tailored for MPS within the mbeddr project
 The following three projects --- PE4MPS, ANTLR{\_}MPS, and mps-metabnf --- aim to provide certain support for GPPLs within the MPS platform.
 We describe their main features and limitations in this section.
 
-\paragraph{PE4MPS~\cite{ref:PE4MPS}.}
+\noindent\textbf{PE4MPS~\cite{ref:PE4MPS}.}
 This project addresses the lack of information about code layout in grammars by using so called PE grammars~\cite{ref:PE}, which is a new notation proposed by the same author.
 PE stands for projectional editing.
 
@@ -155,7 +78,7 @@ Information about the code layout, extracted from the PE file, is used when gene
 The main disadvantage of the PE4MPS approach is that it only shifts the tedious manual work from creating projectional editors in the MPS IDE to writing PE grammars in plain text.
 Usage of a standard text editor is inferior (and much more error-prone) with respect to MPS, which has been designed for the purpose of specifying the code layout and provides lot of support to developers.
 
-\paragraph{ANTLR{\_}MPS~\cite{ref:ANTLR2MPS}.}
+\noindent\textbf{ANTLR{\_}MPS~\cite{ref:ANTLR2MPS}.}
 This project also uses the ANTLR v4 grammar notation, but otherwise works quite differently from PE4MPS.
 Its author created an MPS language that captures the syntax of ANTLR v4 notation using MPS concepts.
 Given the textual grammar of some language as input, the grammar is imported automatically into MPS, taking the form of the ANTLR v4 MPS language.
@@ -164,7 +87,7 @@ The next step would be to create a new MPS language from the grammar definition 
 However, the project has several important limitations.
 The tool does not generate any parent-child relationships in the Structure aspect, and it completely neglects the Editor and TextGen aspects.
 
-\paragraph{mps-metabnf~\cite{ref:MPSMETABNF}.}
+\noindent\textbf{mps-metabnf~\cite{ref:MPSMETABNF}.}
 This tool builds upon similar ideas as the ANTLR{\_}MPS project.
 Every imported grammar is represented using an ANTLR v4 MPS language.
 A user is then able to adjust the grammar as he wishes, specifying the code layout in the projectional editor.

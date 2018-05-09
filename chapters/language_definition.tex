@@ -1,4 +1,4 @@
-\section{Creating Language Definition in MPS}
+\section{Creating Language in MPS}
 \label{sect:LANGDEF}
 
 The proposed \textsc{Ingrid} method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
@@ -159,7 +159,7 @@ Similarly, if the user would like to replace a nested \mpsconcept{Element{\_}1} 
 Intermediary layers have no visual appearance, and therefore it is very difficult for users to see what is actually happening and they may get confused very easily.
 The layer problem is addressed by the shortcut approach, which we describe briefly in the following paragraphs.
 
-\paragraph{The Shortcut Approach.}
+\noindent\textbf{The Shortcut Approach.}
 The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree, and consider just the nodes to be directly offered to the user through the auto-completion menu.
 Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar expands ultimately into the nodes highlighted using the bold font in Figure~\ref{fig:CONTENTEXPAND}.
 
@@ -200,16 +200,8 @@ We observed that the most tedious and error-prone step in the manual definition 
 This step can be very easily automated.
 
 Our solution that we implemented in the current version of the \textsc{Ingrid} method is to create all the cells and place them in a single row.
-The resulting basic layout is illustrated on the example of the \mpsconcept{Element{\_}1} concept in the upper left corner of Figure~\ref{fig:EDITORADJUST}.
 Further adjustments of the layout, such as indentation and line breaks, can be done very efficiently by the user in the MPS IDE.
-The bottom right part of Figure~\ref{fig:EDITORADJUST} shows a fully customized layout for the \mpsconcept{Element{\_}1} concept.
-
-\begin{figure*}[ht]
-	\centering
-	\includegraphics[scale=0.55]{./images/editor_adjustment.png}
-	\caption{Editor aspect of the \mpsconcept{Element{\_}1} concept}
-	\label{fig:EDITORADJUST}
-\end{figure*}
+The resulting layout is illustrated on the example of the \mpsconcept{Element{\_}1} concept in Figure~\ref{fig:EDITORADJUST} (Appendix~\ref{sect:APX}).
 
 Based on our experience, it takes a very short time to manually adjust the layout into a form much better than any fully automated heuristic could achieve.
 A typical user of the \textsc{Ingrid} method will be able to use the projectional editor in MPS quite efficiently.
@@ -219,25 +211,18 @@ We actually experimented with several heuristics to derive a useful code layout 
 \label{sect:TEXTGENDEF}
 
 The purpose of the last phase of the MPS language construction is to generate the TextGen aspect for each concept.
-We use the \mpsconcept{Element{\_}1} concept again for illustration.
-Figure~\ref{fig:TEXTGENBASIC} shows a fragment of BaseLanguage code that can be used as its TextGen aspect.
+Figure~\ref{fig:TEXTGENBASIC} shows a fragment of BaseLanguage code that can be used as the TextGen aspect for \mpsconcept{Element{\_}1}.
 The code appends all literals, properties, and children of \mpsconcept{Element{\_}1} to the output buffer.
-%, and does that in the same order as they appear in the corresponding grammar rule.
 
 \begin{figure}[ht]
 \begin{alltt}
 \small
 \mpstgkeyword{text gen component for concept} \mpstgtarget{Element{\_}1} \{
   \mpstgparam{(context, buffer, node)->void} \{
-    \mpstgaction{append} \{\mpstgliteral{<}\};
-    \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{1}\};
-    \mpstgaction{append} \{\ \};
-    \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Attribute}}{\_}\textit{1}\};
-    \mpstgaction{append} \{\mpstgliteral{>}\};
+    \mpstgaction{append} \{\mpstgliteral{<}\}; \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{1}\}; \mpstgaction{append} \{\ \};
+    \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Attribute}}{\_}\textit{1}\}; \mpstgaction{append} \{\mpstgliteral{>}\};
     \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2}\};
-    \mpstgaction{append} \{\mpstgliteral{</}\};
-    \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{2}\};
-    \mpstgaction{append} \{\mpstgliteral{>}\};
+    \mpstgaction{append} \{\mpstgliteral{</}\}; \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{2}\}; \mpstgaction{append} \{\mpstgliteral{>}\};
   \}
 \}
 \end{alltt}
@@ -249,7 +234,6 @@ The code appends all literals, properties, and children of \mpsconcept{Element{\
 Like in the case of a projectional editor, the main challenge associated with TextGen is to produce valid code with a reasonable layout.
 An implementation of the TextGen aspect must determine properly where to put line breaks, spaces, and indentation.
 For example, in the case of the concept representing an XML element, there must be a space between the element's name and the first attribute, while it is not required between the opening bracket \antlrliteral{\textless} and the name.
-%(Figure~\ref{fig:TEXTGENBASIC}).
 
 Our \textsc{Ingrid} method targets mostly text-based languages, for the concepts of which the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
 An obvious choice would therefore be to use the same approach for Editor and TextGen.
@@ -257,87 +241,22 @@ Nevertheless, since the Editor aspect has to be adjusted manually, we decided to
 We designed a procedure based on a simple fully automated heuristic that provides acceptable results --- the output is human-readable and close to standard formatting of source code used by popular IDE tools, although minor tweaks are often needed.
 
 The procedure creates the TextGen aspect for a given language concept in two steps.
-First, it generates a basic variant that inserts spaces in between every two tokens of the textual representation of the concept.
+First, it generates a basic variant that inserts spaces (or line breaks) in between every two tokens of the textual representation of the concept.
 In the second step, spaces are eliminated from places where they are not really needed.
 The main criterion is whether the generated textual output can be accepted by a parser of the original language (using the ANTLR grammar).
-We discuss all the cases here:
-\begin{itemize}
-	\item When there is a non-alphabetical literal that is used as a token in the grammar, and that might get recognized by the parser without the need for whitespace separators around it, then we can omit the spaces. An example of such literal is '\textless' in SimpleXML.
-	\item In the case of an arbitrary string, the whitespace may be omitted when the adjacent literal ends, respectively begins, with a non-alphabetical character.
-		This applies especially to the values of properties defined in Structure aspects, such as the name of an XML element.
-		Based on this heuristic, redundant spaces inside of quotes will be eliminated, as well as spaces next to semicolons and around brackets.
-		On the other hand, it will separate language keywords from other literals by preserving the space characters between them.
-	\item Spaces can be safely omitted also when optional child nodes are not present, and in the case of empty lists of child nodes, so that whitespace does not accumulate.
-\end{itemize}
-A space must be always inserted when two child nodes are next to each other.
-Elements from a sequence of child nodes are separated with spaces or line breaks.
-
-\begin{figure}[ht]
-\vspace{-2mm}
-\begin{alltt}
-\small
-\mpstgkeyword{text gen component for concept} \mpstgtarget{Element{\_}1} \{
-  \mpstgparam{(context, buffer, node)->void} \{
-    \mpstgaction{append} \{\mpstgliteral{<}\};
-    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{1}.\textbf{isNotEmpty}) \{
-      \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{1}\};
-    \}
-    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Attribute}}{\_}\textit{1}.\textbf{size} > 0) \{
-      \mpstgaction{append} \{\ \};
-      \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Attribute}}{\_}\textit{1} with  \};
-    \}
-    \mpstgaction{append} \{\mpstgliteral{>}\};
-    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2}.\textbf{size} > 0) \{
-      \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2} with  \};
-    \}
-    \mpstgaction{append} \{\mpstgliteral{</}\};
-    \mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{2}.\textbf{isNotEmpty}) \{
-      \mpstgaction{append} \$\{\mpstgparam{node}.\mpstgnodeprop{\textit{Name}}{\_}\textit{2}\};
-    \}
-    \mpstgaction{append} \{\mpstgliteral{>}\};
-  \}
-\}
-\end{alltt}
-\caption{Full TextGen aspect for the \mpsconcept{Element{\_}1} concept}
-\label{fig:TEXTGENFINAL}
-\vspace{-1mm}
-\end{figure}
-
-\begin{figure}[ht]
-\begin{alltt}
-\small
-\mpstgkeyword{if} (\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2}.\textbf{size} > 0) \{
-  \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n;}}
-  \mpstgaction{indent buffer;}
-  \mpstgkeyword{with indent} \{
-    \mpstgaction{append} \$list\{\mpstgparam{node}.\mpstgnodeprop{\textit{Content}}{\_}\textit{2} with  \};
-  \}
-  \mpstgaction{append} \textcolor{blue}{\textbf{\textbackslash{}n;}}
-\} 
-\end{alltt}
-\vspace{-1mm}
-\caption{Fragment of the TextGen aspect of \mpsconcept{Element{\_}1} with adjusted indentation}
-\label{fig:TEXTGENADJUSTED}
-\vspace{-2mm}
-\end{figure}
-
-Figure~\ref{fig:TEXTGENFINAL} contains the complete, automatically generated, TextGen aspect for the \mpsconcept{Element{\_}1} concept.
-%, which represents the full SimpleXML element.
-Such code may be adjusted by hand very easily in order to produce nicely indented XML documents.
-We only need to wrap the \mpsconcept{Content{\_}2} child node with indentation and change the sequence separator to a new line character.
-A fragment of the resulting adjusted code is in Figure~\ref{fig:TEXTGENADJUSTED}.
+Again, the specific cases are discussed in the full version~\cite{ref:TRFULL}.
+We show the complete TextGen aspect for \mpsconcept{Element{\_}1} in the appendix.
 
 \subsection{Remarks about Grammars}
 \label{sect:REMARKSGRAMMARS}
 
-During our work on the \textsc{Ingrid} method, we have also observed that practical usability of a resulting MPS language depends on the specific manner in which the input ANTLR grammar is defined.
-We discuss several issues and our workarounds in this section.
+During our work on the \textsc{Ingrid} method, we have observed that practical usability of a resulting MPS language depends on the specific manner in which the input ANTLR grammar is defined.
 
-\paragraph{Adjusting grammars.}
+\noindent\textbf{Adjusting grammars.}
 In some cases, a small adjustment of the input grammar before the run of \textsc{Ingrid} might yield a better and more useful MPS language.
-Here we illustrate this on two simple examples.
+Here we illustrate this on a simple example.
 
-For the first example, we use the definition of an XML attribute in Figure~\ref{fig:XMLATTRIB}, which is taken from the original XML grammar.
+Figure~\ref{fig:XMLATTRIB} shows the definition of an XML attribute, which is taken from the original XML grammar.
 The lexer rule \antlrlexerrule{STRING} actually says that quotes make a part of the attribute's value.
 If the MPS language would faithfully match the grammar, the user would have to always input the leading and trailing quote together with the value in the projectional editor.
 
@@ -346,8 +265,7 @@ If the MPS language would faithfully match the grammar, the user would have to a
 \begin{alltt}
 \small
   \antlrparserrule{attr} : \antlrlexerrule{Name} \antlrliteral{=} \antlrlexerrule{STRING} ;
-  \antlrlexerrule{STRING} : \antlrliteral{"} \antlrregex{~["]*} \antlrliteral{"}
-         | \antlrliteral{\textbackslash'} \antlrregex{~[']*} \antlrliteral{\textbackslash'} ;
+  \antlrlexerrule{STRING} : \antlrliteral{"} \antlrregex{~["]*} \antlrliteral{"} | \antlrliteral{\textbackslash'} \antlrregex{~[']*} \antlrliteral{\textbackslash'} ;
 \end{alltt}
 \caption{Definition of an XML attribute}
 \label{fig:XMLATTRIB}
@@ -356,11 +274,12 @@ If the MPS language would faithfully match the grammar, the user would have to a
 In our SimpleXML language, we adjusted the grammar easily in a way that we show in Figure~\ref{fig:XMLADJUST}.
 We turned quotes into literals, ensuring that they will only appear in the projectional editor as string constant cells.
 
+Additional examples are provided in~\cite{ref:TRFULL}.
+
 \begin{figure}[ht]
 \begin{alltt}
 \small
-  \antlrparserrule{attr} : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT1} \antlrliteral{"}
-         | \antlrlexerrule{Name} \antlrliteral{=\textbackslash'} \antlrlexerrule{TEXT2} \antlrliteral{\textbackslash'} ;
+  \antlrparserrule{attr} : \antlrlexerrule{Name} \antlrliteral{="} \antlrlexerrule{TEXT1} \antlrliteral{"} | \antlrlexerrule{Name} \antlrliteral{=\textbackslash'} \antlrlexerrule{TEXT2} \antlrliteral{\textbackslash'} ;
   \antlrlexerrule{TEXT1} : \antlrregex{~["]*} ;
   \antlrlexerrule{TEXT2} : \antlrregex{~[']*} ;
 \end{alltt}
@@ -368,34 +287,7 @@ We turned quotes into literals, ensuring that they will only appear in the proje
 \label{fig:XMLADJUST}
 \end{figure}
 
-The second example relates to a fragment of the JavaScript language, also known as ECMAScript.
-%\footnote{https://github.com/antlr/grammars-v4/blob/master/ecmascript/ECMAScript.g4}.
-Every statement in JavaScript needs to be terminated by a semicolon, newline, end of the file, or end of the block --- see the Figure~\ref{fig:JAVASCRIPTSTMT}, which contains the corresponding fragment of the ECMAScript grammar.
-Since there are multiple options, a user would have to select one of them for each statement in the editor.
-Technically, every language concept representing a statement would contain one child node of the interface type \mpsinterface{IEos}, which has to be assigned a proper object (i.e., an AST node corresponding to one of the options listed above).
-
-\begin{figure}[ht]
-\vspace{-1mm}
-\begin{alltt}
-\small
-\antlrparserrule{eos} : \antlrlexerrule{SemiColon} | \antlrlexerrule{EOF} | {lineBreakAhead()}? 
-    | {{\_}input.LT(1).type() == \antlrlexerrule{CloseBrace}}? ;
-\textcolor{gray}{// example reference to the eos rule}
-\antlrparserrule{breakStmt} : \antlrlexerrule{Break} \antlrlexerrule{Identifier}? \antlrparserrule{eos} ;
-\end{alltt}
-\caption{Statements in JavaScript}
-\label{fig:JAVASCRIPTSTMT}
-\vspace{-1mm}
-\end{figure}
-
-Since MPS can differentiate between statements on the AST level, there is no need for an explicit separator.
-For example, we can put each statement on a distinct line, as is usual for JavaScript code, and keep just the semicolon as a fixed literal in the projectional editor.
-The \antlrparserrule{eos} rule would have to be changed to this form: \antlrparserrule{eos} : \antlrliteral{;}.
-A small adjustment of the grammar, like this one, is a very quick solution and makes the generated language more usable in MPS.
-On the other hand, this adjustment of the original ANTLR grammar, performed just for the purpose of creating the MPS language, changes the grammar in such a way that it does not precisely describe the standard JavaScript language.
-To ensure compatibility with JavaScript, the TextGen aspect in the MPS language should put the semicolon after each statement in the plain-text representation of a program code.
-
-\paragraph{Breaking original grammars and parsers.}
+\noindent\textbf{Breaking original grammars and parsers.}
 We also want to point out a general problem with grammar adjustments, which all potential users of the \textsc{Ingrid} method should be aware of.
 The original ANTLR grammar for an input language can be very easily changed in a way that, at first, seems harmless and valid inside MPS, but the parser generated out of the adjusted grammar stops accepting the original language.
 In particular, adjustments needed to improve the resulting MPS language can break down the parser.
