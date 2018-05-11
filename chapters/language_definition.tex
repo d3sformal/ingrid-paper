@@ -2,13 +2,13 @@
 \label{sect:LANGDEF}
 
 The proposed \textsc{Ingrid} method accepts grammars in the ANTLR v4 notation~\cite{ref:ANTLRBOOK} as input.
-Syntax definition in the form of an ANTLR v4 grammar exists for all widely used programming languages. It is available at \url{https://github.com/antlr/grammars-v4}.
-Unlike some of the related projects, we did not extend the notation with any custom features.
+Syntax definition in the form of an ANTLR v4 grammar exists for all widely used programming languages --- it is available at \url{https://github.com/antlr/grammars-v4}.
+We did not extend the notation with any custom features.
 
 The process of language construction by \textsc{Ingrid} consists of four phases --- the first is parsing of the input grammar, followed by definition of the essential aspects of the language.
 
 \textsc{Ingrid} is currently able to create (i) a full Structure aspect for each element of the given language, (ii) a very basic Editor, and (iii) a basic TextGen aspect.
-Therefore, the resulting MPS language typically still has to be adjusted manually to improve its usability, and the remaining aspects not yet supported by \textsc{Ingrid} must also be defined.
+Therefore, the resulting MPS language has to be adjusted manually to improve its usability, and the remaining aspects not yet supported by \textsc{Ingrid} must also be defined.
 
 Our approach differs from the existing projects with similar goals (Section~\ref{sect:RELATED}) especially in the level of automation, and it also has much better support for Editor and TextGen.
 
@@ -21,7 +21,6 @@ We describe the \textsc{Ingrid} method, and illustrate the main challenges, usin
 \centering
 \begin{alltt}
 \small
-\textbf{grammar} \textit{SimpleXML};
 \antlrparserrule{document}  : \antlrparserrule{prolog}? \antlrparserrule{comment}? \antlrparserrule{element} ;
 \antlrparserrule{prolog}    : \antlrliteral{<?xml } \antlrparserrule{attr}* \antlrliteral{?>} ;
 \antlrparserrule{comment}   : \antlrliteral{<!--} \antlrlexerrule{TEXT} \antlrliteral{-->} ;
@@ -36,55 +35,54 @@ We describe the \textsc{Ingrid} method, and illustrate the main challenges, usin
 \antlrlexerrule{TEXT}      : \antlrregex{~[<"]*} ;
 \antlrlexerrule{CDATA}     : \antlrliteral{<![CDATA[} \antlrregex{.*?} \antlrliteral{]]>} ;
 \end{alltt}
-\caption{Grammar of the SimpleXML language in the ANTLR v4 notation}
+\caption{ANTLR v4 grammar of the SimpleXML language}
 \label{fig:SIMPLEXML}
 \vspace{-2mm}
 \end{figure}
 
 The grammar of SimpleXML contains elements of the kinds that are listed below.
-Each color in Figure~\ref{fig:SIMPLEXML} corresponds to one kind in a way indicated by the list item headers.
+Each color in Figure~\ref{fig:SIMPLEXML} corresponds to one kind, as indicated by the list item headers.
 \begin{itemize}
 	\item \textbf{ANTLR v4 keywords} are required by the notation.
 	\item \antlrparserrule{\textbf{Parser rules}} describe the structure of a language.
-	\item \antlrlexerrule{\textbf{Lexer rules}} describe terminal symbols that the parser matches against the input.
-		A terminal symbol can be encoded as a string value or a regular expression.
+	\item \antlrlexerrule{\textbf{Lexer rules}} describe terminal symbols.
+		Any of them can be encoded as a string value or a regular expression.
 	\item \antlrliteralnoap{\textbf{String literals}} also represent terminal symbols, but by exact match to a string constant.
 	\item \antlrregex{\textbf{String tokens}} are described by regular expressions with a special ANTLR v4 regex notation\footnote{https://github.com/antlr/antlr4/blob/master/doc/lexer-rules.md}.
 \end{itemize}
-Elements on the right side of a rule can be annotated with standard EBNF operators (\code{?}, \code{+}, \code{*}) that specify the allowed number of occurrences.
+Elements on the right side of a rule can be annotated with EBNF operators (\code{?}, \code{+}, \code{*}) that specify the allowed number of occurrences.
 
 \subsection{Phase 1: Parsing Input Grammar}
 
-The first phase in the process of MPS language construction is parsing of the input ANTLR v4 grammar.
-It is done using an ANTLR parser that was automatically generated from the grammar of the ANTLR v4 notation itself.
+Parsing of the input ANTLR v4 grammar of a given language is done using an ANTLR parser that was automatically generated from the grammar of the ANTLR v4 notation itself.
 The full parse tree, which comes out of the parser, is quite complex and contains information not relevant for \textsc{Ingrid}.
 In order to get a simple representation that is easy to process by the later phases and keeps only information necessary for the construction of MPS languages, several steps of post-processing of the parse tree are performed.
 An output is a custom AST-like structure that represents the grammar, especially the hierarchy of parser rules, in a way more suitable for MPS.
 
 The representation of lexer rules (tokens) in the full parse tree has to be simplified too.
-In the ANTLR notation, lexer rules can be built from alternatives just like the parser rules --- see, for example, the lexer rule \antlrlexerrule{Name} from our SimpleXML language (Figure~\ref{fig:SIMPLEXML}).
+In the ANTLR notation, lexer rules can be built from alternatives just like the parser rules --- see, for example, the lexer rule \antlrlexerrule{Name} in Figure~\ref{fig:SIMPLEXML}.
 Every tree that represents a lexer rule is flattened into the equivalent regular expression.
 We describe the flattening algorithm in the full version of this paper~\cite{ref:TRFULL}.
 
 \subsection{Phase 2: Structure}
 
 In the next phase, the complete structure of the MPS language is automatically generated from the AST that represents syntax of the input language.
-Elements of the Structure aspect are derived from the AST nodes, and then linked appropriately.
-Therefore, structure of the MPS language is usually similar to the original ANTLR grammar.
+Elements of the Structure aspect are derived from the AST nodes, and linked appropriately.
+Therefore, structure of the MPS language is similar to the original ANTLR grammar.
 
 When designing the procedure for translating AST nodes (i.e., grammar rules) into the MPS language structure, we faced several challenges.
-The main challenge, as we already mentioned, is that a grammar typically contains rules that do not directly correspond to programming language constructs.
+The main challenge is that a grammar typically contains rules that do not directly correspond to programming language constructs.
 Such rules exist at the intermediate layers of a syntax hierarchy.
-Their main purpose is to enable easier understanding and maintenance of the grammar by humans.
-Nevertheless, presence of the intermediate layers would significantly complicate usage of the given language in MPS, and the layers are actually not necessary for construction of an MPS language.
+Their purpose is to enable easier understanding and maintenance of the grammar by humans.
+Nevertheless, presence of the intermediate layers would significantly complicate usage of the language in MPS, and the layers are actually not necessary for construction of an MPS language.
 We show examples illustrating this problem, which we call a \emph{layer problem}, later in this section.
-As a part of the \textsc{Ingrid} method, we have designed an approach to eliminate the unnecessary layers during construction of the Structure aspect --- we call it the \emph{shortcut} approach.
+As a part of the \textsc{Ingrid} method, we have designed an approach to eliminate the unnecessary layers --- we call it the \emph{shortcut} approach.
 However, before focusing on the intermediate layers, we describe the basic principles of translation from AST into Structure.
 
-In MPS, each concept of the language (i.e., every AST node) is represented by an object that may have a parent, some children, and properties of any data type.
+In MPS, each concept of the language (i.e., every AST node) is represented by an object that may have a parent, some children, and properties.
 Additionally, the object may also contain references to objects representing other AST nodes.
-The parent-child relationships between objects that make the Structure aspect are derived from rules of the grammar.
-If a rule has multiple alternatives, then a distinct object (MPS concept) has to be created in the structure for each alternative.
+The parent-child relationships between objects that make the Structure aspect are derived from the grammar rules.
+If a rule has multiple alternatives, then a distinct object (MPS concept) has to be created for each alternative.
 The name of a concept (object) in MPS is composed from (1) the name of the AST node and (2) the number indicating the position of the respective alternative on the right-hand side of the rule.
 
 \begin{figure}[ht]
@@ -105,7 +103,7 @@ The name of a concept (object) in MPS is composed from (1) the name of the AST n
 \end{alltt}
 \caption{Structure aspect of the \code{Element{\_}1} concept}
 \label{fig:ELEMENTSTRUCT}
-\vspace{-1mm}
+\vspace{-2mm}
 \end{figure}
 
 Consider the parser rule \antlrparserrule{element} from the grammar in Figure~\ref{fig:SIMPLEXML}.
@@ -115,28 +113,16 @@ The object contains two properties, one for each reference to the lexer rule \an
 String literals, such as the opening and closing brackets (\antlrliteral{\textless}, \antlrliteral{/\textgreater}) in XML, are omitted because they will be defined only in the Editor aspect for this concept.
 
 References to other parser rules are captured by pointers to child objects.
-The types of child objects, such as \code{IContent} in the \code{Element{\_}1} concept, are determined as follows.
-Consider the \antlrparserrule{content} rule from the SimpleXML language.
+The types of child objects, such as \code{IContent} in \code{Element{\_}1}, are determined as follows.
+Consider the \antlrparserrule{content} rule from SimpleXML.
 An object corresponding to any one of the four alternatives could be the actual value anywhere the \antlrparserrule{content} rule is referenced.
 
 Our solution is to use interface concepts.
-For each rule with more than one alternative on the right side, first an interface concept is defined in the MPS language structure, and then one object that implements the given interface is created for each alternative.
-The resulting fragment of the language structure looks like the one in Figure~\ref{fig:ICONTENTITF}.
-It contains one interface \mpsinterface{IContent} that is implemented by four object concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
-
-\begin{figure}[ht]
-\vspace{-2mm}
-\centering
-\begin{alltt}
-\small
-\mpsinterface{IContent} : \mpsconcept{Content{\_}1} | \mpsconcept{Content{\_}2} | \mpsconcept{Content{\_}3} | \mpsconcept{Content{\_}4}
-\end{alltt}
-\caption{MPS interface \code{IContent} and the types of implementing objects}
-\label{fig:ICONTENTITF}
-\end{figure}
+For each rule with multiple alternatives on the right side, first an interface concept is defined, and then one object that implements the given interface is created for each alternative.
+The resulting fragment of the language structure contains one interface \mpsinterface{IContent} that is implemented by four object concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
 
 Now we can illustrate the layer problem on the behavior of auto-completion in MPS.
-Suppose that a user just inserted a fresh node of the type \mpsconcept{Element{\_1}}, and would like to insert another nested XML element inside.
+Suppose that a user inserted a fresh node of the type \mpsconcept{Element{\_1}}, and would like to insert another XML element inside.
 The auto-completion mechanism of MPS offers four options that are displayed in the left part of Figure~\ref{fig:LAYERPROBLEM}.
 Each option represents one of the MPS concepts that implement the interface \mpsinterface{IContent}.
 
@@ -152,12 +138,12 @@ However, in order to correctly insert another nested element, a user has to perf
 	\item Insert an object (node) of the type \mpsconcept{Content{\_}2} inside the \mpsconcept{Element{\_}1} node. The \mpsconcept{Content{\_}2} object has only a single child node of the interface type \mpsinterface{IElement}.
 	\item Then, the user must again trigger auto-complete and insert either an \mpsconcept{Element{\_}1} node or \mpsconcept{Element{\_}2} into the \mpsconcept{Content{\_}2} node. See the right part of Figure~\ref{fig:LAYERPROBLEM}.
 \end{enumerate}
-The main difficulty here is that, in the first step, the user has to (i) either correctly guess what option offered by the auto-complete menu to select, or (2) to remember the order of alternatives in the grammar rule.
+The difficulty here is that, in the first step, the user either (i) has to correctly guess what option to select in the auto-complete menu, or (2) to remember the order of alternatives in the grammar rule.
 
-Similarly, if the user would like to replace a nested \mpsconcept{Element{\_}1} node with, for example, an XML comment (i.e., the \mpsconcept{Comment} node), then both intermediary layers have to be deleted before she gets back to the original selection among the concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
+Similarly, if the user would like to replace a nested \mpsconcept{Element{\_}1} node with, for example, a \mpsconcept{Comment} node, then both intermediary layers have to be deleted before she gets back to the original selection among the concepts \mpsconcept{Content{\_}1}, $\ldots$, \mpsconcept{Content{\_}4}.
 
-Intermediary layers have no visual appearance, and therefore it is very difficult for users to see what is actually happening and they may get confused very easily.
-The layer problem is addressed by the shortcut approach, which we describe briefly in the following paragraphs.
+Intermediary layers have no visual appearance, and therefore it is very difficult for users to see what is actually happening and they may get confused easily.
+The layer problem is addressed by the shortcut approach, which we describe in the following paragraphs.
 
 \noindent\textbf{The Shortcut Approach.}
 The key idea of this approach is to skip all the intermediary layers (nodes) in the syntax tree, and consider just the nodes to be directly offered to the user through the auto-completion menu.
@@ -175,16 +161,14 @@ Specifically, the \antlrparserrule{content} rule from the SimpleXML grammar expa
 \vspace{-2mm}
 \end{figure}
 
-For the input that consists of a particular AST node $N$ and the grammar rule $R$ that expands $N$, the procedure implementing the shortcut approach systematically traverses the parser tree (AST) built in the earlier phases in order to identify each AST node that (i) may appear in some derivation chain starting by the rule $R$ from the node $N$ and (ii) does not belong to any intermediary layer.
+For the input that consists of an AST node $N$ and the grammar rule $R$ that expands $N$, the procedure implementing the shortcut approach systematically traverses the full tree (AST) in order to identify each AST node that (i) may appear in some derivation chain starting by the rule $R$ from $N$ and (ii) does not belong to any intermediary layer.
 We call them \emph{end nodes}.
-Our algorithm that can recognize intermediary layers is, too, described in the full version~\cite{ref:TRFULL}.
+Our algorithm that can recognize intermediary layers is described in the full version~\cite{ref:TRFULL}.
 
 We use the name \emph{shortcut approach} for this algorithm, because it creates shortcuts from the given rule to end nodes, by the virtue of hiding all intermediary layers.
-
 The primary use case for shortcuts is to generate options for the auto-completion menus, such that only the end nodes are offered.
 Shortcuts have to be considered when nodes are inserted, and also when they are deleted.
-In each case, the whole chain including possibly multiple intermediary AST nodes (up to the end node) must be added, respectively deleted.
-When the user wants to delete some end node from the AST of a program or document written in the MPS language, the effect of an insertion must be fully reversed.
+In each case, the whole chain including possibly multiple intermediary AST nodes must be added, respectively deleted.
 
 \subsection{Phase 3: Editor}
 \label{sect:EDITORDEF}
@@ -194,17 +178,16 @@ As we said in Section~\ref{sect:MPS}, MPS uses a cellular system that enables th
 The specific goal of this phase is to create the Editor aspect for each language concept, such that all its attributes --- name, properties, children --- are projected using the respective cell types.
 
 The main problem that we had to address is the absence of information about the code layout and whitespace in ANTLR grammars.
-Here we present a solution that is only partially automated for reasons explained below.
+Here we present a solution that is only partially automated.
 
-We observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept that should appear in its visual representation.
+We observed that the most tedious and error-prone step in the manual definition of the Editor aspect is the creation of cells for all literals (keywords), properties, children, and other fields of a given concept.
 This step can be very easily automated.
 
-Our solution that we implemented in the current version of the \textsc{Ingrid} method is to create all the cells and place them in a single row.
+Our solution that we implemented in the current version of \textsc{Ingrid} is to create all the cells and place them in a single row.
 Further adjustments of the layout, such as indentation and line breaks, can be done very efficiently by the user in the MPS IDE.
 The resulting layout is illustrated on the example of the \mpsconcept{Element{\_}1} concept in Figure~\ref{fig:EDITORADJUST} (Appendix~\ref{sect:APX}).
 
 Based on our experience, it takes a very short time to manually adjust the layout into a form much better than any fully automated heuristic could achieve.
-A typical user of the \textsc{Ingrid} method will be able to use the projectional editor in MPS quite efficiently.
 We actually experimented with several heuristics to derive a useful code layout automatically, but all of them produced rather suboptimal results.
 
 \subsection{Phase 4: Text Generation}
@@ -228,11 +211,11 @@ The code appends all literals, properties, and children of \mpsconcept{Element{\
 \end{alltt}
 \caption{Basic TextGen aspect for the \mpsconcept{Element{\_}1} concept}
 \label{fig:TEXTGENBASIC}
-\vspace{-3mm}
+\vspace{-4mm}
 \end{figure}
 
 Like in the case of a projectional editor, the main challenge associated with TextGen is to produce valid code with a reasonable layout.
-An implementation of the TextGen aspect must determine properly where to put line breaks, spaces, and indentation.
+An implementation of TextGen must determine properly where to put line breaks, spaces, and indentation.
 For example, in the case of the concept representing an XML element, there must be a space between the element's name and the first attribute, while it is not required between the opening bracket \antlrliteral{\textless} and the name.
 
 Our \textsc{Ingrid} method targets mostly text-based languages, for the concepts of which the visual representation in a projectional editor must be almost equivalent to their plain-text representation.
@@ -253,15 +236,15 @@ We show the complete TextGen aspect for \mpsconcept{Element{\_}1} in the appendi
 During our work on the \textsc{Ingrid} method, we have observed that practical usability of a resulting MPS language depends on the specific manner in which the input ANTLR grammar is defined.
 
 \noindent\textbf{Adjusting grammars.}
-In some cases, a small adjustment of the input grammar before the run of \textsc{Ingrid} might yield a better and more useful MPS language.
-Here we illustrate this on a simple example (some additional examples are provided in~\cite{ref:TRFULL}).
+In some cases, a small adjustment of the grammar before the run of \textsc{Ingrid} might yield a better and more useful MPS language.
+Here we illustrate this on a simple example.
 
 Figure~\ref{fig:XMLATTRIB} shows the definition of an XML attribute, which is taken from the original XML grammar.
-The lexer rule \antlrlexerrule{STRING} actually says that quotes make a part of the attribute's value.
-If the MPS language would faithfully match the grammar, the user would have to always input the leading and trailing quote together with the value in the projectional editor.
+The lexer rule \antlrlexerrule{STRING} says that quotes make a part of the attribute's value.
+If the MPS language would faithfully match the grammar, the user would have to always input both quotes together with the value in the projectional editor.
 
 \begin{figure}[ht]
-\vspace{-1mm}
+\vspace{-2mm}
 \begin{alltt}
 \small
   \antlrparserrule{attr} : \antlrlexerrule{Name} \antlrliteral{=} \antlrlexerrule{STRING} ;
@@ -271,7 +254,7 @@ If the MPS language would faithfully match the grammar, the user would have to a
 \label{fig:XMLATTRIB}
 \end{figure}
 
-In our SimpleXML language, we adjusted the grammar easily in a way that we show in Figure~\ref{fig:XMLADJUST}.
+In SimpleXML, we adjusted the grammar in a way that we show in Figure~\ref{fig:XMLADJUST}.
 We turned quotes into literals, ensuring that they will only appear in the projectional editor as string constant cells.
 
 \begin{figure}[ht]
@@ -286,10 +269,9 @@ We turned quotes into literals, ensuring that they will only appear in the proje
 \end{figure}
 
 \noindent\textbf{Breaking original grammars and parsers.}
-We also want to point out a general problem with grammar adjustments, which all potential users of the \textsc{Ingrid} method should be aware of.
-The original ANTLR grammar for an input language can be very easily changed in a way that, at first, seems harmless and valid inside MPS, but the parser generated out of the adjusted grammar stops accepting the original language.
-In particular, adjustments needed to improve the resulting MPS language can break down the parser.
+We also want to point out a general problem with grammar adjustments, which all potential users of \textsc{Ingrid} should be aware of.
+The original ANTLR grammar for an input language can be easily changed in a way that, at first, seems harmless and valid in MPS, but the parser generated out of the adjusted grammar stops accepting the original language.
 
-This problem has two main causes: (1) low-level implementation details of token matching in the ANTLR parser and (2) usage of ANTLR grammars for a different purpose (that was not expected) in our project.
+This problem has two main causes: (1) low-level implementation details of token matching in the ANTLR parser and (2) usage of ANTLR grammars for a different purpose in our project.
 Since, for practical reasons, it is very important that a parser works for programs written according to the original grammar, adjustments have to be performed carefully by the users of \textsc{Ingrid}.
 

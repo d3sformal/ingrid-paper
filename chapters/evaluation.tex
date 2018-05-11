@@ -1,31 +1,30 @@
 \section{Evaluation}
 \label{sect:EVAL}
 
-We implemented the \textsc{Ingrid} method as an MPS plugin.
+We implemented \textsc{Ingrid} as an MPS plugin.
 While most of the plugin is written in Java, small fragments of BaseLanguage code were needed to bind with the MPS API, which is used to programatically generate language elements and their aspects.
 The plugin uses the ANTLR library~\cite{ref:ANTLR} for parsing of ANTLR v4 grammar files, and several MPS libraries that implement the MPS API.
 Our complete implementation is available at \url{https://github.com/premun/ingrid}.
 
-For the purpose of evaluation, we applied \textsc{Ingrid} to several well-established and widely used languages, including JSON, JavaScript (ECMAScript 5.1~\cite{ref:ECMASCRIPT51}), and C\#.
+For the purpose of evaluation, we applied \textsc{Ingrid} to several widely used languages, including JSON, JavaScript (ECMAScript 5.1~\cite{ref:ECMASCRIPT51}), and C\#.
 MPS projects that contain definitions of all three languages are also released at \url{https://github.com/premun/ingrid}.
-In the rest of this section, we discuss our experience with application of \textsc{Ingrid} to these languages, and then we highlight few general observations.
+In the rest of this section, we discuss our experience with \textsc{Ingrid} on these languages, and then we highlight few general observations.
 
-However, first we must emphasize that MPS languages automatically produced by \textsc{Ingrid}, are not ready-to-use full-fledged MPS counterparts of the original input languages.
+However, first we must emphasize that MPS languages automatically produced by \textsc{Ingrid} are not ready-to-use full-fledged MPS counterparts of the original input languages.
 The structure of a generated MPS language fully corresponds to the respective ANTLR grammar, but its other aspects have to be manually tweaked (e.g., the Editor) or defined from scratch by the end user.
 \textsc{Ingrid} also does not yet support advanced features of MPS, such as type checking.
 
 \noindent\textbf{JSON.}
-The least amount of manual adjusting after the import into MPS was needed in case of the JSON language~\cite{ref:JSON}, because it is the simplest language from all that we used for our experiments.
+The least amount of manual adjusting after the import into MPS was needed for JSON~\cite{ref:JSON}, because it is the simplest language from all that we used.
 Specifically, the first author spent less than 20 minutes in order to get a language that is ready to use.
 
 \noindent\textbf{JavaScript.}
-In the case of JavaScript, automated generating of the language definition in MPS from the ANTLR grammar and subsequent manual adjusting was done in less than one hour.
-The current version of \textsc{Ingrid} fully automatically produces the definition of JavaScript in MPS that needs just minor adjustments to be really useful --- for example, the language designer has to define actions that improve editing experience by automatically transforming the AST in the background.
+In the case of JavaScript, automated generating of the language definition in MPS and subsequent manual adjusting was done in less than one hour.
+The current version of \textsc{Ingrid} automatically produces the definition of JavaScript in MPS that needs just minor adjustments to be really useful --- for example, the language designer has to define actions that improve editing experience by automatically transforming the AST in the background.
 
 \noindent\textbf{C\#.}
 Before we could run \textsc{Ingrid} on C\#~\cite{ref:CSHARP}, we had to manually adjust the ANTLR grammar of C\# in order to ensure that \textsc{Ingrid} produces at least a reasonable structure (hierarchy of concepts) that can be practically used in MPS just with minor alterations.
 Necessary adjustments include removal of intermediary rules such as \antlrparserrule{statement\_list} : \antlrparserrule{statement*}~\antlrliteral{;} by inlining the right-hand side.
-The Editor aspect was modified afterwards, but only for some of the concepts. 
 Roughly one hour of manual effort was needed in total.
 Nevertheless, additional modifications of the grammar and selected aspects of the MPS language are still needed.
 A great flexibility and complexity of the C\# language is the main reason behind all the necessary changes to the language definition in MPS and to the ANTLR grammar.
@@ -45,5 +44,5 @@ On the other hand, our experiments with complex languages show that, in the case
 MPS IDE provides good support for efficient tweaking of the code layout in Editor and TextGen, allowing designers to produce really useful languages very fast.
 Despite that, we also tried to design some automated heuristics, but so far all yield rather mediocre results when compared to what human users can achieve efficiently instead.
 
-Regarding future changes to the ANTLR grammar of a subject language, it is certainly possible to directly update the corresponding MPS definition, but in some cases it may be easier to run again the whole import process and overwrite the previous definition with a new one.
+Regarding future changes to the ANTLR grammar of a given language, a user can directly update the corresponding MPS definition, but in some cases it may be easier to run again the whole import process and overwrite the previous definition with a new one.
 
